@@ -1,6 +1,6 @@
 // ElektroPlan SM: static prototype checks. No browser or electrical safety certification.
 const fs=require('node:fs');const vm=require('node:vm');const assert=require('node:assert/strict');
-const path='prototypes/integrated-titleblock-schematic-v116.html';
+const path='prototypes/integrated-titleblock-schematic-v117.html';
 const html=fs.readFileSync(path,'utf8');
 const scripts=[...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/gi)].map(m=>m[1]);
 assert.equal(scripts.length,1,'Expected one inline application script');
@@ -34,6 +34,9 @@ assert.ok(scripts[0].includes('photoEvidenceKey()'),'Evidence lookup must key by
 for(const id of ['catalogEvidenceInspect','catalogEvidenceStatus'])assert.ok(html.includes('id="'+id+'"'),'Missing component evidence status '+id);
 assert.ok(scripts[0].includes("const id=$('catalogPartId').value.trim(),item=manualCatalog[id]"),'Evidence inspection must use saved component card');
 assert.ok(scripts[0].includes('Kein Foto-Nachweis'),'Missing evidence must be disclosed');
+for(const id of ['manufacturerReviewUrl','manufacturerReviewDoc','manufacturerReviewer','manufacturerReviewNote','manufacturerReviewRecord','manufacturerReviewShow','manufacturerReviewStatus'])assert.ok(html.includes('id="'+id+'"'),'Missing manufacturer review UI '+id);
+assert.ok(scripts[0].includes('USER_REPORTED_REVIEW_NOT_INDEPENDENTLY_VERIFIED'),'Manufacturer review must be user-reported only');
+assert.ok(scripts[0].includes('terminalsApproved:false'),'Manufacturer review must not approve terminal wiring');
 
 const structuralSource=scripts[0].match(/function structuralFixtureCheck\([\s\S]*?return warnings\}/);
 assert.ok(structuralSource,'Structural diagnostic helper missing');
