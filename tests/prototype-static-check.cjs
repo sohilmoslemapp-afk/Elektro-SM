@@ -1,6 +1,6 @@
 // ElektroPlan SM: static prototype checks. No browser or electrical safety certification.
 const fs=require('node:fs');const vm=require('node:vm');const assert=require('node:assert/strict');
-const path='prototypes/integrated-titleblock-schematic-v126.html';
+const path='prototypes/integrated-titleblock-schematic-v127.html';
 const html=fs.readFileSync(path,'utf8');
 const scripts=[...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/gi)].map(m=>m[1]);
 assert.equal(scripts.length,1,'Expected one inline application script');
@@ -65,6 +65,9 @@ assert.ok(scripts[0].includes('manuell kopieren'),'Clipboard fallback must permi
 for(const id of ['componentAuditPreview','componentAuditPreviewHide','componentAuditPreviewArea','componentAuditPreviewText'])assert.ok(html.includes('id="'+id+'"'),'Missing audit preview '+id);
 assert.ok(scripts[0].includes("$('componentAuditPreviewText').textContent=content"),'Preview must use safe text rendering');
 assert.ok(scripts[0].includes("$('componentAuditPreviewArea').hidden=true"),'Preview must be closable');
+for(const id of ['componentLibrarySearch','componentLibrarySearchRun','componentLibrarySearchResults'])assert.ok(html.includes('id="'+id+'"'),'Missing local search '+id);
+assert.ok(scripts[0].includes('Object.entries(manualCatalog).filter'),'Search must use local manual catalog');
+assert.ok(scripts[0].includes('— UNVERIFIED / غير معتمد'),'Search must not imply electrical verification');
 
 const structuralSource=scripts[0].match(/function structuralFixtureCheck\([\s\S]*?return warnings\}/);
 assert.ok(structuralSource,'Structural diagnostic helper missing');
