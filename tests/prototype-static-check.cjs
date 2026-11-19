@@ -1,6 +1,6 @@
 // ElektroPlan SM: static prototype checks. No browser or electrical safety certification.
 const fs=require('node:fs');const vm=require('node:vm');const assert=require('node:assert/strict');
-const path='prototypes/integrated-titleblock-schematic-v121.html';
+const path='prototypes/integrated-titleblock-schematic-v122.html';
 const html=fs.readFileSync(path,'utf8');
 const scripts=[...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/gi)].map(m=>m[1]);
 assert.equal(scripts.length,1,'Expected one inline application script');
@@ -50,6 +50,9 @@ assert.ok(scripts[0].includes('Herstellerunterlagen unabhängig prüfen'),'Check
 assert.ok(html.includes('id="componentAuditChecklistExport"'),'Missing checklist export control');
 assert.ok(scripts[0].includes('UNVERIFIED_COMPONENT_REVIEW_CHECKLIST'),'Checklist export must label unverified state');
 assert.ok(scripts[0].includes('terminalWiringApproved:false'),'Checklist must not approve terminal wiring');
+for(const id of ['componentAuditPrint','componentAuditPrintArea','componentAuditPrintText'])assert.ok(html.includes('id="'+id+'"'),'Missing printable audit '+id);
+assert.ok(html.includes('@media print'),'Printable audit must have print stylesheet');
+assert.ok(scripts[0].includes('KEINE VERDRAHTUNGSFREIGABE'),'Printed audit must deny wiring approval');
 
 const structuralSource=scripts[0].match(/function structuralFixtureCheck\([\s\S]*?return warnings\}/);
 assert.ok(structuralSource,'Structural diagnostic helper missing');
