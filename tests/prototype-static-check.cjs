@@ -1,6 +1,6 @@
 // ElektroPlan SM: static prototype checks. No browser or electrical safety certification.
 const fs=require('node:fs');const vm=require('node:vm');const assert=require('node:assert/strict');
-const path='prototypes/integrated-titleblock-schematic-v128.html';
+const path='prototypes/integrated-titleblock-schematic-v129.html';
 const html=fs.readFileSync(path,'utf8');
 const scripts=[...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/gi)].map(m=>m[1]);
 assert.equal(scripts.length,1,'Expected one inline application script');
@@ -72,6 +72,9 @@ assert.ok(html.includes('id="componentLibrarySearchFromPhoto"'),'Missing photo-t
 assert.ok(scripts[0].includes("$('photoManufacturer').value.trim()"),'Photo search must read manufacturer');
 assert.ok(scripts[0].includes("$('photoModel').value.trim()"),'Photo search must read model');
 assert.ok(scripts[0].includes("$('componentLibrarySearchRun').click()"),'Photo search must invoke local search');
+assert.ok(scripts[0].includes('exactBoth?3:exactModel?2:exactQuery?1:0'),'Search must rank manufacturer/model exact matches');
+assert.ok(scripts[0].includes('Teiltreffer / تشابه جزئي'),'Search must label partial matches');
+assert.ok(scripts[0].includes('Exakt: Hersteller + Modell'),'Search must label exact manufacturer and model matches');
 
 const structuralSource=scripts[0].match(/function structuralFixtureCheck\([\s\S]*?return warnings\}/);
 assert.ok(structuralSource,'Structural diagnostic helper missing');
