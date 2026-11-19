@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ElektroPlan SM – Bauteil-Erfassung Prototyp</title>
+<style>*{box-sizing:border-box}body{margin:0;padding:16px;background:#edf3fa;color:#182b45;font:16px system-ui,-apple-system,sans-serif}main{max-width:700px;margin:auto;background:white;padding:22px;border-radius:18px}h1{margin-top:0}.btn,label.pick{display:block;padding:15px;margin:12px 0;border:0;border-radius:12px;background:#1559b7;color:white;font:inherit;font-weight:700;text-align:center;cursor:pointer}.pick{position:relative;overflow:hidden}.pick input{position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer}input[type=text],select{width:100%;padding:12px;margin:5px 0 14px;border:1px solid #aab9ca;border-radius:8px;font:inherit}#preview{display:none;max-width:100%;max-height:50vh;margin:10px auto;border-radius:10px}section{padding:15px;margin:15px 0;background:#f1f5fa;border-radius:12px}.warn{border-left:4px solid #b46b00;background:#fff5df}small{color:#475b73}#result{white-space:pre-wrap;overflow-wrap:anywhere}button:disabled{opacity:.5}</style></head>
+<body><main><h1>⚡ ElektroPlan SM</h1><p><strong>Entwicklungsprototyp: Bauteil-Erfassung</strong></p>
+<section class="warn"><strong>Wichtig:</strong> Noch keine automatische Bilderkennung und keine geprüfte Klemmenbelegung. Niemals Verdrahtung allein aus diesem Prototyp ableiten. Herstellerdatenblatt und Elektrofachkraft erforderlich.</section>
+<label class="pick">📷 Kamera öffnen<input id="camera" type="file" accept="image/*" capture="environment"></label>
+<label class="pick">🖼️ Bild auswählen<input id="gallery" type="file" accept="image/*"></label>
+<img id="preview" alt="Vorschau des ausgewählten Bauteils"><p id="status" role="status">Noch kein Bild ausgewählt.</p>
+<section><h2>Bauteil manuell erfassen</h2>
+<label for="manufacturer">Hersteller</label><input id="manufacturer" type="text" autocomplete="organization" placeholder="z. B. Eltako">
+<label for="model">Modell / Typenbezeichnung</label><input id="model" type="text" placeholder="Exakte Typenbezeichnung vom Typenschild">
+<label for="category">Bauteilart</label><select id="category"><option value="">Bitte wählen</option><option>Relais / Stromstoßschalter</option><option>FI / RCD</option><option>Leitungsschutzschalter</option><option>Präsenzmelder</option><option>KNX-Gerät</option><option>Notleuchte</option><option>Sonstiges</option></select>
+<button class="btn" id="record" type="button">🔎 Erfassung prüfen</button></section>
+<section><h2>Ergebnis</h2><div id="result" aria-live="polite">Noch keine Erfassung.</div></section>
+<section><h2>Was kann ElektroPlan SM?</h2><p><strong>Jetzt im Prototyp:</strong> Foto aufnehmen/auswählen, Vorschau, manuelle Bauteildaten erfassen und auf Vollständigkeit prüfen.</p><p><strong>Geplant:</strong> automatische KI-Erkennung, Abgleich mit offiziellen Herstellerunterlagen, verifizierte Klemmenzuordnung und Übernahme in Elektropläne.</p></section>
+<small>Datenschutz: Die ausgewählte Bilddatei bleibt in diesem Prototyp lokal im Browser und wird nicht hochgeladen. Beim Verlassen der Seite gehen die Eingaben verloren.</small></main>
+<script>
+(()=>{'use strict';const $=id=>document.getElementById(id);let currentUrl=null;
+function showFile(file){if(!file)return;if(!file.type.startsWith('image/')){$('status').textContent='Bitte eine Bilddatei auswählen.';return}if(currentUrl)URL.revokeObjectURL(currentUrl);currentUrl=URL.createObjectURL(file);$('preview').src=currentUrl;$('preview').style.display='block';$('status').textContent='Bild ausgewählt: '+file.name+' (keine automatische Erkennung).'}
+['camera','gallery'].forEach(id=>$(id).addEventListener('change',e=>showFile(e.target.files&&e.target.files[0])));
+$('record').addEventListener('click',()=>{const manufacturer=$('manufacturer').value.trim(),model=$('model').value.trim(),category=$('category').value;const missing=[];if(!manufacturer)missing.push('Hersteller');if(!model)missing.push('Modell');if(!category)missing.push('Bauteilart');$('result').textContent=missing.length?'Bitte ergänzen: '+missing.join(', '):'Erfasst: '+manufacturer+' / '+model+' / '+category+'\nStatus: NICHT VERIFIZIERT.\nNächster Schritt: Original-Herstellerdatenblatt prüfen. Keine Klemmenbelegung verfügbar.';});
+window.addEventListener('pagehide',()=>{if(currentUrl)URL.revokeObjectURL(currentUrl)});
+})();
+</script></body></html>
