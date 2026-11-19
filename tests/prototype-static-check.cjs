@@ -1,6 +1,6 @@
 // ElektroPlan SM: static prototype checks. No browser or electrical safety certification.
 const fs=require('node:fs');const vm=require('node:vm');const assert=require('node:assert/strict');
-const path='prototypes/integrated-titleblock-schematic-v111.html';
+const path='prototypes/integrated-titleblock-schematic-v112.html';
 const html=fs.readFileSync(path,'utf8');
 const scripts=[...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/gi)].map(m=>m[1]);
 assert.equal(scripts.length,1,'Expected one inline application script');
@@ -19,6 +19,9 @@ for(const id of ['photoReadText','photoOcrStatus','photoOcrResult'])assert.ok(ht
 assert.ok(scripts[0].includes("typeof window.TextDetector!=='function'"),'OCR must handle unsupported browsers');
 assert.ok(scripts[0].includes('componentPhotoFile!==file'),'OCR must ignore stale photo results');
 assert.ok(scripts[0].includes('bitmap.close()'),'OCR must release bitmap resources');
+for(const id of ['photoExtractCandidate','photoCandidateStatus'])assert.ok(html.includes('id="'+id+'"'),'Missing OCR candidate control '+id);
+assert.ok(scripts[0].includes('const manufacturer=matchLabel('),'OCR suggestions require explicit label matching');
+assert.ok(scripts[0].includes('const model=matchLabel('),'OCR model suggestion requires label matching');
 
 const structuralSource=scripts[0].match(/function structuralFixtureCheck\([\s\S]*?return warnings\}/);
 assert.ok(structuralSource,'Structural diagnostic helper missing');
