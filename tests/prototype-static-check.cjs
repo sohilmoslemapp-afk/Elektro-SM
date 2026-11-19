@@ -1,11 +1,11 @@
 // ElektroPlan SM: static prototype checks. No browser or electrical safety certification.
 const fs=require('node:fs');const vm=require('node:vm');const assert=require('node:assert/strict');
-const path='prototypes/integrated-titleblock-schematic-v98.html';
+const path='prototypes/integrated-titleblock-schematic-v99.html';
 const html=fs.readFileSync(path,'utf8');
 const scripts=[...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/gi)].map(m=>m[1]);
 assert.equal(scripts.length,1,'Expected one inline application script');
 new vm.Script(scripts[0],{filename:path});
-for(const id of ['checkBackupHealth','runSelfDiagnostics','runRegressionChecks','exportDeviceReviewReport','recordDeviceReview','exportDeviceLibrary','importDeviceLibrary'])assert.ok(html.includes('id="'+id+'"'),'Missing UI control '+id);
+for(const id of ['validateProjectData','checkBackupHealth','runSelfDiagnostics','runRegressionChecks','exportDeviceReviewReport','recordDeviceReview','exportDeviceLibrary','importDeviceLibrary'])assert.ok(html.includes('id="'+id+'"'),'Missing UI control '+id);
 assert.ok(html.includes('UNVERIFIED_USER_ENTRY'),'Missing unverified provenance marker');
 assert.ok(html.includes('NOT an electrical safety certification'),'Missing safety disclaimer');
 
@@ -24,6 +24,15 @@ assert.ok(check([], [null]).includes('invalid-edge'));
 assert.ok(check([{id:'A',x:0,y:0}],[{a:'A',b:'MISSING'}]).includes('missing-endpoint'),'String endpoint must be validated');
 assert.deepEqual(check([{id:'A',x:0,y:0},{id:'B',x:1,y:1}],[{a:'A',b:'B'}]),[]);
 assert.equal(csv('a;"b"'),'"a;""b"""');
+const snapshotSource=scripts[0].match(/function validateProjectSnapshot\([\s\S]*?return errors\}/);
+assert.ok(snapshotSource,'Project snapshot validator missing');
+const validate=vm.runInNewContext('('+snapshotSource[0]+')');
+const base={kind:'UNVERIFIED_SCHEMATIC_WITH_TITLEBLOCK',seq:1,parts:[{id:'A',x:0,y:0}],edges:[]};
+assert.deepEqual(Array.from(validate(base)),[]);
+assert.ok(Array.from(validate({...base,parts:[base.parts[0],base.parts[0]]})).some(x=>x.includes('Duplicate')));
+assert.ok(Array.from(validate({...base,edges:[{a:'A',b:'MISSING'}]})).some(x=>x.includes('missing component')));
+assert.ok(Array.from(validate({...base,parts:[{id:'A',x:'invalid',y:0}]})).some(x=>x.includes('Invalid position')));
+console.log('PASS: Four project snapshot validation fixtures');
 console.log('PASS: Six executable regression fixture checks');
 assert.ok(scripts[0].includes("localStorage.getItem(AUTO_RECOVERY_KEY)"),'Backup health check must read autosave');
 assert.ok(scripts[0].includes("d.kind!=='UNVERIFIED_SCHEMATIC_WITH_TITLEBLOCK'"),'Backup check must validate schema kind');
