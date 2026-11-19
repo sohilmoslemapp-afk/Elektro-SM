@@ -1,6 +1,6 @@
 // ElektroPlan SM: static prototype checks. No browser or electrical safety certification.
 const fs=require('node:fs');const vm=require('node:vm');const assert=require('node:assert/strict');
-const path='prototypes/integrated-titleblock-schematic-v99.html';
+const path='prototypes/integrated-titleblock-schematic-v100.html';
 const html=fs.readFileSync(path,'utf8');
 const scripts=[...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/gi)].map(m=>m[1]);
 assert.equal(scripts.length,1,'Expected one inline application script');
@@ -32,6 +32,12 @@ assert.deepEqual(Array.from(validate(base)),[]);
 assert.ok(Array.from(validate({...base,parts:[base.parts[0],base.parts[0]]})).some(x=>x.includes('Duplicate')));
 assert.ok(Array.from(validate({...base,edges:[{a:'A',b:'MISSING'}]})).some(x=>x.includes('missing component')));
 assert.ok(Array.from(validate({...base,parts:[{id:'A',x:'invalid',y:0}]})).some(x=>x.includes('Invalid position')));
+assert.ok(scripts[0].includes("const warnings=validateProjectSnapshot(data)"),'Saved local project must be validated before load');
+const localOpen=scripts[0].slice(scripts[0].indexOf("$('openLocalProject').onclick="),scripts[0].indexOf("$('deleteLocalProject').onclick="));
+assert.ok(localOpen.indexOf('validateProjectSnapshot(data)')>=0,'Validation absent from local open');
+assert.ok(localOpen.indexOf('validateProjectSnapshot(data)')<localOpen.indexOf("confirm('Replace current unsaved schematic?"),'Validation must precede replacement confirmation');
+assert.ok(localOpen.includes('if(warnings.length)'),'Invalid snapshots must be rejected');
+console.log('PASS: Local project opening has structural validation guard');
 console.log('PASS: Four project snapshot validation fixtures');
 console.log('PASS: Six executable regression fixture checks');
 assert.ok(scripts[0].includes("localStorage.getItem(AUTO_RECOVERY_KEY)"),'Backup health check must read autosave');
