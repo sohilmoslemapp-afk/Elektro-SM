@@ -1,6 +1,6 @@
 // ElektroPlan SM: static prototype checks. No browser or electrical safety certification.
 const fs=require('node:fs');const vm=require('node:vm');const assert=require('node:assert/strict');
-const path='prototypes/integrated-titleblock-schematic-v107.html';
+const path='prototypes/integrated-titleblock-schematic-v108.html';
 const html=fs.readFileSync(path,'utf8');
 const scripts=[...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/gi)].map(m=>m[1]);
 assert.equal(scripts.length,1,'Expected one inline application script');
@@ -50,6 +50,7 @@ assert.ok(recoveryHandler.includes('validateProjectSnapshot(snapshot.schematic)'
 assert.ok(recoveryHandler.indexOf('validateProjectSnapshot(snapshot.schematic)')<recoveryHandler.indexOf('new File('),'Recovery validation must precede file creation');
 assert.ok(recoveryHandler.includes('if(recoveryWarnings.length)throw Error'),'Invalid recovery must be rejected');
 assert.ok(importHandler.includes("throw Error('Plankopf')"),'Title-block type must be validated');
+assert.ok(importHandler.indexOf("if(!t||typeof t!=='object'||Array.isArray(t))")<importHandler.indexOf('t.photoData!==null'),'Title-block type must be checked before photoData access');
 assert.ok(importHandler.includes("throw Error('Papierformat')"),'Paper type must be validated');
 assert.ok(importHandler.includes("throw Error('Plankopf Ausschnitt')"),'Crop coordinates must be validated');
 assert.ok(importHandler.indexOf("throw Error('Plankopf Ausschnitt')")<importHandler.indexOf('parts=d.parts'),'Title-block validation must precede state mutation');
