@@ -1,6 +1,6 @@
 // ElektroPlan SM: static prototype checks. No browser or electrical safety certification.
 const fs=require('node:fs');const vm=require('node:vm');const assert=require('node:assert/strict');
-const path='prototypes/integrated-titleblock-schematic-v123.html';
+const path='prototypes/integrated-titleblock-schematic-v124.html';
 const html=fs.readFileSync(path,'utf8');
 const scripts=[...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/gi)].map(m=>m[1]);
 assert.equal(scripts.length,1,'Expected one inline application script');
@@ -56,6 +56,9 @@ assert.ok(scripts[0].includes('KEINE VERDRAHTUNGSFREIGABE'),'Printed audit must 
 assert.ok(scripts[0].includes('OFFENE PRÜFSCHRITTE'),'Printable report must list outstanding steps');
 assert.ok(scripts[0].includes('Herstellerverifikation: NEIN'),'Printable report must explicitly deny manufacturer verification');
 assert.ok(scripts[0].includes('Verdrahtungsfreigabe: NEIN'),'Printable report must explicitly deny wiring approval');
+assert.ok(html.includes('id="componentAuditTextExport"'),'Missing TXT audit export');
+assert.ok(scripts[0].includes('text/plain;charset=utf-8'),'TXT audit export must use UTF-8');
+assert.ok(scripts[0].includes('buildPrintableAuditText'),'TXT and print must share report content');
 
 const structuralSource=scripts[0].match(/function structuralFixtureCheck\([\s\S]*?return warnings\}/);
 assert.ok(structuralSource,'Structural diagnostic helper missing');
