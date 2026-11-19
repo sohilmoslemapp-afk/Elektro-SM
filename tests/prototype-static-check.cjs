@@ -1,6 +1,6 @@
 // ElektroPlan SM: static prototype checks. No browser or electrical safety certification.
 const fs=require('node:fs');const vm=require('node:vm');const assert=require('node:assert/strict');
-const path='prototypes/integrated-titleblock-schematic-v119.html';
+const path='prototypes/integrated-titleblock-schematic-v120.html';
 const html=fs.readFileSync(path,'utf8');
 const scripts=[...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/gi)].map(m=>m[1]);
 assert.equal(scripts.length,1,'Expected one inline application script');
@@ -44,6 +44,9 @@ assert.ok(scripts[0].includes('terminalWiringApproved:false'),'Audit must not ap
 for(const id of ['componentAuditSummary','componentAuditSummaryStatus'])assert.ok(html.includes('id="'+id+'"'),'Missing readable audit status '+id);
 assert.ok(scripts[0].includes('HERSTELLERVERIFIKATION: NEIN'),'Summary must deny manufacturer verification');
 assert.ok(scripts[0].includes('VERDRAHTUNGSFREIGABE: NEIN'),'Summary must deny wiring approval');
+for(const id of ['componentAuditChecklist','componentAuditChecklistOutput'])assert.ok(html.includes('id="'+id+'"'),'Missing review checklist '+id);
+assert.ok(scripts[0].includes('Klemmenbelegung durch qualifizierte Fachkraft'),'Review checklist must require qualified terminal check');
+assert.ok(scripts[0].includes('Herstellerunterlagen unabhängig prüfen'),'Checklist must require independent documentation review');
 
 const structuralSource=scripts[0].match(/function structuralFixtureCheck\([\s\S]*?return warnings\}/);
 assert.ok(structuralSource,'Structural diagnostic helper missing');
