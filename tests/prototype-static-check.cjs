@@ -1,6 +1,6 @@
 // ElektroPlan SM: static prototype checks. No browser or electrical safety certification.
 const fs=require('node:fs');const vm=require('node:vm');const assert=require('node:assert/strict');
-const path='prototypes/integrated-titleblock-schematic-v125.html';
+const path='prototypes/integrated-titleblock-schematic-v126.html';
 const html=fs.readFileSync(path,'utf8');
 const scripts=[...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/gi)].map(m=>m[1]);
 assert.equal(scripts.length,1,'Expected one inline application script');
@@ -62,6 +62,9 @@ assert.ok(scripts[0].includes('buildPrintableAuditText'),'TXT and print must sha
 for(const id of ['componentAuditCopy','componentAuditCopyStatus'])assert.ok(html.includes('id="'+id+'"'),'Missing clipboard UI '+id);
 assert.ok(scripts[0].includes('navigator.clipboard.writeText(content)'),'Clipboard action must copy report text');
 assert.ok(scripts[0].includes('manuell kopieren'),'Clipboard fallback must permit manual copy');
+for(const id of ['componentAuditPreview','componentAuditPreviewHide','componentAuditPreviewArea','componentAuditPreviewText'])assert.ok(html.includes('id="'+id+'"'),'Missing audit preview '+id);
+assert.ok(scripts[0].includes("$('componentAuditPreviewText').textContent=content"),'Preview must use safe text rendering');
+assert.ok(scripts[0].includes("$('componentAuditPreviewArea').hidden=true"),'Preview must be closable');
 
 const structuralSource=scripts[0].match(/function structuralFixtureCheck\([\s\S]*?return warnings\}/);
 assert.ok(structuralSource,'Structural diagnostic helper missing');
