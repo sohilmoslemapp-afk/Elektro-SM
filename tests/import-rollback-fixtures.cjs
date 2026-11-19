@@ -1,6 +1,6 @@
-// Executes the actual V122 JSON import handler with mocked browser dependencies.
+// Executes the actual V123 JSON import handler with mocked browser dependencies.
 const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
-const html=fs.readFileSync('prototypes/integrated-titleblock-schematic-v122.html','utf8');
+const html=fs.readFileSync('prototypes/integrated-titleblock-schematic-v123.html','utf8');
 const script=html.match(/<script>([\s\S]*?)<\/script>/)[1];
 const handler=script.match(/\$\('loadplan'\)\.onchange=async e=>\{[\s\S]*?return false\}\};\$\('papersize'\)\.onchange=/);
 assert.ok(handler,'Import handler not found');
