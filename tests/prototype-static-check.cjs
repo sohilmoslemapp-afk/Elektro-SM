@@ -1,6 +1,6 @@
 // ElektroPlan SM: static prototype checks. No browser or electrical safety certification.
 const fs=require('node:fs');const vm=require('node:vm');const assert=require('node:assert/strict');
-const path='prototypes/integrated-titleblock-schematic-v110.html';
+const path='prototypes/integrated-titleblock-schematic-v111.html';
 const html=fs.readFileSync(path,'utf8');
 const scripts=[...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/gi)].map(m=>m[1]);
 assert.equal(scripts.length,1,'Expected one inline application script');
@@ -15,6 +15,10 @@ assert.ok(html.includes('Keine automatische Erkennung, kein Upload'),'Photo UI m
 for(const id of ['photoManufacturer','photoModel','photoToCatalog','photoTranscriptionStatus'])assert.ok(html.includes('id="'+id+'"'),'Missing manual nameplate field '+id);
 assert.ok(scripts[0].includes("$('catalogManufacturer').value=manufacturer"),'Manual manufacturer must transfer to catalog');
 assert.ok(scripts[0].includes("$('catalogModel').value=model"),'Manual model must transfer to catalog');
+for(const id of ['photoReadText','photoOcrStatus','photoOcrResult'])assert.ok(html.includes('id="'+id+'"'),'Missing OCR interface '+id);
+assert.ok(scripts[0].includes("typeof window.TextDetector!=='function'"),'OCR must handle unsupported browsers');
+assert.ok(scripts[0].includes('componentPhotoFile!==file'),'OCR must ignore stale photo results');
+assert.ok(scripts[0].includes('bitmap.close()'),'OCR must release bitmap resources');
 
 const structuralSource=scripts[0].match(/function structuralFixtureCheck\([\s\S]*?return warnings\}/);
 assert.ok(structuralSource,'Structural diagnostic helper missing');
