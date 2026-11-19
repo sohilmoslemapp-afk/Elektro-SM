@@ -1,6 +1,6 @@
 // ElektroPlan SM: static prototype checks. No browser or electrical safety certification.
 const fs=require('node:fs');const vm=require('node:vm');const assert=require('node:assert/strict');
-const path='prototypes/integrated-titleblock-schematic-v114.html';
+const path='prototypes/integrated-titleblock-schematic-v115.html';
 const html=fs.readFileSync(path,'utf8');
 const scripts=[...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/gi)].map(m=>m[1]);
 assert.equal(scripts.length,1,'Expected one inline application script');
@@ -28,6 +28,9 @@ assert.ok(scripts[0].includes('keine Klemmen übernommen'),'Library matching mus
 for(const id of ['photoEvidenceType','photoEvidenceUrl','photoEvidenceNote','photoEvidenceSave','photoEvidenceStatus'])assert.ok(html.includes('id="'+id+'"'),'Missing photo evidence control '+id);
 assert.ok(scripts[0].includes("photoStored:false"),'Evidence record must not claim photo storage');
 assert.ok(scripts[0].includes('USER_RECORDED_NOT_INDEPENDENTLY_VERIFIED'),'Evidence must remain unverified');
+for(const id of ['photoEvidenceLoad','photoEvidenceExport'])assert.ok(html.includes('id="'+id+'"'),'Missing evidence retrieval/export '+id);
+assert.ok(scripts[0].includes('UNVERIFIED_COMPONENT_PHOTO_EVIDENCE'),'Evidence export must label unverified records');
+assert.ok(scripts[0].includes('photoEvidenceKey()'),'Evidence lookup must key by manufacturer and model');
 
 const structuralSource=scripts[0].match(/function structuralFixtureCheck\([\s\S]*?return warnings\}/);
 assert.ok(structuralSource,'Structural diagnostic helper missing');
