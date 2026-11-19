@@ -1,6 +1,6 @@
 // ElektroPlan SM: static prototype checks. No browser or electrical safety certification.
 const fs=require('node:fs');const vm=require('node:vm');const assert=require('node:assert/strict');
-const path='prototypes/integrated-titleblock-schematic-v101.html';
+const path='prototypes/integrated-titleblock-schematic-v102.html';
 const html=fs.readFileSync(path,'utf8');
 const scripts=[...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/gi)].map(m=>m[1]);
 assert.equal(scripts.length,1,'Expected one inline application script');
@@ -41,6 +41,11 @@ const importHandler=scripts[0].slice(scripts[0].indexOf("$('loadplan').onchange=
 assert.ok(importHandler.includes('validateProjectSnapshot(d)'),'JSON import must validate project structure');
 assert.ok(importHandler.indexOf('validateProjectSnapshot(d)')<importHandler.indexOf('parts=d.parts'),'JSON import must validate before replacing current parts');
 assert.ok(importHandler.includes('if(structuralWarnings.length)throw Error'),'JSON import must reject invalid structure');
+const recoveryHandler=scripts[0].slice(scripts[0].indexOf('async function applyRecoverySnapshot('),scripts[0].indexOf("$('restoreHistory').onclick="));
+assert.ok(recoveryHandler.includes('validateProjectSnapshot(snapshot.schematic)'),'Recovery must validate snapshot');
+assert.ok(recoveryHandler.indexOf('validateProjectSnapshot(snapshot.schematic)')<recoveryHandler.indexOf('new File('),'Recovery validation must precede file creation');
+assert.ok(recoveryHandler.includes('if(recoveryWarnings.length)throw Error'),'Invalid recovery must be rejected');
+console.log('PASS: Recovery snapshot validated before import');
 console.log('PASS: Imported JSON is validated before diagram mutation');
 console.log('PASS: Local project opening has structural validation guard');
 console.log('PASS: Four project snapshot validation fixtures');
