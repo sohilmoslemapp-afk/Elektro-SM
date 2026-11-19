@@ -1,6 +1,6 @@
 // ElektroPlan SM: static prototype checks. No browser or electrical safety certification.
 const fs=require('node:fs');const vm=require('node:vm');const assert=require('node:assert/strict');
-const path='prototypes/integrated-titleblock-schematic-v97.html';
+const path='prototypes/integrated-titleblock-schematic-v98.html';
 const html=fs.readFileSync(path,'utf8');
 const scripts=[...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/gi)].map(m=>m[1]);
 assert.equal(scripts.length,1,'Expected one inline application script');
@@ -21,6 +21,8 @@ assert.ok(check([{id:'A',x:0,y:0},{id:'A',x:1,y:1}],[]).includes('duplicate-id')
 assert.ok(check([{id:'A',x:NaN,y:0}],[]).includes('invalid-coordinate'));
 assert.ok(check([{id:'A',x:0,y:0}],[{a:{id:'A'},b:{id:'MISSING'}}]).includes('missing-endpoint'));
 assert.ok(check([], [null]).includes('invalid-edge'));
+assert.ok(check([{id:'A',x:0,y:0}],[{a:'A',b:'MISSING'}]).includes('missing-endpoint'),'String endpoint must be validated');
+assert.deepEqual(check([{id:'A',x:0,y:0},{id:'B',x:1,y:1}],[{a:'A',b:'B'}]),[]);
 assert.equal(csv('a;"b"'),'"a;""b"""');
 console.log('PASS: Six executable regression fixture checks');
 assert.ok(scripts[0].includes("localStorage.getItem(AUTO_RECOVERY_KEY)"),'Backup health check must read autosave');
