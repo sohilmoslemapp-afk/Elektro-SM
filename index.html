@@ -49,6 +49,11 @@ small{display:block;line-height:1.5;margin-top:16px}
 <p id="result">Noch kein Bauteil erfasst.</p>
 <small>Entwicklungsstand: keine automatische Bilderkennung. Anschlussbelegung nur anhand geprüfter Herstellerunterlagen beurteilen.</small>
 </section>
+<section id="saved-components">
+  <h2>Gespeicherte Bauteile</h2>
+  <p>Hier werden gespeicherte Bauteile angezeigt.</p>
+  <ul id="component-list"></ul>
+</section>
 </main>
 <script>
 (function(){
@@ -83,6 +88,35 @@ var b=document.getElementById('brand').value.trim();
 var m=document.getElementById('model').value.trim();
 document.getElementById('result').textContent=t&&b&&m?'✓ Erfasst: '+t+' | '+b+' | '+m:'Bitte Typ, Hersteller und Modell eingeben.';
 };
+
+const componentList = document.getElementById('component-list');
+const savedComponents = JSON.parse(
+  localStorage.getItem('elektroplan-components') || '[]'
+);
+
+function showSavedComponents() {
+  componentList.innerHTML = '';
+  savedComponents.forEach(function(item) {
+    const li = document.createElement('li');
+    li.textContent = item.type + ' – ' + item.brand + ' – ' + item.model;
+    componentList.appendChild(li);
+  });
+}
+
+document.getElementById('record').addEventListener('click', function() {
+  const type = document.getElementById('type').value.trim();
+  const brand = document.getElementById('brand').value.trim();
+  const model = document.getElementById('model').value.trim();
+
+  if (!type || !brand || !model) return;
+
+  savedComponents.push({ type, brand, model });
+  localStorage.setItem('elektroplan-components', JSON.stringify(savedComponents));
+  showSavedComponents();
+});
+
+showSavedComponents();
+
 })();
 </script>
 </body>
