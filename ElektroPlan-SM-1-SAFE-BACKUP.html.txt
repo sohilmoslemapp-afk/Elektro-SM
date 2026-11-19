@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ElektroPlan SM – Entwicklung 1</title>
+<style>
+*{box-sizing:border-box}
+body{font-family:system-ui,-apple-system,sans-serif;background:#eef3fa;color:#15243b;margin:0;padding:16px}
+main{max-width:620px;margin:auto;background:white;padding:22px;border-radius:18px}
+h1{margin-top:0}
+.pick{display:block;position:relative;overflow:hidden;background:#125ac8;color:white;border-radius:12px;text-align:center;padding:18px 10px;margin:12px 0;font-size:18px;font-weight:700}
+.pick input{position:absolute;inset:0;width:100%;height:100%;opacity:0;font-size:100px}
+button,input,select{font:inherit}
+button{padding:12px;border:1px solid #bbc9d9;background:#f5f8fc;border-radius:10px}
+.field{display:block;width:100%;padding:12px;margin:8px 0 14px;border:1px solid #bbc9d9;border-radius:10px}
+#status,#result{background:#edf3fa;padding:14px;border-radius:10px;white-space:pre-wrap;overflow-wrap:anywhere}
+#preview{display:none;max-width:100%;max-height:60vh;margin:15px auto;border-radius:10px}
+section{margin-top:24px;padding-top:16px;border-top:1px solid #ccd5e2}
+small{display:block;line-height:1.5;margin-top:16px}
+</style>
+</head>
+<body>
+<main>
+<h1>⚡ ElektroPlan SM</h1>
+<h2>Kamera</h2>
+<label class="pick">📷 Kamera öffnen<input id="camera" type="file" accept="image/*" capture="environment"></label>
+<label class="pick">🖼️ Bild auswählen<input id="gallery" type="file" accept="image/*"></label>
+<p id="status">Seite geladen. Bereit.</p>
+<img id="preview" alt="Bildvorschau">
+<button id="check" type="button">🔎 Funktion prüfen</button>
+<section>
+<h2>Bauteil erfassen</h2>
+<label for="type">Bauteiltyp</label>
+<select id="type" class="field">
+<option value="">Bitte auswählen</option>
+<option>FI / RCD</option>
+<option>LS-Schalter</option>
+<option>Schütz</option>
+<option>Relais</option>
+<option>KNX</option>
+<option>Sonstiges</option>
+</select>
+<label for="brand">Hersteller</label>
+<input id="brand" class="field" placeholder="z. B. ABB, Hager, Siemens">
+<label for="model">Modell / Artikelnummer</label>
+<input id="model" class="field" placeholder="Modell eingeben">
+<button id="record" type="button">Bauteil erfassen</button>
+<p id="result">Noch kein Bauteil erfasst.</p>
+<small>Entwicklungsstand: keine automatische Bilderkennung. Anschlussbelegung nur anhand geprüfter Herstellerunterlagen beurteilen.</small>
+</section>
+</main>
+<script>
+(function(){
+var s=document.getElementById('status');
+var p=document.getElementById('preview');
+function msg(t){s.textContent=t}
+window.addEventListener('error',function(e){msg('JavaScript-Fehler: '+e.message)});
+document.getElementById('check').onclick=function(){
+msg('✓ JavaScript funktioniert.\nAdresse: '+location.protocol+'\nBrowser: '+navigator.userAgent.slice(0,110));
+};
+['camera','gallery'].forEach(function(id){
+var el=document.getElementById(id);
+el.addEventListener('click',function(){msg('Auswahl '+id+' angeklickt. Warte auf Datei …')});
+el.addEventListener('change',function(){
+var f=el.files&&el.files[0];
+if(!f){msg('Keine Datei zurückgegeben.');return}
+msg('Datei empfangen: '+f.name+' ('+Math.round(f.size/1024)+' KB)\nFormat: '+f.type);
+p.style.display='none';
+var r=new FileReader();
+r.onload=function(){
+p.onload=function(){p.style.display='block';msg('✓ Bild erfolgreich angezeigt: '+f.name)};
+p.onerror=function(){msg('Bild konnte nicht dargestellt werden: '+f.type)};
+p.src=r.result;
+};
+r.onerror=function(){msg('Fehler beim Lesen der Datei.')};
+r.readAsDataURL(f);
+});
+});
+document.getElementById('record').onclick=function(){
+var t=document.getElementById('type').value;
+var b=document.getElementById('brand').value.trim();
+var m=document.getElementById('model').value.trim();
+document.getElementById('result').textContent=t&&b&&m?'✓ Erfasst: '+t+' | '+b+' | '+m:'Bitte Typ, Hersteller und Modell eingeben.';
+};
+})();
+</script>
+</body>
+</html>
