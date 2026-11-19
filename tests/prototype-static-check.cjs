@@ -1,6 +1,6 @@
 // ElektroPlan SM: static prototype checks. No browser or electrical safety certification.
 const fs=require('node:fs');const vm=require('node:vm');const assert=require('node:assert/strict');
-const path='prototypes/integrated-titleblock-schematic-v100.html';
+const path='prototypes/integrated-titleblock-schematic-v101.html';
 const html=fs.readFileSync(path,'utf8');
 const scripts=[...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/gi)].map(m=>m[1]);
 assert.equal(scripts.length,1,'Expected one inline application script');
@@ -37,6 +37,11 @@ const localOpen=scripts[0].slice(scripts[0].indexOf("$('openLocalProject').oncli
 assert.ok(localOpen.indexOf('validateProjectSnapshot(data)')>=0,'Validation absent from local open');
 assert.ok(localOpen.indexOf('validateProjectSnapshot(data)')<localOpen.indexOf("confirm('Replace current unsaved schematic?"),'Validation must precede replacement confirmation');
 assert.ok(localOpen.includes('if(warnings.length)'),'Invalid snapshots must be rejected');
+const importHandler=scripts[0].slice(scripts[0].indexOf("$('loadplan').onchange=async"),scripts[0].indexOf("$('papersize').onchange="));
+assert.ok(importHandler.includes('validateProjectSnapshot(d)'),'JSON import must validate project structure');
+assert.ok(importHandler.indexOf('validateProjectSnapshot(d)')<importHandler.indexOf('parts=d.parts'),'JSON import must validate before replacing current parts');
+assert.ok(importHandler.includes('if(structuralWarnings.length)throw Error'),'JSON import must reject invalid structure');
+console.log('PASS: Imported JSON is validated before diagram mutation');
 console.log('PASS: Local project opening has structural validation guard');
 console.log('PASS: Four project snapshot validation fixtures');
 console.log('PASS: Six executable regression fixture checks');
