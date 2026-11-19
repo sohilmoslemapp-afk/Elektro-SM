@@ -5,12 +5,13 @@ const script=html.match(/<script>([\s\S]*?)<\/script>/)[1];
 const handler=script.match(/\$\('loadplan'\)\.onchange=async e=>\{[\s\S]*?return false\}\};\$\('papersize'\)\.onchange=/);
 assert.ok(handler,'Import handler not found');
 const source=handler[0].replace(/;\$\('papersize'\)\.onchange=$/,'');
+const validatorSource=script.match(/function validateProjectSnapshot\([\s\S]*?return errors\}/);assert.ok(validatorSource,'Actual project validator missing');const actualValidator=vm.runInNewContext('('+validatorSource[0]+')');
 const fields={};for(const id of ['paperwidth','paperheight','papersize','printfit','mmperunit','tbmode','tbcompany','tbproject','tbnumber'])fields[id]={value:'original-'+id};
 let currentParts=[{id:'OLD',x:10,y:20}],currentEdges=[],currentFixedEnds=[],currentSeq=7,currentImage='original-image',currentCrop={x:0,y:0,w:1,h:1},currentUndo=['keep'];
 let drawCalls=0,reportText='';
 const context={Number,JSON,Set,Object,Array,Error,parts:currentParts,edges:currentEdges,fixedEnds:currentFixedEnds,seq:currentSeq,tbImage:currentImage,tbCrop:currentCrop,undo:currentUndo,
   $:id=>fields[id]||(fields[id]={value:''}),draw:()=>{drawCalls++;throw Error('Injected draw failure')},report:x=>{reportText=x},
-  validateProjectSnapshot:d=>{const ids=new Set();for(const p of d.parts){if(ids.has(p.id))return ['Duplicate'];ids.add(p.id)}return []}};
+  validateProjectSnapshot:actualValidator};
 vm.createContext(context);vm.runInContext(source,context);
 const before=()=>JSON.stringify({parts:context.parts,edges:context.edges,fixedEnds:context.fixedEnds,seq:context.seq,tbImage:context.tbImage,tbCrop:context.tbCrop,undo:context.undo,fields:Object.fromEntries(Object.entries(fields).map(([k,v])=>[k,v.value]))});
 const initial=before();
