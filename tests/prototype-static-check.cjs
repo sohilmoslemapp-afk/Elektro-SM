@@ -1,6 +1,6 @@
 // ElektroPlan SM: static prototype checks. No browser or electrical safety certification.
 const fs=require('node:fs');const vm=require('node:vm');const assert=require('node:assert/strict');
-const path='prototypes/integrated-titleblock-schematic-v113.html';
+const path='prototypes/integrated-titleblock-schematic-v114.html';
 const html=fs.readFileSync(path,'utf8');
 const scripts=[...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/gi)].map(m=>m[1]);
 assert.equal(scripts.length,1,'Expected one inline application script');
@@ -25,6 +25,9 @@ assert.ok(scripts[0].includes('const model=matchLabel('),'OCR model suggestion r
 for(const id of ['photoMatchLibrary','photoLibraryMatchStatus'])assert.ok(html.includes('id="'+id+'"'),'Missing library match UI '+id);
 assert.ok(scripts[0].includes('Object.values(deviceLibrary).filter'),'Library matching must use existing user library');
 assert.ok(scripts[0].includes('keine Klemmen übernommen'),'Library matching must not claim terminal transfer');
+for(const id of ['photoEvidenceType','photoEvidenceUrl','photoEvidenceNote','photoEvidenceSave','photoEvidenceStatus'])assert.ok(html.includes('id="'+id+'"'),'Missing photo evidence control '+id);
+assert.ok(scripts[0].includes("photoStored:false"),'Evidence record must not claim photo storage');
+assert.ok(scripts[0].includes('USER_RECORDED_NOT_INDEPENDENTLY_VERIFIED'),'Evidence must remain unverified');
 
 const structuralSource=scripts[0].match(/function structuralFixtureCheck\([\s\S]*?return warnings\}/);
 assert.ok(structuralSource,'Structural diagnostic helper missing');
