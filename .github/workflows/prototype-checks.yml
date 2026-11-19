@@ -15,4 +15,6 @@ jobs:
         with:
           node-version: '22'
       - name: Static regression checks
-        run: node tests/prototype-static-check.cjs
+        run: |
+          node tests/prototype-static-check.cjs
+          node tests/backup-health-fixtures.cjs
