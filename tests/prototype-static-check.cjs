@@ -1,6 +1,6 @@
 // ElektroPlan SM: static prototype checks. No browser or electrical safety certification.
 const fs=require('node:fs');const vm=require('node:vm');const assert=require('node:assert/strict');
-const path='prototypes/integrated-titleblock-schematic-v120.html';
+const path='prototypes/integrated-titleblock-schematic-v121.html';
 const html=fs.readFileSync(path,'utf8');
 const scripts=[...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/gi)].map(m=>m[1]);
 assert.equal(scripts.length,1,'Expected one inline application script');
@@ -47,6 +47,9 @@ assert.ok(scripts[0].includes('VERDRAHTUNGSFREIGABE: NEIN'),'Summary must deny w
 for(const id of ['componentAuditChecklist','componentAuditChecklistOutput'])assert.ok(html.includes('id="'+id+'"'),'Missing review checklist '+id);
 assert.ok(scripts[0].includes('Klemmenbelegung durch qualifizierte Fachkraft'),'Review checklist must require qualified terminal check');
 assert.ok(scripts[0].includes('Herstellerunterlagen unabhängig prüfen'),'Checklist must require independent documentation review');
+assert.ok(html.includes('id="componentAuditChecklistExport"'),'Missing checklist export control');
+assert.ok(scripts[0].includes('UNVERIFIED_COMPONENT_REVIEW_CHECKLIST'),'Checklist export must label unverified state');
+assert.ok(scripts[0].includes('terminalWiringApproved:false'),'Checklist must not approve terminal wiring');
 
 const structuralSource=scripts[0].match(/function structuralFixtureCheck\([\s\S]*?return warnings\}/);
 assert.ok(structuralSource,'Structural diagnostic helper missing');
