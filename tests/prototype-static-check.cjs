@@ -1,6 +1,6 @@
 // ElektroPlan SM: static prototype checks. No browser or electrical safety certification.
 const fs=require('node:fs');const vm=require('node:vm');const assert=require('node:assert/strict');
-const path='prototypes/integrated-titleblock-schematic-v118.html';
+const path='prototypes/integrated-titleblock-schematic-v119.html';
 const html=fs.readFileSync(path,'utf8');
 const scripts=[...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/gi)].map(m=>m[1]);
 assert.equal(scripts.length,1,'Expected one inline application script');
@@ -41,6 +41,9 @@ for(const id of ['componentAuditReport','componentAuditOutput','componentAuditEx
 assert.ok(scripts[0].includes("kind:'UNVERIFIED_COMPONENT_AUDIT'"),'Audit must be explicitly unverified');
 assert.ok(scripts[0].includes('independentlyManufacturerVerified:false'),'Audit must not assert manufacturer verification');
 assert.ok(scripts[0].includes('terminalWiringApproved:false'),'Audit must not approve wiring');
+for(const id of ['componentAuditSummary','componentAuditSummaryStatus'])assert.ok(html.includes('id="'+id+'"'),'Missing readable audit status '+id);
+assert.ok(scripts[0].includes('HERSTELLERVERIFIKATION: NEIN'),'Summary must deny manufacturer verification');
+assert.ok(scripts[0].includes('VERDRAHTUNGSFREIGABE: NEIN'),'Summary must deny wiring approval');
 
 const structuralSource=scripts[0].match(/function structuralFixtureCheck\([\s\S]*?return warnings\}/);
 assert.ok(structuralSource,'Structural diagnostic helper missing');
