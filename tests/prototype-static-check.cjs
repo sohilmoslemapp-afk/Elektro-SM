@@ -1,6 +1,6 @@
 // ElektroPlan SM: static prototype checks. No browser or electrical safety certification.
 const fs=require('node:fs');const vm=require('node:vm');const assert=require('node:assert/strict');
-const path='prototypes/integrated-titleblock-schematic-v105.html';
+const path='prototypes/integrated-titleblock-schematic-v106.html';
 const html=fs.readFileSync(path,'utf8');
 const scripts=[...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/gi)].map(m=>m[1]);
 assert.equal(scripts.length,1,'Expected one inline application script');
@@ -32,6 +32,10 @@ assert.deepEqual(Array.from(validate(base)),[]);
 assert.ok(Array.from(validate({...base,parts:[base.parts[0],base.parts[0]]})).some(x=>x.includes('Duplicate')));
 assert.ok(Array.from(validate({...base,edges:[{a:'A',b:'MISSING'}]})).some(x=>x.includes('missing component')));
 assert.ok(Array.from(validate({...base,parts:[{id:'A',x:'invalid',y:0}]})).some(x=>x.includes('Invalid position')));
+assert.ok(Array.from(validate({...base,parts:[{id:'A',x:null,y:0}]})).some(x=>x.includes('Invalid position')),'Null coordinate must be rejected');
+assert.ok(Array.from(validate({...base,parts:[{id:'A',x:'',y:0}]})).some(x=>x.includes('Invalid position')),'Empty coordinate must be rejected');
+assert.ok(Array.from(validate({...base,edges:[{a:'A'}]})).some(x=>x.includes('invalid b endpoint')),'Missing wire endpoint must be rejected');
+assert.ok(Array.from(validate({...base,edges:[{a:'A',b:null}]})).some(x=>x.includes('invalid b endpoint')),'Null wire endpoint must be rejected');
 assert.ok(scripts[0].includes("const warnings=validateProjectSnapshot(data)"),'Saved local project must be validated before load');
 const localOpen=scripts[0].slice(scripts[0].indexOf("$('openLocalProject').onclick="),scripts[0].indexOf("$('deleteLocalProject').onclick="));
 assert.ok(localOpen.indexOf('validateProjectSnapshot(data)')>=0,'Validation absent from local open');
