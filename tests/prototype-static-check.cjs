@@ -1,6 +1,6 @@
 // ElektroPlan SM: static prototype checks. No browser or electrical safety certification.
 const fs=require('node:fs');const vm=require('node:vm');const assert=require('node:assert/strict');
-const path='prototypes/integrated-titleblock-schematic-v104.html';
+const path='prototypes/integrated-titleblock-schematic-v105.html';
 const html=fs.readFileSync(path,'utf8');
 const scripts=[...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/gi)].map(m=>m[1]);
 assert.equal(scripts.length,1,'Expected one inline application script');
@@ -52,6 +52,10 @@ assert.ok(importHandler.indexOf("throw Error('Plankopf Ausschnitt')")<importHand
 assert.ok(importHandler.includes("throw Error('Fixierte Leitungsenden')"),'Detached wire ends must be validated');
 assert.ok(importHandler.includes("throw Error('Papierabmessungen')"),'Paper dimensions must be validated');
 assert.ok(importHandler.indexOf("throw Error('Fixierte Leitungsenden')")<importHandler.indexOf('parts=d.parts'),'Detached wire ends must be checked before mutation');
+assert.ok(importHandler.includes("throw Error('Doppelte fixierte Leitungsenden')"),'Duplicate detached wire ends must be rejected');
+assert.ok(importHandler.includes('t.crop.x+t.crop.w>1'),'Crop must stay inside image');
+assert.ok(importHandler.indexOf("throw Error('Doppelte fixierte Leitungsenden')")<importHandler.indexOf('parts=d.parts'),'Duplicate endpoint check must precede mutation');
+console.log('PASS: Duplicate detached wire ends and crop bounds guarded');
 console.log('PASS: Detached wire endpoints and paper dimensions guarded before mutation');
 console.log('PASS: Title-block and paper data validated before project mutation');
 console.log('PASS: Recovery snapshot validated before import');
