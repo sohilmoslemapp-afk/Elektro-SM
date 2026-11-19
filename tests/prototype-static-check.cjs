@@ -1,6 +1,6 @@
 // ElektroPlan SM: static prototype checks. No browser or electrical safety certification.
 const fs=require('node:fs');const vm=require('node:vm');const assert=require('node:assert/strict');
-const path='prototypes/integrated-titleblock-schematic-v106.html';
+const path='prototypes/integrated-titleblock-schematic-v107.html';
 const html=fs.readFileSync(path,'utf8');
 const scripts=[...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/gi)].map(m=>m[1]);
 assert.equal(scripts.length,1,'Expected one inline application script');
@@ -63,6 +63,10 @@ console.log('PASS: Duplicate detached wire ends and crop bounds guarded');
 console.log('PASS: Detached wire endpoints and paper dimensions guarded before mutation');
 console.log('PASS: Title-block and paper data validated before project mutation');
 console.log('PASS: Recovery snapshot validated before import');
+assert.ok(importHandler.includes('const previousState={parts,edges,fixedEnds,seq,tbImage,tbCrop,undo,fields:{}}'),'Import must snapshot prior state');
+assert.ok(importHandler.includes('parts=previousState.parts;edges=previousState.edges;fixedEnds=previousState.fixedEnds'),'Import failure must restore previous diagram');
+assert.ok(importHandler.includes('for(const [id,value] of Object.entries(previousState.fields))'),'Import failure must restore form fields');
+console.log('PASS: Import rollback paths present for application failures');
 console.log('PASS: Imported JSON is validated before diagram mutation');
 console.log('PASS: Local project opening has structural validation guard');
 console.log('PASS: Four project snapshot validation fixtures');
