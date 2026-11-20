@@ -1,6 +1,6 @@
 # ElektroPlan SM 1 — Produktstandard und Abnahmekriterien
 
-Ziel: professionelles, mobil bedienbares Elektroplanungswerkzeug mit überprüfbaren Funktionen. Der aktuelle Prototyp ist **kein** Ersatz für geprüfte Elektro-CAD-Systeme oder Fachplanung.
+Ziel: professionelles, plattformübergreifendes Elektroplanungswerkzeug für Computer, Tablets und Smartphones mit überprüfbaren Funktionen. Der aktuelle Prototyp ist **kein** Ersatz für geprüfte Elektro-CAD-Systeme oder Fachplanung.
 
 ## Priorität A — belastbarer Schaltplan
 - Normgerechte Symbolbibliothek (IEC 60617, Nutzungsrechte und Symboltreue separat prüfen).
@@ -21,10 +21,16 @@ Ziel: professionelles, mobil bedienbares Elektroplanungswerkzeug mit überprüfb
 - Optische Erkennung nur mit expliziter Fehleranzeige, menschlicher Bestätigung und Testdaten; im Prototyp derzeit **nicht vorhanden**.
 - Offline-/Datenschutzkonzept, keine unbemerkten Uploads.
 
+## Plattformen und Bedienkonzepte
+- Desktop: Windows, macOS und Linux über aktuelle Desktop-Browser; Maus, Tastatur, große Arbeitsfläche, Zoom/Pan und Tastaturkürzel.
+- Mobil: iPhone/iPad und Android-Smartphones/-Tablets über aktuelle Browser; Touch, adaptive Werkzeugleisten und Gesten.
+- Ein kompatibles Projektdateiformat für alle Plattformen; Import/Export und Datenaustausch ohne Datenverlust testen.
+- Browser-Unterstützung und mögliche spätere installierbare Desktop-/Mobile-Apps getrennt prüfen; derzeit keine native App vorhanden.
+
 ## Priorität D — Qualität und Release
 - Automatisierte Unit-, Integrations- und End-to-End-Tests.
 - Tests für Drag & Drop, Touch, Speichern/Neuladen, Import, Export, beschädigte Dateien, große Projekte.
-- Realtests auf iPhone Safari und Android Tablet; reproduzierbare Testprotokolle.
+- Realtests auf iPhone Safari, Android Tablet sowie Desktop-Browsern unter Windows/macOS/Linux; reproduzierbare Testprotokolle.
 - Backup von main und funktionierender Kameraversion unverändert halten.
 - Keine Produktionsfreigabe ohne dokumentierte Abnahme der Sicherheits-/Normfragen.
 
