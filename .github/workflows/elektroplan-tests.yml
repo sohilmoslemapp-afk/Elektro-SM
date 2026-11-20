@@ -63,6 +63,8 @@ jobs:
         run: node tests/integrated-terminal-check-index.test.js
       - name: Integrated terminal review status
         run: node tests/integrated-terminal-review-status.test.js
+      - name: Integrated import persistence feedback
+        run: node tests/integrated-import-persistence-feedback.test.js
       - name: Integrated Schaltplan UI wiring
         run: node tests/integrated-schematic-ui.test.js
 
