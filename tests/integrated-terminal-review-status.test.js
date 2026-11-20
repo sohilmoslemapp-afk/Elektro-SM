@@ -7,7 +7,7 @@ const start=html.indexOf("$('checkPlan').onclick=()=>{");
 const end=html.indexOf('function download(',start);
 assert.ok(start>=0&&end>start);
 const source=html.slice(start,end);
-assert.match(source,/review\.textContent=!result\.valid\|\|!terminalResult\.valid\|\|pendingWires\|\|invalidWires\|\|unresolvedNets\|\|terminalResult\.reviewRequired/);
+assert.match(source,/review\.textContent=!result\.valid\|\|!terminalResult\.valid\|\|pendingWires\|\|invalidWires\|\|unresolvedNets\|\|unresolvedGraph\|\|terminalResult\.reviewRequired/);
 const requiresReview=(structureValid,terminalValid,pending,invalid,unresolved,reviewRequired)=>!structureValid||!terminalValid||pending||invalid||unresolved||reviewRequired;
 assert.equal(Boolean(requiresReview(true,false,0,0,0,false)),true,'terminal errors must require review');
 assert.equal(Boolean(requiresReview(true,true,0,0,0,false)),false,'complete structural checks do not force extra review');
