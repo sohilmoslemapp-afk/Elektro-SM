@@ -21,3 +21,9 @@ assert.equal(check({...a,connections:[{from:{component:'Q1',terminal:'2'},to:{co
 assert.equal(check({...a,components:[{id:'Q1',terminals:['1','2']},{id:'H1',terminals:['A1','A2']},{id:'X1',terminals:['L']}]}).warnings.some(x=>x.includes('X1/L')),true);
 assert.equal(check({...a,connections:[{from:{component:'Q1',terminal:'2'},to:{component:'Q1',terminal:'1'}}]}).valid,true);
 console.log('Terminal graph: 12 structural assertions passed; electrical correctness not assessed.');
+
+assert.equal(check({components:[],connections:[]}).valid,true);
+assert.equal(check({components:[],connections:[]}).reviewRequired,true);
+assert.equal(check({components:[],connections:[]}).warnings.some(x=>x.includes('Keine Bauteile')),true);
+assert.equal(check({components:a.components,connections:[]}).reviewRequired,true);
+assert.equal(check({components:a.components,connections:[]}).warnings.some(x=>x.includes('Keine Verbindungen')),true);
