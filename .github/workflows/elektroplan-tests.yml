@@ -140,3 +140,6 @@ jobs:
 
       - name: DXF geometry export regression
         run: node tests/dxf-export.test.js
+
+      - name: DXF read-only geometry preview regression
+        run: node tests/dxf-preview.test.js
