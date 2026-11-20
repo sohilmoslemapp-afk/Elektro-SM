@@ -111,3 +111,6 @@ assert.ok(html.includes('appendSourceDetails(box,result.item)'),'Photo matches m
 assert.ok(html.includes('appendSourceDetails(li,p)'),'Library records must expose their source dossier');
 assert.ok(html.includes('Quellenstatus: manuell eingetragen, NICHT herstellerverifiziert'),'Source must not be labelled manufacturer verified');
 assert.ok(html.includes("ElektroPlanV134?.validHttps(part.docUrl)"),'Document links in source dossier must pass HTTPS validation');
+
+assert.ok(html.includes('id="partNumber"'),'Component library must capture article number separately from model');
+assert.ok(html.includes("partNumber:safe($('partNumber').value)"),'Article number must be saved in library records');
