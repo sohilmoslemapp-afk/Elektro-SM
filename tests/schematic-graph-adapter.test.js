@@ -134,3 +134,9 @@ assert.equal(completeGraphReview.warnings.some(x=>x.startsWith('Nicht zugeordnet
 const malformedPending=validateTerminalGraph({components:graph.components,connections:graph.connections,pending:'broken'});
 assert.equal(malformedPending.valid,false,'Malformed pending list must fail closed');
 assert.ok(malformedPending.errors.includes('Ungültige Liste nicht zugeordneter Leitungen'));
+
+for(const entry of [null,{}, {wire:-1,reason:'Fehlt'}, {wire:1.5,reason:'Fehlt'}, {wire:0,reason:''},{wire:0,reason:5}]){
+ const malformed=validateTerminalGraph({components:graph.components,connections:graph.connections,pending:[entry]});
+ assert.equal(malformed.valid,false,'Malformed pending entry must fail closed: '+JSON.stringify(entry));
+ assert.ok(malformed.errors.some(x=>x.startsWith('Ungültige offene Leitungsreferenz')));
+}
