@@ -123,3 +123,10 @@ assert.deepEqual(unsafeReferences.pending,[
  {wire:2,reason:'Klemmenreferenz ungültig'}
 ],'Padded and invisible control-character references must never enter the graph');
 assert.equal(unsafeReferences.connections.length,0);
+
+const pendingGraphReview=validateTerminalGraph(fromSchematic(project));
+assert.equal(pendingGraphReview.valid,true,'Known graph edges remain structurally valid');
+assert.equal(pendingGraphReview.reviewRequired,true,'Pending wires must always require human review');
+assert.ok(pendingGraphReview.warnings.includes('Nicht zugeordnete Leitungen: 1'),'Terminal graph review must disclose pending wire count');
+const completeGraphReview=validateTerminalGraph(fromSchematic({...project,wires:[project.wires[0]]}));
+assert.equal(completeGraphReview.warnings.some(x=>x.startsWith('Nicht zugeordnete Leitungen:')),false,'Fully assigned wires must not create a pending-wire warning');
