@@ -5,9 +5,15 @@
 function analyze(project){
  const symbols=Array.isArray(project?.symbols)?project.symbols:[];
  const wires=Array.isArray(project?.wires)?project.wires:[];
- const byId=new Map(),duplicateIds=new Set();
+ const byId=new Map(),duplicateIds=new Set(),normalizedIds=new Map();
  const unsafe=/[\u0000-\u001f\u007f-\u009f\u200b-\u200f\u202a-\u202e\u2060-\u2069\ufeff]/u;
- for(const symbol of symbols){if(!symbol||typeof symbol.id!=='string'||!symbol.id.trim())continue;if(byId.has(symbol.id))duplicateIds.add(symbol.id);else byId.set(symbol.id,symbol)}
+ for(const symbol of symbols){
+  if(!symbol||typeof symbol.id!=='string'||!symbol.id.trim())continue;
+  const id=symbol.id,normalized=id.normalize('NFC');
+  if(byId.has(id))duplicateIds.add(id);else byId.set(id,symbol);
+  if(normalizedIds.has(normalized)){duplicateIds.add(id);duplicateIds.add(normalizedIds.get(normalized))}
+  else normalizedIds.set(normalized,id);
+ }
  const parent=new Map(),groups=new Map(),pending=[];
  const validTerminals=s=>Array.isArray(s?.manualTerminals)&&s.manualTerminals.length<=8&&s.manualTerminals.every(t=>typeof t==='string'&&t.trim()===t&&t.length>0&&t.length<=40&&!unsafe.test(t))&&new Set(s.manualTerminals).size===s.manualTerminals.length;
  const validId=id=>typeof id==='string'&&id.trim()===id&&id.length>0&&id.length<=100&&!unsafe.test(id);
