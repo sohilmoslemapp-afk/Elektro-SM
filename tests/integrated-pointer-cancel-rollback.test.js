@@ -1,0 +1,14 @@
+'use strict';
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const path=require('node:path');
+const html=fs.readFileSync(path.join(__dirname,'../prototypes/ElektroPlan-SM-integriert.html'),'utf8');
+const start=html.indexOf('function render(){');
+const end=html.indexOf("document.querySelectorAll('[data-add]')",start);
+assert.ok(start>=0&&end>start);
+const render=html.slice(start,end);
+assert.match(render,/drag=\{id:s\.id,startX:s\.x,startY:s\.y\}/);
+assert.match(render,/pointercancel',\(\)=>\{if\(drag\?\.id===s\.id\)/);
+assert.match(render,/s\.x=drag\.startX;s\.y=drag\.startY;drag=null;render\(\)/);
+assert.match(render,/pointerup',\(\)=>\{if\(drag\)\{drag=null;recordHistory\(\);persist\(\);render\(\)/);
+console.log('Integrated interrupted pointer drag rollback: static contract passed');
