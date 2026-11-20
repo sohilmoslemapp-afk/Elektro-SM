@@ -13,8 +13,10 @@ function inspect(project){
   if(symbol?.type==='MOTOR'){
    const required=['U1','V1','W1','PE'];const manual=new Set(Array.isArray(symbol.manualTerminals)?symbol.manualTerminals:[]);
    for(const terminal of required)if(!manual.has(terminal))warnings.push({kind:'missing-motor-terminal',symbol:symbol.id,terminals:[terminal]});
-   const phases=required.slice(0,3).filter(t=>wires.some(w=>(w.a===symbol.id&&w.fromTerminal===t)||(w.b===symbol.id&&w.toTerminal===t)));
+   const used=t=>wires.some(w=>(w.a===symbol.id&&w.fromTerminal===t)||(w.b===symbol.id&&w.toTerminal===t));
+   const phases=required.slice(0,3).filter(used);
    if(phases.length>0&&phases.length<3)warnings.push({kind:'partial-motor-phases',symbol:symbol.id,terminals:phases});
+   if(phases.length>0&&!used('PE'))warnings.push({kind:'motor-pe-unassigned',symbol:symbol.id,terminals:['PE']});
    continue;
   }
   const pairs=PAIRS[symbol?.type];if(!pairs)continue;
