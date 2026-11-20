@@ -72,4 +72,15 @@ const invalidReassignment=analyze({symbols:distinctPins.symbols,wires:[distinctP
 assert.equal(invalidReassignment.nets.length,1,'unknown pin must not merge separate networks');
 assert.equal(invalidReassignment.pending.length,1,'unknown pin must require manual review');
 assert.deepEqual(invalidReassignment.nets[0].terminals.map(t=>t.component),['Q1','X1']);
+// A branched net can have three endpoints while another pin of the same device stays isolated.
+const branchProject={symbols:[{id:'Q',manualTerminals:['A1','A2']},{id:'X',manualTerminals:['1']},{id:'Y',manualTerminals:['1']},{id:'Z',manualTerminals:['1']}],wires:[{a:'Q',fromTerminal:'A1',b:'X',toTerminal:'1'},{a:'Q',fromTerminal:'A1',b:'Y',toTerminal:'1'},{a:'Q',fromTerminal:'A2',b:'Z',toTerminal:'1'}]};
+const branched=analyze(branchProject);
+assert.equal(branched.nets.length,2,'branched pin and separate pin must remain two nets');
+assert.deepEqual(branched.nets.map(n=>n.terminals.length).sort(),[2,3]);
+assert.equal(branched.pending.length,0);
+const removedBranch=analyze({symbols:branchProject.symbols,wires:branchProject.wires.slice(1)});
+assert.equal(removedBranch.nets.length,2,'removing a branch must not connect previously separate pins');
+assert.deepEqual(removedBranch.nets.map(n=>n.terminals.length).sort(),[2,2]);
+const reversedWires=analyze({symbols:branchProject.symbols,wires:[...branchProject.wires].reverse()});
+assert.deepEqual(reversedWires.nets,branched.nets,'wire ordering must not change net grouping');
 console.log('Explicit terminal connectivity grouping regression passed');
