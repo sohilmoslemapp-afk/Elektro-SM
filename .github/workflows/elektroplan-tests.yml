@@ -90,6 +90,8 @@ jobs:
         run: node tests/schematic-layout-audit.test.js
       - name: Schematic automatic placement
         run: node tests/schematic-auto-placement.test.js
+      - name: Multipole terminal-pair structural checks
+        run: node tests/schematic-multipole-audit.test.js
 
       - name: Integrated project import size guard
         run: node tests/integrated-import-size-guard.test.js
