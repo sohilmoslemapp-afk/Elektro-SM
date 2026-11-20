@@ -36,7 +36,7 @@ jobs:
           node - <<'NODE'
           const fs=require('node:fs'),vm=require('node:vm');
           const html=fs.readFileSync('prototypes/ElektroPlan-SM-integriert.html','utf8');
-          const blocks=[...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)].map(x=>x[1]);
+          const blocks=[...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)].map(x=>x[1]).filter(x=>x.trim().length>0);
           if(blocks.length!==1)throw Error('Expected one inline application script');
           new vm.Script(blocks[0],{filename:'ElektroPlan-SM-integriert.html'});
           console.log('Integrated inline JS syntax passed');
