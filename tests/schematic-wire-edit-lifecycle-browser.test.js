@@ -38,6 +38,6 @@ const path=require('node:path');
   await page.locator('#checkPlan').click();
   if(!(await page.locator('#planCheckResult').innerText()).includes('nicht auswertbare Netzverbindungen'))throw Error('Connectivity analysis absent after wire edit');
   if(errors.length)throw Error('Browser errors: '+errors.join(' | '));
-  console.log('Mobile Chromium: wire deletion, undo, redo, invalid input and net check passed');
+  console.log('Mobile Chromium: wire deletion, undo, redo, cancel and net check passed');
  }finally{await browser.close()}
 })().catch(e=>{console.error(e);process.exitCode=1});
