@@ -64,3 +64,7 @@ assert.ok(html.includes('Leitungsenden noch nicht vollständig zugeordnet.'),'Te
 assert.ok(html.includes('Manuelle Leitungsenden vorhanden – nicht herstellerverifiziert.'),'Terminal picker must not imply manufacturer verification');
 
 assert.ok(html.includes('if(!w)return msg(\'Leitung nicht mehr vorhanden – Auswahl neu öffnen\')'),'Terminal picker must refuse saving a deleted wire');
+
+assert.ok(html.includes('const pickerWires=data.wires.slice()'),'Terminal picker must snapshot wire identities');
+assert.ok(html.includes('w!==pickerWires[index]'),'Terminal picker must reject changed wire identity');
+assert.ok(html.includes('Leitung geändert – Auswahl neu öffnen'),'Terminal picker must explain stale selection');
