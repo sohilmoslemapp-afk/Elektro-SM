@@ -1,0 +1,14 @@
+'use strict';
+const assert=require('node:assert/strict');
+const {createStrip}=require('../src/terminal-strip');
+const {validate}=require('../src/schematic-validation');
+const {validateImport}=require('../src/project-import-validation');
+const strip=createStrip('X1',['1','2','3','N','PE'],100,150);
+assert.equal(strip.type,'KLEMME');
+assert.deepEqual(strip.manualTerminals,['1','2','3','N','PE']);
+assert.equal(validate({symbols:[strip],wires:[]}).valid,true);
+assert.equal(validateImport({format:'ElektroPlan-SM-1',data:{name:'X test',symbols:[strip],wires:[],parts:[]}}).ok,true);
+for(const terminals of [['1','1'],['é','e\u0301'],['N\u200b'],[],Array(9).fill('1')])assert.throws(()=>createStrip('X1',terminals,0,0));
+assert.throws(()=>createStrip('Q1',['1'],0,0));
+assert.throws(()=>createStrip('X1',['1'],Infinity,0));
+console.log('Manual terminal strip factory and project import regression passed');
