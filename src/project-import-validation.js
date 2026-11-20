@@ -5,7 +5,7 @@ function validSource(r,brand,model){return r===null||!!(r&&typeof r==='object'&&
 
 function validateImport(payload){
  const errors=[];
- if(!payload||payload.format!=='ElektroPlan-SM-1'||!payload.data||typeof payload.data!=='object')return {ok:false,errors:['Unbekanntes Projektformat']};
+ if(!payload||typeof payload!=='object'||Array.isArray(payload)||payload.format!=='ElektroPlan-SM-1'||!payload.data||typeof payload.data!=='object'||Array.isArray(payload.data))return {ok:false,errors:['Unbekanntes Projektformat']};
  const d=payload.data;
  if(!Array.isArray(d.symbols)||!Array.isArray(d.wires)||!Array.isArray(d.parts))return {ok:false,errors:['Projektlisten fehlen']};
  if(d.symbols.length>10000||d.wires.length>50000||d.parts.length>10000)errors.push('Projekt überschreitet Sicherheitsgrenzen');
