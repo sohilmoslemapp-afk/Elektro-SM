@@ -13,14 +13,20 @@ function assessManufacturerEvidence(record){
  const identity=record.identity||{}, evidence=record.evidence||{}, terminals=record.terminals;
  if(!nonempty(identity.manufacturer))errors.push('Hersteller fehlt');
  if(!nonempty(identity.model))errors.push('Modellbezeichnung fehlt');
- if(!nonempty(identity.partNumber))warnings.push('Artikelnummer fehlt – Identität fachlich prüfen');
+ if(!nonempty(identity.partNumber))errors.push('Artikelnummer fehlt – eindeutige Zuordnung nicht möglich');
+ if(nonempty(evidence.documentPartNumber)&&nonempty(identity.partNumber)&&evidence.documentPartNumber!==identity.partNumber)errors.push('Artikelnummer stimmt nicht mit dem Herstellerdokument überein');
+ if(!nonempty(evidence.documentPartNumber))errors.push('Artikelnummer im Dokument nicht erfasst');
  if(!nonempty(evidence.documentTitle))errors.push('Herstellerdokument fehlt');
  if(!validDocumentUrl(evidence.documentUrl))errors.push('Gültiger HTTPS-Dokumentlink fehlt');
  if(!nonempty(evidence.documentRevision))errors.push('Dokumentversion fehlt');
  if(!nonempty(evidence.pageReference))errors.push('Seiten- oder Abschnittsreferenz fehlt');
  if(evidence.publisherVerified!==true)errors.push('Herausgeber nicht als Hersteller verifiziert');
+ if(!nonempty(evidence.publisherReviewReference))errors.push('Nachweis der Herausgeberprüfung fehlt');
  if(evidence.modelMatchVerified!==true)errors.push('Modellzuordnung nicht verifiziert');
+ if(!nonempty(evidence.modelReviewReference))errors.push('Nachweis der Modellzuordnung fehlt');
  if(evidence.terminalMappingReviewed!==true)errors.push('Anschlusszuordnung nicht fachlich geprüft');
+ if(!nonempty(evidence.reviewer))errors.push('Fachprüfer fehlt');
+ if(!nonempty(evidence.reviewDate)||!/^\\d{4}-\\d{2}-\\d{2}$/.test(evidence.reviewDate))errors.push('Prüfdatum fehlt oder ist ungültig');
  if(!Array.isArray(terminals)||terminals.length===0)errors.push('Keine dokumentierten Anschlüsse');
  else{
   const names=new Set();
@@ -36,7 +42,7 @@ function assessManufacturerEvidence(record){
  const usableForTerminalReference=errors.length===0;
  return {usableForTerminalReference,reviewRequired:!usableForTerminalReference||warnings.length>0,
   electricallyApproved:false,errors,warnings,
-  disclaimer:'Dokumentierte Anschlussreferenz, keine elektrische Sicherheitsprüfung oder Freigabe.'};
+  disclaimer:'Prüfvermerke sind manuell erfasst und nicht automatisch bei Herstellern bestätigt. Keine elektrische Sicherheitsprüfung oder Freigabe.'};
 }
 const api={assessManufacturerEvidence,validDocumentUrl};
 if(typeof module!=='undefined'&&module.exports)module.exports=api;
