@@ -16,7 +16,7 @@ assert.equal(unsupported.entities.length,1,'supported line should remain visible
 assert.equal(unsupported.unsupportedCount,2,'unsupported geometry must be reported, not silently omitted');
 assert.throws(()=>previewDxf('0\nSECTION\n2\nENTITIES\n0\nENDSEC\n'),/EOF/);
 assert.throws(()=>previewDxf('0\nEOF\n'),/ENTITIES/);
-assert.throws(()=>previewDxf('0\nSECTION\n2\nENTITIES\n0\nLINE\n10\n1\n20\n2\n11\n3\n21\n4\n0\nEOF\n'),/Incomplete/);
+assert.throws(()=>previewDxf('0\nSECTION\n2\nENTITIES\n0\nLINE\n10\n1\n20\n2\n11\n3\n21\n4\n0\nEOF\n'),/EOF before ENDSEC/);
 assert.throws(()=>previewDxf('0\nSECTION\n2\nENTITIES\n0\nSECTION\n2\nHEADER\n0\nENDSEC\n0\nEOF\n'),/Nested/);
 assert.throws(()=>previewDxf('0\nENDSEC\n0\nEOF\n'),/Unexpected/);
 assert.throws(()=>previewDxf('0\nSECTION\n2\nENTITIES\n0\nEOF\n'),/EOF before ENDSEC/);
