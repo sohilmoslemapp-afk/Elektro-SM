@@ -7,7 +7,20 @@ function validateTerminalGraph(project){
  const pending=Array.isArray(project?.pending)?project.pending:[];
  if(pending.length)warnings.push('Nicht zugeordnete Leitungen: '+pending.length);
  if(project?.pending!==undefined&&!Array.isArray(project.pending))errors.push('Ungültige Liste nicht zugeordneter Leitungen');
- pending.forEach((item,i)=>{if(!item||!Number.isSafeInteger(item.wire)||item.wire<0||typeof item.reason!=='string'||!item.reason.trim())errors.push('Ungültige offene Leitungsreferenz '+i)});
+ const pendingIndexes=new Set();
+ pending.forEach((item,i)=>{
+  if(!item||!Number.isSafeInteger(item.wire)||item.wire<0||typeof item.reason!=='string'||!item.reason.trim()){errors.push('Ungültige offene Leitungsreferenz '+i);return}
+  if(pendingIndexes.has(item.wire))errors.push('Doppelte offene Leitungsreferenz '+item.wire);
+  pendingIndexes.add(item.wire);
+ });
+ const sourceIndexes=new Set();
+ edges?.forEach?.((edge,i)=>{
+  if(edge?.sourceWire===undefined)return;
+  if(!Number.isSafeInteger(edge.sourceWire)||edge.sourceWire<0){errors.push('Ungültiger Quellleitungsindex '+i);return}
+  if(sourceIndexes.has(edge.sourceWire))errors.push('Doppelter Quellleitungsindex '+edge.sourceWire);
+  sourceIndexes.add(edge.sourceWire);
+ });
+ for(const index of pendingIndexes)if(sourceIndexes.has(index))errors.push('Leitung gleichzeitig offen und verbunden: '+index);
  if(!Array.isArray(parts)||!Array.isArray(edges))return {valid:false,reviewRequired:true,electricallyApproved:false,errors:['Ungültiges Anschlussmodell'],warnings};
  const ids=new Set(),normalizedIds=new Set(),ports=new Map(),used=new Map(),edgeKeys=new Set(),connectedComponents=new Set();
  if(parts.length===0){warnings.push('Keine Bauteile vorhanden');if(edges.length>0)errors.push('Verbindungen ohne Bauteile sind unzulässig')}
