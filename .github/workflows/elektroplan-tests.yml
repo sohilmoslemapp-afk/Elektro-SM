@@ -152,3 +152,6 @@ jobs:
 
       - name: Schematic terminal integrity regression
         run: node tests/schematic-terminal-validation.test.js
+
+      - name: DXF schematic terminal integrity
+        run: node tests/dxf-terminal-integrity.test.js
