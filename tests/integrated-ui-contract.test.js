@@ -54,3 +54,7 @@ assert.ok(html.includes("invalid?' ✖':missing?' ⚠':''"),'Invalid and missing
 
 assert.ok(html.includes('Leitungen mit ungültiger Klemmenreferenz:'),'Plan check must report invalid terminal reference count');
 assert.ok(html.includes('Strukturprüfung: Fehlerhafte Klemmenreferenzen'),'Plan check must show an explicit invalid-terminal summary');
+
+assert.ok(html.includes('terminalResult.reviewRequired'),'Plan check must consume terminal graph review-required state');
+assert.ok(html.includes('Fachliche Nachprüfung erforderlich'),'Plan check must visibly require specialist review');
+assert.ok(html.includes('Strukturell vollständig – weiterhin keine elektrische Freigabe'),'Even complete structural graphs must not imply electrical approval');
