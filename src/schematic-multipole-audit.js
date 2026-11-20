@@ -10,6 +10,13 @@ function inspect(project){
  const wires=Array.isArray(project?.wires)?project.wires:[];
  const warnings=[];
  for(const symbol of symbols){
+  if(symbol?.type==='MOTOR'){
+   const required=['U1','V1','W1','PE'];const manual=new Set(Array.isArray(symbol.manualTerminals)?symbol.manualTerminals:[]);
+   for(const terminal of required)if(!manual.has(terminal))warnings.push({kind:'missing-motor-terminal',symbol:symbol.id,terminals:[terminal]});
+   const phases=required.slice(0,3).filter(t=>wires.some(w=>(w.a===symbol.id&&w.fromTerminal===t)||(w.b===symbol.id&&w.toTerminal===t)));
+   if(phases.length>0&&phases.length<3)warnings.push({kind:'partial-motor-phases',symbol:symbol.id,terminals:phases});
+   continue;
+  }
   const pairs=PAIRS[symbol?.type];if(!pairs)continue;
   const manual=new Set(Array.isArray(symbol.manualTerminals)?symbol.manualTerminals:[]);
   for(const [a,b] of pairs){
