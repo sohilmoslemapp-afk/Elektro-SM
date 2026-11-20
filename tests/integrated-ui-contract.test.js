@@ -34,3 +34,9 @@ assert.match(scripts[0],/save\.disabled=!fromSelect\.options\.length\|\|!toSelec
 assert.match(html,/keine Herstellerprüfung, keine elektrische Freigabe/,'Manual terminal safety disclaimer required');
 assert.match(html,/manuelle Klemmen enthalten, keine Herstellerprüfung/,'CSV export must clearly disclaim manufacturer verification');
 console.log('Integrated UI contract: element/dependency/action/safety checks passed (static; not a browser run).');
+
+assert.match(html,/data-tab="features"/,'Capabilities navigation must be visible');
+assert.match(html,/<section id="features" hidden>/,'Capabilities page must exist');
+assert.match(html,/Automatische Erkennung elektrischer Bauteile aus Fotos/,'Photo recognition must be marked as planned');
+assert.match(html,/Firmenkonten, Lizenzen und zeitlich begrenzte Testzugänge/,'Company licensing must be marked as planned');
+assert.match(html,/\['plan','parts','camera','project','features'\]/,'Navigation must support capabilities page');
