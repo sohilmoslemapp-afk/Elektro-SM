@@ -8,5 +8,5 @@ assert.match(html,/title\.textContent=String\(data\.name\|\|'Neues Projekt'\)\.s
 assert.match(html,/Blatt 1\/1/);
 assert.match(html,/Schematischer Entwurf – nicht elektrisch geprüft/);
 assert.match(html,/Keine Freigabe/);
-assert.match(html,/function render\(\)\{renderDrawingTitleBlock\(\)/);
+assert.match(html,/function render\(\)\{renderNetStatus\(\);renderDrawingTitleBlock\(\)/);
 console.log('Drawing title block and non-approved export status contract passed');
