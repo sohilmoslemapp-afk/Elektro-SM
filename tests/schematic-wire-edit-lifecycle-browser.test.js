@@ -15,12 +15,15 @@ const path=require('node:path');
   }
   const count=()=>page.locator('#wires > path').count();
   if(await count()!==2)throw Error('Expected two wires before deletion');
+  if(!(await page.locator('#netStatus').innerText()).includes('Offene/ungültige Leitungen: 2'))throw Error('Live net status did not reflect two unassigned wires');
   page.once('dialog',d=>d.accept('1'));
   await page.locator('#deleteWire').click();
   if(await count()!==1)throw Error('Wire deletion did not refresh drawing');
+  if(!(await page.locator('#netStatus').innerText()).includes('Offene/ungültige Leitungen: 1'))throw Error('Live net status did not update after deletion');
   if(!(await page.locator('#wires').textContent()).includes('W1'))throw Error('Wire numbering not refreshed');
   await page.locator('#undoEdit').click();
   if(await count()!==2)throw Error('Undo did not restore deleted wire');
+  if(!(await page.locator('#netStatus').innerText()).includes('Offene/ungültige Leitungen: 2'))throw Error('Undo did not refresh net status');
   await page.locator('#redoEdit').click();
   if(await count()!==1)throw Error('Redo did not remove wire again');
   page.once('dialog',d=>d.accept('invalid'));
