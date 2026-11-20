@@ -159,3 +159,7 @@ assert.ok(html.includes('w.fromTerminal!==pickerWires[index].fromTerminal||w.toT
 assert.ok(html.includes('fromTerminal:w.fromTerminal,toTerminal:w.toTerminal'), 'Wire deletion must snapshot terminal endpoints as well as component identities');
 
 assert.match(html,/Ungültige Symbolposition:/,'Plan check must explicitly identify malformed symbol coordinates');
+
+assert.match(html,/if\(wirePath\)\{node\('path'/,'Only valid wire routes should create SVG paths');
+assert.match(html,/Leitungsweg ungültig/,'Invalid wire routes must be visibly flagged');
+assert.match(html,/wireId\.textContent\+=' ✖'/,'Invalid wire routes must also mark the wire number');
