@@ -4,6 +4,7 @@ function finitePoint(p){return p&&Number.isFinite(p.x)&&Number.isFinite(p.y)&&Ma
 function route(from,to,offset=0){
  if(!finitePoint(from)||!finitePoint(to)||!Number.isFinite(offset)||Math.abs(offset)>10000)return null;
  const x1=from.x,y1=from.y,x2=to.x,y2=to.y;
+ if(x1===x2&&y1===y2)return null; // No drawable wire for coincident endpoints.
  if(x1===x2||y1===y2)return 'M'+x1+' '+y1+' L'+x2+' '+y2;
  const middle=Math.round((x1+x2)/2+offset);
  return 'M'+x1+' '+y1+' H'+middle+' V'+y2+' H'+x2;
