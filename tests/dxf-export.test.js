@@ -18,4 +18,15 @@ assert.equal((withTerminals.match(/\nTERMINAL_LABELS\n/g)||[]).length,4);
 assert.match(withTerminals,/\n1\nU1\n/);
 assert.match(withTerminals,/\n10\n143\n20\n-183\n30\n0\n11\n257\n21\n-183\n31\n0/);
 assert.throws(()=>exportDxf({symbols:[{id:'A',x:100,y:200},{id:'B',x:300,y:200}],wires:[{a:'A',b:'B',fromTerminal:'9'}]}),/Terminal position/);
+
+const {previewDxf}=require('../src/dxf-preview');
+const parsed=previewDxf(withTerminals);
+const wire=parsed.entities.find(e=>e.type==='LINE'&&e.layer==='WIRES');
+assert(wire,'DXF wire geometry must survive re-reading');
+assert.deepEqual([wire[10],wire[20],wire[11],wire[21]],[143,-183,257,-183]);
+const terminals=parsed.entities.filter(e=>e.type==='CIRCLE'&&e.layer==='TERMINALS');
+assert.equal(terminals.length,4,'every manually entered terminal must survive geometry export and re-read');
+assert(terminals.some(e=>e[10]===143&&e[20]===-183),'source terminal geometry must survive');
+assert(terminals.some(e=>e[10]===257&&e[20]===-183),'target terminal geometry must survive');
+assert(parsed.entities.some(e=>e.type==='TEXT'&&e.layer==='TERMINAL_LABELS'&&e.text==='U1'));
 console.log('DXF R12 geometry and explicit terminal coordinate export tests passed');
