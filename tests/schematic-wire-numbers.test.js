@@ -1,0 +1,12 @@
+'use strict';
+const assert=require('node:assert/strict');
+const {numberWires}=require('../src/schematic-wire-numbers');
+const project={wires:[{a:'X1',fromTerminal:'1',b:'K1',toTerminal:'A1'},{a:'K1',b:'H1'}]};
+const numbers=numberWires(project);
+assert.deepEqual(numbers.map(w=>w.id),['W1','W2']);
+assert.equal(numbers[0].complete,true);
+assert.equal(numbers[1].complete,false);
+assert.deepEqual(numberWires({wires:[]}),[]);
+assert.deepEqual(numberWires(null),[]);
+assert.deepEqual(project.wires[0],{a:'X1',fromTerminal:'1',b:'K1',toTerminal:'A1'});
+console.log('Wire identifiers and incomplete connection flags passed');
