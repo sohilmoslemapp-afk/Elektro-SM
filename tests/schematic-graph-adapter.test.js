@@ -33,3 +33,12 @@ const blankAndNonString=fromSchematic({...project,wires:[
 assert.deepEqual(blankAndNonString.pending.map(p=>p.wire),[0,1,2],'Whitespace and non-string terminal references remain pending');
 assert.equal(blankAndNonString.connections.length,1,'Only complete terminal strings become graph edges');
 assert.equal(blankAndNonString.connections[0].sourceWire,3,'Original wire index must survive filtering');
+
+const emptyGraph=fromSchematic(null);
+assert.deepEqual(emptyGraph,{components:[],connections:[],pending:[]},'Missing project must not crash graph conversion');
+const untouched=JSON.stringify(project);
+const independent=fromSchematic(project);
+independent.components[0].terminals.push('TEST');
+assert.equal(JSON.stringify(project),untouched,'Adapter output must not mutate original project terminals');
+const absentIds=fromSchematic({symbols:[{id:'F3',manualTerminals:['1']},{id:'X1',manualTerminals:['2']}],wires:[{a:null,b:'X1',fromTerminal:'1',toTerminal:'2'}]});
+assert.equal(validateTerminalGraph(absentIds).valid,false,'Missing component references must fail terminal validation');
