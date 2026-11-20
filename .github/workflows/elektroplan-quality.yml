@@ -19,6 +19,8 @@ jobs:
           node --check src/terminal-graph.js
       - name: Terminal-graph regression
         run: node tests/terminal-graph.test.js
+      - name: Expanded terminal graph regression
+        run: node tests/terminal-graph-regression.test.js
       - name: Search-ranking regression
         run: node tests/V132-ranking.test.js
       - name: Integrated prototype inline JavaScript syntax
