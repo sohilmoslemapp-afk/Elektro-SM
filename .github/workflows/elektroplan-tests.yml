@@ -23,6 +23,8 @@ jobs:
         run: node tests/V132-ranking.test.js
       - name: V133 manufacturer safety
         run: node tests/V133-safe-matching.test.js
+      - name: Manufacturer evidence review size bounds
+        run: node tests/manufacturer-evidence-bounds.test.js
       - name: Manufacturer evidence and exact article-number safety
         run: node --test tests/manufacturer-evidence.test.js
       - name: OCR identification input safety bounds
