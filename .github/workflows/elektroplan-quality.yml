@@ -37,6 +37,7 @@ jobs:
           npm install --no-save playwright
           npx playwright install --with-deps chromium
           node tests/browser-smoke.test.js
+          node tests/tablet-desktop-smoke.test.js
       - name: Integrated prototype inline JavaScript syntax
         run: |
           node - <<'NODE'
