@@ -98,7 +98,7 @@ assert.ok(fs.existsSync('src/image-text-recognition.js'),'OCR module must exist'
 assert.ok(html.includes('id="photoReadText"'),'Camera must offer image-text extraction');
 assert.ok(html.includes("ElektroPlanImageText.readImageText(preview,window)"),'OCR must use the guarded recognition module');
 assert.ok(html.includes("preview.src!==original"),'OCR must discard stale image results');
-assert.ok(html.includes('OCR ist keine Anschlussfreigabe'),'OCR output must not authorize terminal assignments');
+assert.ok(html.includes('Keine Anschlussfreigabe.'),'OCR output must not authorize terminal assignments');
 
 assert.ok(html.includes('Hersteller aus erkanntem Text auswählen'),'OCR must let the user explicitly choose manufacturer text');
 assert.ok(html.includes('Modell / Artikelnummer aus erkanntem Text auswählen'),'OCR must let the user explicitly choose model text');
