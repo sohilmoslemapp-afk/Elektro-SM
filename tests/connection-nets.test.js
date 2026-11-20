@@ -21,4 +21,12 @@ for(const bad of [['1','1'],['1',''],Array.from({length:9},(_,i)=>String(i+1))])
  assert.equal(result.nets.length,0,'invalid terminal lists must not produce apparent connectivity');
  assert.equal(result.pending.length,1);
 }
+for(const badId of [' X','X\u200b','X\n']){
+ const check=analyze({symbols:[{id:badId,manualTerminals:['1']},{id:'B',manualTerminals:['1']}],wires:[{a:badId,fromTerminal:'1',b:'B',toTerminal:'1'}]});
+ assert.equal(check.nets.length,0);
+ assert.match(check.pending[0].reason,/Ungültige Symbolkennung/);
+}
+const hiddenTerminal=analyze({symbols:[{id:'A',manualTerminals:['1\u200b']},{id:'B',manualTerminals:['1']}],wires:[{a:'A',fromTerminal:'1\u200b',b:'B',toTerminal:'1'}]});
+assert.equal(hiddenTerminal.nets.length,0);
+assert.equal(hiddenTerminal.pending.length,1);
 console.log('Explicit terminal connectivity grouping regression passed');
