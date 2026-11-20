@@ -97,3 +97,8 @@ assert.equal(repeated.electricallyApproved,false);
 const distinctParallel=analyze({symbols:[{id:'A',manualTerminals:['1','2']},{id:'B',manualTerminals:['1','2']}],wires:[{a:'A',fromTerminal:'1',b:'B',toTerminal:'1'},{a:'A',fromTerminal:'2',b:'B',toTerminal:'2'}]});
 assert.equal(distinctParallel.pending.length,0,'different terminal pairs must not be treated as duplicates');
 assert.equal(distinctParallel.nets.length,2,'different terminal pairs remain independent networks');
+
+assert.deepEqual(repeated.pending.map(item=>item.duplicateOf),[0,0],'duplicate warnings must point to the first matching wire');
+const duplicateAfterReorder=analyze({symbols:chainSymbols,wires:[{a:'B',fromTerminal:'1',b:'A',toTerminal:'1'},chainWires[0]]});
+assert.equal(duplicateAfterReorder.pending[0].wire,1);
+assert.equal(duplicateAfterReorder.pending[0].duplicateOf,0,'reversed original must be identified deterministically');
