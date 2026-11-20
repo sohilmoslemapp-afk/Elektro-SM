@@ -13,12 +13,17 @@ function validateImport(payload){
  if(d.symbols.length>10000||d.wires.length>50000||d.parts.length>10000)errors.push('Projekt überschreitet Sicherheitsgrenzen');
  if(d.symbols.length>10000||d.wires.length>50000||d.parts.length>10000)return {ok:false,errors};
  if(typeof d.name!=='string'||d.name.length>200)errors.push('Ungültiger Projektname');
- const ids=new Set(),normalizedIds=new Set(),symbolsById=new Map();
+ const ids=new Set(),normalizedIds=new Set(),symbolsById=new Map(),stripLabels=new Set();
  const unsafeId=/[\u0000-\u001f\u007f-\u009f\u200b-\u200f\u202a-\u202e\u2060-\u2069\ufeff]/u;
  d.symbols.forEach((s,i)=>{
   if(!s||typeof s.id!=='string'||s.id.length>100||!s.id||s.id!==s.id.trim()||unsafeId.test(s.id)||ids.has(s.id)||normalizedIds.has(s.id.normalize('NFC')))errors.push('Symbol '+i+': ungültige Kennung');
   else {ids.add(s.id);normalizedIds.add(s.id.normalize('NFC'));symbolsById.set(s.id,s);}
   if(!types.has(s?.type)||!Number.isFinite(s?.x)||!Number.isFinite(s?.y)||Math.abs(s.x)>100000||Math.abs(s.y)>100000)errors.push('Symbol '+i+': ungültige Daten');
+  if(s?.stripLabel!==undefined){
+   const label=s.stripLabel;
+   if(s.type!=='KLEMME'||typeof label!=='string'||!/^X[1-9][0-9]{0,3}$/.test(label)||s.id!==label||stripLabels.has(label))errors.push('Symbol '+i+': ungültige oder doppelte Klemmleistenkennung');
+   else stripLabels.add(label);
+  }
   if(['partBrand','partModel'].some(k=>s?.[k]!==undefined&&(typeof s[k]!=='string'||s[k].length>200)))errors.push('Symbol '+i+': ungültige Bauteilreferenz');
   if(s?.sourceRecord!==undefined&&!validSource(s.sourceRecord,s.partBrand,s.partModel))errors.push('Symbol '+i+': ungültiger Quellenbeleg');
   if(s?.manualTerminals!==undefined&&(!Array.isArray(s.manualTerminals)||s.manualTerminals.length>64||s.manualTerminals.some(t=>typeof t!=='string'||!t.trim()||t!==t.trim()||t.length>40||unsafeId.test(t))||new Set(s.manualTerminals.map(t=>typeof t==='string'?t.normalize('NFC'):t)).size!==s.manualTerminals.length))errors.push('Symbol '+i+': ungültige manuelle Klemmenbezeichnungen');
