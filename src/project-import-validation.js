@@ -13,6 +13,7 @@ function validateImport(payload){
   if(!s||typeof s.id!=='string'||s.id.length>100||!s.id||ids.has(s.id))errors.push('Symbol '+i+': ungültige Kennung');
   else ids.add(s.id);
   if(!types.has(s?.type)||!Number.isFinite(s?.x)||!Number.isFinite(s?.y)||Math.abs(s.x)>100000||Math.abs(s.y)>100000)errors.push('Symbol '+i+': ungültige Daten');
+  if(['partBrand','partModel'].some(k=>s?.[k]!==undefined&&(typeof s[k]!=='string'||s[k].length>200)))errors.push('Symbol '+i+': ungültige Bauteilreferenz');
  });
  d.wires.forEach((w,i)=>{if(!w||!ids.has(w.a)||!ids.has(w.b)||w.a===w.b)errors.push('Leitung '+i+': ungültige Endpunkte')});
  d.parts.forEach((p,i)=>{if(!p||!['type','brand','model','docTitle','docUrl'].every(k=>typeof p[k]==='string'&&p[k].length<=2000))errors.push('Bauteil '+i+': ungültige Daten');else if(p.docUrl){try{const u=new URL(p.docUrl);if(u.protocol!=='https:')throw Error()}catch{errors.push('Bauteil '+i+': ungültige Dokument-URL')}}});
