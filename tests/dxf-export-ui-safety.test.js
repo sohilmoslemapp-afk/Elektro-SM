@@ -1,0 +1,13 @@
+'use strict';
+const assert=require('node:assert/strict'),fs=require('node:fs');
+const html=fs.readFileSync('prototypes/ElektroPlan-SM-integriert.html','utf8');
+const start=html.indexOf("$('exportDxf').onclick=");
+const end=html.indexOf("$('printPlan').onclick=",start);
+assert(start>=0&&end>start);
+const handler=html.slice(start,end);
+assert(handler.includes('ElektroPlanValidation?.validate(data)'));
+assert(handler.includes('!review.valid'));
+assert(handler.includes('!w.fromTerminal||!w.toTerminal'));
+assert(handler.indexOf('if(incomplete.length)')<handler.indexOf('ElektroPlanDxf.exportDxf(data)'));
+assert(handler.includes('Keine elektrische Freigabe'));
+console.log('DXF export blocks incomplete schematic wiring and preserves warning');
