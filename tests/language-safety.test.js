@@ -10,4 +10,7 @@ assert.ok(html.includes("localStorage.getItem('elektroplan-language')"),'Languag
 assert.match(html,/id="cameraSafetyNotice"/,'Camera safety message must have stable target');
 for(const phrase of ['Keine automatische Bilderkennung','No automatic photo identification','لا يوجد تعرّف تلقائي على القطع من الصور'])assert.ok(html.includes(phrase),'Missing localized camera safety message: '+phrase);
 assert.ok(html.includes("localizedSafety[lang].camera"),'Camera safety text must update on language switch');
+assert.match(html,/id="librarySafetyNotice"/,'Library safety warning must have stable target');
+for(const phrase of ['Suchtreffer und Dokumentlinks sind keine Bestätigung','Search results and document links do not verify','نتائج البحث وروابط الوثائق لا تثبت'])assert.ok(html.includes(phrase),'Missing translated library safety notice: '+phrase);
+assert.ok(html.includes("localizedSafety[lang].library"),'Library safety text must update on language switch');
 console.log('German, English and Arabic language selector, RTL and camera safety translations: passed');
