@@ -9,7 +9,7 @@
 <section id="parts" hidden><h2>Bauteilbibliothek</h2><div class="grid"><label>Typ<select id="type"><option>FI / RCD</option><option>LS-Schalter</option><option>Schütz</option><option>Relais</option><option>KNX</option><option>Sonstiges</option></select></label><label>Hersteller<input id="brand" placeholder="z. B. Hager"></label><label>Modell / Artikelnummer<input id="model"></label></div><label>Dokumenttitel (optional)<input id="docTitle"></label><label>Hersteller-Dokument (HTTPS, optional)<input id="docUrl" type="url"></label><button id="addPart" class="primary">Bauteil speichern</button><h3>Suche</h3><div class="grid"><label>Hersteller<input id="searchBrand"></label><label>Modell<input id="searchModel"></label></div><button id="searchParts">Suchen</button><ul id="partResults"></ul><h3>Gespeicherte Bauteile</h3><ul id="partList"></ul><p class="warn">Suchtreffer und Dokumentlinks sind keine Bestätigung von Anschlussbelegung oder elektrischer Sicherheit. Originalunterlagen fachlich prüfen.</p></section>
 <section id="camera" hidden><h2>Kamera und Bildauswahl</h2><label class="btn">📷 Kamera öffnen<input id="takePhoto" type="file" accept="image/*" capture="environment" hidden></label><label class="btn">🖼️ Bild auswählen<input id="choosePhoto" type="file" accept="image/*" hidden></label><p id="photoStatus">Noch kein Bild ausgewählt.</p><img id="preview" alt="Ausgewähltes Bauteilfoto"><p class="warn">Keine automatische Bilderkennung. Hersteller und Modell manuell eingeben und überprüfen. Bilder werden hier nicht dauerhaft gespeichert.</p></section>
 <section id="project" hidden><h2>Projektdaten</h2><p>Lokale Speicherung in diesem Browser. Browserdaten können gelöscht werden.</p><div class="tools"><button id="saveAll" class="primary">Speichern</button><button id="exportJson">Projektdatei exportieren</button><label class="btn">Projektdatei importieren<input id="importJson" type="file" accept=".json,application/json" hidden></label></div><p class="warn">Import ersetzt die aktuell im Editor geladenen Projektdaten. Vorher exportieren.</p></section>
-</main><script src="../src/schematic-validation.js"></script><script src="../src/project-import-validation.js"></script><script>
+</main><script src="../src/schematic-validation.js"></script><script src="../src/project-import-validation.js"></script><script src="../src/terminal-graph.js"></script><script>
 (()=>{'use strict';
 const $=id=>document.getElementById(id),KEY='elektroplan-sm-integrated-1';let data={name:'Neues Projekt',symbols:[],wires:[],parts:[]},selected=null,wireStart=null,wireMode=false,drag=null;
 const msg=t=>$('message').textContent=t;
@@ -31,8 +31,10 @@ $('checkPlan').onclick=()=>{
  const box=$('planCheckResult');box.hidden=false;box.replaceChildren();
  if(!window.ElektroPlanValidation){box.textContent='Prüfmodul nicht geladen. Keine Freigabe möglich.';return}
  const result=window.ElektroPlanValidation.validate(data);
- const h=document.createElement('strong');h.textContent=result.valid?'Strukturprüfung: keine Strukturfehler':'Strukturprüfung: Fehler gefunden';box.append(h);
- const ul=document.createElement('ul');for(const line of [...result.errors,...result.warnings]){const li=document.createElement('li');li.textContent=line;ul.append(li)}box.append(ul);
+ const terminalResult=window.ElektroPlanTerminals?.validate(data);
+ if(!terminalResult){box.textContent='Klemmenprüfung nicht geladen. Keine Freigabe möglich.';return}
+ const h=document.createElement('strong');h.textContent=result.valid&&terminalResult.valid?'Strukturprüfung: keine Strukturfehler':'Strukturprüfung: Fehler gefunden';box.append(h);
+ const ul=document.createElement('ul');for(const line of [...result.errors,...result.warnings,...terminalResult.errors.map(x=>'Klemmenfehler: '+x),...terminalResult.warnings.map(x=>'Klemmenhinweis: '+x)]){const li=document.createElement('li');li.textContent=line;ul.append(li)}box.append(ul);
  const p=document.createElement('p');p.textContent=result.disclaimer;box.append(p);
 };
 
