@@ -165,6 +165,7 @@ const path = require('node:path');
     const bomDownload=await bomPromise;
     const bomText=await require('node:fs/promises').readFile(await bomDownload.path(),'utf8');
     if(!bomText.includes('Hersteller (manuell)')||!bomText.includes('Modell (manuell)')||!bomText.includes('"Anzahl"'))throw Error('BOM CSV missing manufacturer/model/count columns');
+    if(!bomText.includes('"Symbol-IDs"')||!bomText.includes('"Herstellerprüfung"')||!bomText.includes('NICHT herstellerverifiziert'))throw Error('BOM CSV lacks traceability or verification warning');
     const wireCsvPromise=page.waitForEvent('download');
     await page.locator('#exportWireList').click();
     const wireCsv=await wireCsvPromise;
