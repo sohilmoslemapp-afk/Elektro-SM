@@ -60,6 +60,8 @@ jobs:
         run: node tests/integrated-touch-terminal-wire.test.js
       - name: Supply reference overlay
         run: node tests/integrated-supply-reference.test.js
+      - name: Manual terminal strip insertion
+        run: node tests/terminal-strip.test.js
 
       - name: Integrated project import size guard
         run: node tests/integrated-import-size-guard.test.js
