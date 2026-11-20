@@ -137,3 +137,6 @@ jobs:
 
       - name: File format compatibility registry
         run: node tests/file-format-registry.test.js
+
+      - name: DXF geometry export regression
+        run: node tests/dxf-export.test.js
