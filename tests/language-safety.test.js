@@ -25,4 +25,6 @@ for(const id of ['diagramGuidance','manufacturerSearchNotice'])assert.ok(html.in
 for(const phrase of ['Enter terminals manually','إدخال أطراف التوصيل يدوياً','Connections are schematic only','التوصيلات تخطيطية فقط','Results are not automatically verified','النتائج ليست مصادر موثّقة تلقائياً'])assert.ok(html.includes(phrase),'Missing trilingual terminal/safety copy: '+phrase);
 assert.ok(html.includes('localizedTerminalControls[lang]'),'Terminal controls must change with language');
 assert.ok(html.includes('localizedGuidance[lang].diagram'),'Diagram guidance must change with language');
+for(const phrase of ['statusTranslations','Wiring is NOT manufacturer-verified','التوصيل غير معتمد من الشركة المصنّعة','Saved project is invalid','المشروع المحفوظ غير صالح','maximum 64 unique labels','الحد الأقصى 64 تسمية'])assert.ok(html.includes(phrase),'Missing critical trilingual runtime status: '+phrase);
+assert.ok(html.includes("statusTranslations[t]?.[lang]||t"),'Translated status must retain German fallback');
 console.log('German, English and Arabic language selector, RTL and camera safety translations: passed');
