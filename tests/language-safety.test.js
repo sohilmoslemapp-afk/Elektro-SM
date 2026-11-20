@@ -1,0 +1,13 @@
+'use strict';
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const html=fs.readFileSync('prototypes/ElektroPlan-SM-integriert.html','utf8');
+assert.match(html,/<select id="appLanguage"/,'Language selector must exist');
+for(const lang of ['de','en','ar'])assert.ok(html.includes('<option value="'+lang+'">'),'Missing language '+lang);
+assert.ok(html.includes("document.documentElement.dir=lang==='ar'?'rtl':'ltr'"),'Arabic RTL direction required');
+assert.ok(html.includes("localStorage.setItem('elektroplan-language',lang)"),'Language preference must persist');
+assert.ok(html.includes("localStorage.getItem('elektroplan-language')"),'Language preference must restore');
+assert.match(html,/id="cameraSafetyNotice"/,'Camera safety message must have stable target');
+for(const phrase of ['Keine automatische Bilderkennung','No automatic photo identification','لا يوجد تعرّف تلقائي على القطع من الصور'])assert.ok(html.includes(phrase),'Missing localized camera safety message: '+phrase);
+assert.ok(html.includes("localizedSafety[lang].camera"),'Camera safety text must update on language switch');
+console.log('German, English and Arabic language selector, RTL and camera safety translations: passed');
