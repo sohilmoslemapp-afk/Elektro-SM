@@ -22,3 +22,14 @@ assert.equal(malformedSymbol.components.length,2,'Malformed symbols must not sil
 assert.equal(validateTerminalGraph(malformedSymbol).valid,false,'Malformed symbols must fail terminal validation without throwing');
 const malformedWire=fromSchematic({symbols:[{id:'X1',manualTerminals:['1']}],wires:[null]});
 assert.deepEqual(malformedWire.pending.map(x=>x.wire),[0],'Null wires must remain explicitly pending');
+
+
+const blankAndNonString=fromSchematic({...project,wires:[
+ {a:'F3',b:'X1',fromTerminal:' ',toTerminal:'3'},
+ {a:'F3',b:'X1',fromTerminal:2,toTerminal:'3'},
+ {a:'F3',b:'X1',fromTerminal:'2',toTerminal:'\\t'},
+ {a:'F3',b:'X1',fromTerminal:'2',toTerminal:'3'}
+]});
+assert.deepEqual(blankAndNonString.pending.map(p=>p.wire),[0,1,2],'Whitespace and non-string terminal references remain pending');
+assert.equal(blankAndNonString.connections.length,1,'Only complete terminal strings become graph edges');
+assert.equal(blankAndNonString.connections[0].sourceWire,3,'Original wire index must survive filtering');
