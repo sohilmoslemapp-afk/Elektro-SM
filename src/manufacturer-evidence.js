@@ -4,6 +4,8 @@
 (function(root){
 'use strict';
 function nonempty(s){return typeof s==='string' && s.length<=2000 && s.trim().length>0 && s===s.trim();}
+const unsafeLabel=/[\u0000-\u001f\u007f-\u009f\u200b-\u200f\u202a-\u202e\u2060-\u2069\ufeff]/u;
+function validTerminalLabel(s){return nonempty(s)&&s.length<=40&&!unsafeLabel.test(s)}
 function validDocumentUrl(value){if(!nonempty(value))return false;try{const url=new URL(value);return url.protocol==='https:'&&!!url.hostname&&!url.username&&!url.password;}catch{return false;}}
 function validReviewDate(value){if(typeof value!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(value))return false;const d=new Date(value+'T00:00:00Z');return !Number.isNaN(d.getTime())&&d.toISOString().slice(0,10)===value;}
 function assessManufacturerEvidence(record){
@@ -33,7 +35,7 @@ function assessManufacturerEvidence(record){
  else{
   const names=new Set();
   terminals.slice(0,256).forEach((t,i)=>{
-   if(!t||!nonempty(t.name)||!nonempty(t.function)||!nonempty(t.sourceReference)){
+   if(!t||!validTerminalLabel(t.name)||!nonempty(t.function)||!nonempty(t.sourceReference)){
     errors.push('Anschluss '+i+': Name, Funktion oder Quellenverweis fehlt');return;
    }
    const name=t.name.normalize('NFC');
