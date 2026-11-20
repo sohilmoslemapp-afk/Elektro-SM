@@ -24,3 +24,11 @@ Diese Anforderungen gelten **für jede neue Funktion und jedes Release**.
 
 ## Sicherheit
 Nur grafische und strukturelle Prüfungen, keine elektrische Freigabe oder Normkonformitätszusage. Herstelleranschlüsse werden niemals aus ungeprüften Angaben abgeleitet.
+
+## Verbindliche Bedienarten
+- **Spracheingabe:** Sprachbefehle auf Deutsch, Englisch und Arabisch für die Kernfunktionen. Erkennung nur mit ausdrücklicher Mikrofonberechtigung; Browserunterstützung, Fehlerfälle und Fallback müssen sichtbar sein. Keine Behauptung, dass Spracherkennung schon implementiert oder auf allen Geräten verfügbar ist, bevor reale Tests erfolgreich sind.
+- **Texteingabe:** Dieselben Kernaktionen müssen über getippte Befehle und zugängliche Formulare/Schaltflächen möglich sein. Befehle dürfen keine gefährlichen oder irreversiblen Aktionen ohne Bestätigung auslösen.
+- **Touch:** Vollständige Bedienung mit Fingertipps, Touch-Auswahl und Ziehen auf iPhone, Android und Tablets; keine ausschließlich hover- oder mausabhängigen Aktionen.
+- **Maus und Tastatur:** Vollständige Bedienung am Desktop, inklusive Fokus, Auswahl und verständlichen Fehlermeldungen.
+- **Funktionsparität:** Neue Kernfunktionen benötigen einen dokumentierten Weg über Sprache, Text, Touch und Maus; wo Sprach-APIs nicht verfügbar sind, muss die Texteingabe als Ersatz funktionieren.
+- **Qualität:** Tests für Befehlsinterpretation (de/en/ar), Touch-/Pointer-Ereignisse, Tastatur und Maus; reale Gerätetests vor Freigabe.
