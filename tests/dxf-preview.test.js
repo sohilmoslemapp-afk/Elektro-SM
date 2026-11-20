@@ -11,4 +11,7 @@ assert.equal(p.unsupportedCount,0);
 assert.throws(()=>previewDxf('0\nSECTION\n2\nENTITIES\n0\nLINE\n10\nInfinity\n0\nENDSEC\n'),/coordinate/);
 assert.throws(()=>previewDxf('0\nSECTION\n2\nENTITIES\n0\nLINE\n10'),/Truncated/);
 assert.throws(()=>previewDxf('x\nfoo\n'),/group code/);
+const unsupported=previewDxf('0\nSECTION\n2\nENTITIES\n0\nARC\n8\nOTHER\n0\nSPLINE\n8\nOTHER\n0\nLINE\n8\nWIRES\n10\n1\n20\n2\n11\n3\n21\n4\n0\nENDSEC\n0\nEOF\n');
+assert.equal(unsupported.entities.length,1,'supported line should remain visible');
+assert.equal(unsupported.unsupportedCount,2,'unsupported geometry must be reported, not silently omitted');
 console.log('Read-only DXF geometry preview and export roundtrip passed');
