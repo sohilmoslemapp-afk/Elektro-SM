@@ -73,7 +73,9 @@ document.getElementById('read-image-text').addEventListener('click',async functi
  if(!p.src||p.style.display==='none'){output.textContent='Bitte zuerst ein Bild auswählen.';return}
  if(!window.ElektroPlanImageText){output.textContent='Texterkennungsmodul nicht geladen.';return}
  output.textContent='Texterkennung läuft …';
+ const imageAtStart=p.src;
  const result=await window.ElektroPlanImageText.readImageText(p,window);
+ if(p.src!==imageAtStart){output.textContent='Bild wurde geändert – Texterkennung erneut starten.';return}
  output.textContent=result.message+(result.lines.length?'\\n'+result.lines.join('\\n'):'');
 });
 document.getElementById('check').onclick=function(){
