@@ -55,6 +55,7 @@ jobs:
           node tests/cross-platform-trilingual-browser.test.js
           node tests/command-input-browser.test.js
           node tests/schematic-pictograms-browser.test.js
+          node tests/motor-control-browser.test.js
       - name: Integrated prototype inline JavaScript syntax
         run: |
           node - <<'NODE'
