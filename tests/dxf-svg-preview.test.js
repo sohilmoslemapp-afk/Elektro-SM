@@ -1,0 +1,13 @@
+'use strict';
+const assert=require('node:assert/strict');
+const {previewDxf}=require('../src/dxf-preview');
+const {exportDxf}=require('../src/dxf-export');
+const {renderPreview}=require('../src/dxf-svg-preview');
+const project={symbols:[{id:'A',type:'LS',x:100,y:200},{id:'B',type:'MOTOR',x:300,y:200}],wires:[{a:'A',b:'B'}]};
+const svg=renderPreview(previewDxf(exportDxf(project)));
+assert.match(svg,/<svg /);assert.match(svg,/<line /);assert.match(svg,/<circle /);assert.match(svg,/<text /);
+const unsafe=renderPreview({entities:[{type:'TEXT',10:0,20:0,text:'<script>alert(1)</script>',layer:'" onload="alert(1)'}]});
+assert(!unsafe.includes('<script>'));assert(!unsafe.includes('data-layer="" onload='));
+assert.match(unsafe,/&lt;script&gt;/);
+assert.throws(()=>renderPreview({entities:[{type:'LINE',10:Infinity,20:0,11:0,21:0}]}),/Invalid geometry/);
+console.log('DXF SVG geometry rendering and text escaping passed');
