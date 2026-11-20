@@ -173,13 +173,15 @@ $('supplyRails').onclick=()=>{showSupplyReference=!showSupplyReference;$('supply
 $('wireMode').onclick=()=>{wireMode=!wireMode;wireStart=null;wireStartTerminal=null;$('wireMode').classList.toggle('primary',wireMode);msg(wireMode?'Zwei Bauteile auswählen':'Verbindungsmodus beendet')};
 $('deleteWire').onclick=()=>{
  if(!data.wires.length)return msg('Keine Leitung zum Löschen vorhanden');
- const choices=data.wires.map((w,i)=>(i+1)+': '+w.a+(w.fromTerminal?'/'+w.fromTerminal:'')+' → '+w.b+(w.toTerminal?'/'+w.toTerminal:'')).join('\n');
- const answer=prompt(localizedPrompt('Leitung zum Löschen auswählen (Nummer):\n')+choices,'1');
- if(answer===null)return;
- if(!/^[1-9]\d*$/.test(answer.trim()))return msg('Ungültige Leitungsnummer');
- const index=Number(answer.trim())-1;
- if(!Number.isSafeInteger(index)||index<0||index>=data.wires.length)return msg('Ungültige Leitungsnummer');
- data.wires.splice(index,1);recordHistory();render();persist();msg('Leitung gelöscht – Verbindungsgruppen werden beim Prüfen neu berechnet');
+ const old=$('wireDeletePanel');if(old){old.remove();return}
+ const panel=document.createElement('div');panel.id='wireDeletePanel';panel.setAttribute('role','group');panel.setAttribute('aria-label','Leitung zum Löschen auswählen');
+ const label=document.createElement('label');label.textContent='Leitung auswählen';const select=document.createElement('select');select.id='wireDeleteSelect';
+ const snapshots=data.wires.map(w=>({ref:w,a:w.a,b:w.b}));
+ data.wires.forEach((w,i)=>{const option=document.createElement('option');option.value=String(i);option.textContent='W'+(i+1)+': '+w.a+(w.fromTerminal?'/'+w.fromTerminal:'')+' → '+w.b+(w.toTerminal?'/'+w.toTerminal:'');select.append(option)});
+ label.append(select);panel.append(label);
+ const remove=document.createElement('button');remove.type='button';remove.id='confirmDeleteWire';remove.textContent='Ausgewählte Leitung löschen';
+ remove.onclick=()=>{const index=Number(select.value),w=data.wires[index],snapshot=snapshots[index];if(!w||!snapshot||w!==snapshot.ref||w.a!==snapshot.a||w.b!==snapshot.b)return msg('Leitung geändert – Auswahl neu öffnen');data.wires.splice(index,1);recordHistory();render();persist();panel.remove();msg('Leitung gelöscht – Verbindungsgruppen aktualisiert')};
+ const cancel=document.createElement('button');cancel.type='button';cancel.id='cancelDeleteWire';cancel.textContent='Abbrechen';cancel.onclick=()=>panel.remove();panel.append(remove,cancel);$('deleteWire').after(panel);
 };
 $('deleteSelected').onclick=()=>{if(!selected)return;data.symbols=data.symbols.filter(s=>s.id!==selected);data.wires=data.wires.filter(w=>w.a!==selected&&w.b!==selected);selected=null;recordHistory();render();persist()};
 function validateDiagram(){const box=$('validationResults');box.replaceChildren();if(!window.ElektroPlanValidation){box.textContent=uiText('Prüfmodul nicht geladen. Keine Freigabe möglich.');return {errors:['Prüfmodul nicht geladen'],warnings:[]}}const result=window.ElektroPlanValidation.validate(data);const h=document.createElement('strong');h.textContent=result.valid?'✓ Keine Strukturfehler':'✕ '+result.errors.length+' Strukturfehler';box.append(h);for(const line of [...result.errors.map(t=>'Fehler: '+t),...result.warnings.map(t=>'Hinweis: '+t),result.disclaimer]){const p=document.createElement('p');p.textContent=line;box.append(p)}return result}$('checkDiagram').onclick=validateDiagram;
