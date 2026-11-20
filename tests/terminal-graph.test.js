@@ -7,6 +7,8 @@ assert.equal(check(a).reviewRequired,true);
 assert.equal(check(a).electricallyApproved,false);
 assert.equal(check(a).warnings.length,2);
 assert.equal(check({}).valid,false);
+assert.equal(check({}).reviewRequired,true);
+assert.equal(check({}).electricallyApproved,false);
 assert.equal(check({...a,components:[{id:'Q1',terminals:['2']},{id:'H1',terminals:['A1']}]}).reviewRequired,false);
 assert.equal(check({...a,components:[{id:'Q1',terminals:['2']},{id:'H1',terminals:['A1']}]}).electricallyApproved,false);
 assert.equal(check({...a,connections:[{from:{component:'Q1',terminal:'3'},to:{component:'H1',terminal:'A1'}}]}).valid,false);
