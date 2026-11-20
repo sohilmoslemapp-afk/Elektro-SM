@@ -1,0 +1,14 @@
+'use strict';
+const assert=require('node:assert/strict');
+const {validateTerminalGraph:check}=require('../src/terminal-graph.js');
+const a={components:[{id:'Q1',terminals:['1','2']},{id:'H1',terminals:['A1','A2']}],connections:[{from:{component:'Q1',terminal:'2'},to:{component:'H1',terminal:'A1'}}]};
+assert.equal(check(a).valid,true);
+assert.equal(check(a).warnings.length,2);
+assert.equal(check({}).valid,false);
+assert.equal(check({...a,connections:[{from:{component:'Q1',terminal:'3'},to:{component:'H1',terminal:'A1'}}]}).valid,false);
+assert.equal(check({...a,connections:[{from:{component:'Q1',terminal:'2'},to:{component:'Q1',terminal:'2'}}]}).valid,false);
+assert.equal(check({...a,components:[a.components[0],a.components[0]]}).valid,false);
+assert.equal(check({...a,components:[{id:'Q1',terminals:['1','1']}]}).valid,false);
+assert.equal(check({...a,connections:[a.connections[0],a.connections[0]]}).warnings.some(x=>x.includes('doppelt')),true);
+assert.equal(check({...a,connections:[{from:{component:'Q1',terminal:'2'},to:{component:'missing',terminal:'A1'}}]}).valid,false);
+console.log('Terminal graph: 8 structural assertions passed; electrical correctness not assessed.');
