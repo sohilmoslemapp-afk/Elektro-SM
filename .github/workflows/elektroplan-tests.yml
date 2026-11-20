@@ -71,6 +71,8 @@ jobs:
         run: node tests/integrated-undo-redo-history.test.js
       - name: Integrated interrupted touch drag rollback
         run: node tests/integrated-pointer-cancel-rollback.test.js
+      - name: Unified integrated diagram validation
+        run: node tests/integrated-unified-diagram-validation.test.js
       - name: Integrated Schaltplan UI wiring
         run: node tests/integrated-schematic-ui.test.js
 
