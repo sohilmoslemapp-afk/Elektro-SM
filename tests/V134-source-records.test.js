@@ -1,0 +1,16 @@
+'use strict';
+const assert=require('node:assert/strict');
+const {createReference,validHttps}=require('../prototypes/V134-source-records.js');
+const base={brand:'ABB',model:'F202 A',documentUrl:'https://example.org/manual.pdf',documentTitle:'Manual',checkedBy:'Reviewer',checkedAt:'2026-11-20'};
+assert.equal(createReference(base).valid,true);
+assert.equal(createReference(base).record.wiringApproved,false);
+assert.equal(createReference(base).record.terminalMapping,null);
+assert.equal(createReference({...base,brand:''}).valid,false);
+assert.equal(createReference({...base,model:''}).valid,false);
+assert.equal(createReference({...base,documentUrl:'http://example.org'}).valid,false);
+assert.equal(createReference({...base,documentUrl:'javascript:alert(1)'}).valid,false);
+assert.equal(createReference({...base,documentTitle:''}).valid,false);
+assert.equal(createReference({...base,checkedBy:''}).valid,false);
+assert.equal(createReference({...base,checkedAt:'invalid'}).valid,false);
+assert.equal(validHttps('https://example.org'),true);
+console.log('V134 source record assertions passed (11). Example URL is synthetic, not manufacturer verified.');
