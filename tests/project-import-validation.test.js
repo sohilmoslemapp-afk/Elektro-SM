@@ -1,0 +1,12 @@
+'use strict';
+const assert=require('node:assert/strict');
+const {validateImport}=require('../src/project-import-validation.js');
+const valid={format:'ElektroPlan-SM-1',data:{name:'Test',symbols:[{id:'a',type:'LS',x:10,y:20},{id:'b',type:'LAMP',x:20,y:30}],wires:[{a:'a',b:'b'}],parts:[]}};
+assert.equal(validateImport(valid).ok,true);
+assert.equal(validateImport({}).ok,false);
+assert.equal(validateImport({...valid,data:{...valid.data,symbols:[valid.data.symbols[0],valid.data.symbols[0]]}}).ok,false);
+assert.equal(validateImport({...valid,data:{...valid.data,wires:[{a:'a',b:'missing'}]}}).ok,false);
+assert.equal(validateImport({...valid,data:{...valid.data,symbols:[{id:'a',type:'LS',x:Infinity,y:0}]}}).ok,false);
+assert.equal(validateImport({...valid,data:{...valid.data,parts:[{type:'LS',brand:'A',model:'B',docTitle:'',docUrl:'javascript:alert(1)'}]}}).ok,false);
+assert.equal(validateImport({...valid,data:{...valid.data,symbols:Array(10001).fill({id:'x',type:'LS',x:0,y:0})}}).ok,false);
+console.log('Project import validation: 7 assertions passed.');
