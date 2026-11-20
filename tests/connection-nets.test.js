@@ -16,4 +16,9 @@ assert.match(duplicate.pending[0].reason,/Mehrdeutige/);
 const self=analyze({symbols:[{id:'X',manualTerminals:['1','2']}],wires:[{a:'X',fromTerminal:'1',b:'X',toTerminal:'2'}]});
 assert.equal(self.nets.length,0,'self-wire must not create a misleading net');
 assert.match(self.pending[0].reason,/Selbstverbindung/);
+for(const bad of [['1','1'],['1',''],Array.from({length:9},(_,i)=>String(i+1))]){
+ const result=analyze({symbols:[{id:'A',manualTerminals:bad},{id:'B',manualTerminals:['1']}],wires:[{a:'A',fromTerminal:'1',b:'B',toTerminal:'1'}]});
+ assert.equal(result.nets.length,0,'invalid terminal lists must not produce apparent connectivity');
+ assert.equal(result.pending.length,1);
+}
 console.log('Explicit terminal connectivity grouping regression passed');
