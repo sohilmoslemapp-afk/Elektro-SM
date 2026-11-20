@@ -138,3 +138,8 @@ assert.ok(html.includes("$('photoPartNumber').value=articleChoice.value"),'OCR a
 assert.ok(html.includes('const netResult=window.ElektroPlanNets?.analyze(data)'), 'Schaltplan check must analyze terminal connectivity');
 assert.ok(html.includes('netResult.pending.map(x=>'), 'Schaltplan check must show unresolved net reasons');
 assert.ok(html.includes('||unresolvedNets||terminalResult.reviewRequired'), 'Unresolved connectivity must require review');
+
+assert.ok(html.includes('id="deleteWire"'), 'Schaltplan must expose a wire deletion control');
+assert.ok(html.includes("$('deleteWire').onclick=()=>{"), 'Wire deletion action must be bound');
+assert.ok(html.includes('data.wires.splice(index,1);recordHistory();render();persist()'), 'Wire deletion must update history, diagram and saved project');
+assert.ok(html.includes('Number.isSafeInteger(index)'), 'Wire deletion must reject invalid indexes');
