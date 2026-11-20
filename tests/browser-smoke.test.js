@@ -68,7 +68,8 @@ const path = require('node:path');
     await page.locator('#addPart').click();
     await page.locator('#partList li').last().locator('button').click();
     if(await page.locator('#symbols > g').count()!==3)throw Error('RCD library-to-plan insertion failed');
-    if(!await page.locator('#message').textContent().then(t=>t.includes('NICHT mit dem Symbol verknüpft')))throw Error('Unlinked manufacturer warning missing');
+    if(!await page.locator('#message').textContent().then(t=>t.includes('Anschlussbelegung NICHT verifiziert')))throw Error('Unverified terminal warning missing');
+    if(!await page.locator('#symbols > g').last().textContent().then(t=>t.includes('Test Hersteller TEST-123')))throw Error('Manual manufacturer/model label missing');
     await page.locator('#undoEdit').click();
     if(await page.locator('#symbols > g').count()!==2)throw Error('Undo of library symbol insertion failed');
 
