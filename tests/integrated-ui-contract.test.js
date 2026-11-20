@@ -127,3 +127,7 @@ assert.ok(html.includes('Ergebnisse sind nicht automatisch als Herstellerquellen
 assert.ok(html.includes('id="photoFindDocument"'),'Camera must offer direct manufacturer datasheet discovery');
 assert.ok(html.includes("$('photoFindDocument').onclick=()=>searchManufacturerDocument"),'Camera must connect to datasheet search');
 assert.ok(html.includes('function searchManufacturerDocument(brand,partNumber)'),'Camera and library must share manufacturer datasheet search');
+
+assert.ok(html.includes('p.documentIdentity={manufacturer:p.brand,model:p.model,articleNumber:p.partNumber'),'Saved parts must retain structured document-to-article identity');
+assert.ok(html.includes("verificationStatus:'manual-unverified',terminalAssignmentApproved:false"),'Manual document references must not imply approved terminal assignments');
+assert.ok(html.includes('if(part.documentIdentity)'),'Library must display structured document identity');
