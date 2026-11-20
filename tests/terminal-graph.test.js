@@ -68,3 +68,9 @@ assert.equal(samePart.reviewRequired,true);
 assert.equal(samePart.electricallyApproved,false);
 assert.ok(samePart.warnings.some(w=>w.includes('Zwei Anschlüsse desselben Bauteils')));
 assert.ok(!check(a).warnings.some(w=>w.includes('Zwei Anschlüsse desselben Bauteils')));
+
+const noTerminals=check({components:[{id:'K2',terminals:[]}],connections:[]});
+assert.equal(noTerminals.valid,true,'No terminals is incomplete, not a malformed component');
+assert.equal(noTerminals.reviewRequired,true);
+assert.ok(noTerminals.warnings.some(w=>w.includes('Bauteil ohne erfasste Anschlüsse: K2')));
+assert.ok(!check(a).warnings.some(w=>w.includes('Bauteil ohne erfasste Anschlüsse')));
