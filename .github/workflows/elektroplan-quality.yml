@@ -23,6 +23,10 @@ jobs:
         run: node tests/terminal-graph-regression.test.js
       - name: Search-ranking regression
         run: node tests/V132-ranking.test.js
+      - name: Conservative manufacturer and model matching
+        run: node tests/V133-safe-matching.test.js
+      - name: Source provenance validation
+        run: node tests/V134-source-records.test.js
       - name: Integrated prototype inline JavaScript syntax
         run: |
           node - <<'NODE'
