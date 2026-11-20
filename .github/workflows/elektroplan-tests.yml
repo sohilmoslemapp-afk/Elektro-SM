@@ -29,6 +29,8 @@ jobs:
         run: node --test tests/image-text-recognition.test.js
       - name: Integrated OCR and source UI contract
         run: node tests/integrated-ui-contract.test.js
+      - name: Trilingual interface safety contract
+        run: node tests/language-safety.test.js
       - name: V134 source provenance
         run: node tests/V134-source-records.test.js
       - name: Schematic structural validation
