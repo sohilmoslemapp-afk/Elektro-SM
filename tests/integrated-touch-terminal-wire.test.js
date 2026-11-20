@@ -1,0 +1,10 @@
+'use strict';
+const assert=require('node:assert/strict');
+const fs=require('node:fs'),path=require('node:path');
+const html=fs.readFileSync(path.join(__dirname,'../prototypes/ElektroPlan-SM-integriert.html'),'utf8');
+assert.match(html,/getAttribute\?\.\('data-terminal'\)/,'Pointer selection reads actual visible terminal');
+assert.match(html,/next\.fromTerminal=wireStartTerminal/);
+assert.match(html,/next\.toTerminal=picked/);
+assert.match(html,/w\.fromTerminal===next\.toTerminal&&w\.toTerminal===next\.fromTerminal/,'Reversed identical pair blocked');
+assert.match(html,/wireStartTerminal=null;wireMode=false/,'Selection resets after connection');
+console.log('Direct terminal touch wiring UI contract passed');
