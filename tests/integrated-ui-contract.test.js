@@ -48,3 +48,5 @@ assert.match(html,/Dokument öffnen \(ungeprüft\)/,'External document links mus
 assert.match(html,/Bibliothekseintrag löschen/,'Library deletion control required');
 assert.match(html,/data\.parts\.splice\(index,1\)/,'Deletion must remove only the selected library record');
 assert.match(html,/Bereits vorhandene Plansymbole bleiben unverändert/,'Deletion must disclose that schematic symbols are retained');
+
+assert.match(html,/edge\.fromTerminal&&edge\.toTerminal\?'':' ⚠'/,'Unassigned wire ends must have a visible warning on the schematic');
