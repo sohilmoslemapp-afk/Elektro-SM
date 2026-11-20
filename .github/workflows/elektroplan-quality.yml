@@ -21,6 +21,8 @@ jobs:
         run: node tests/terminal-graph.test.js
       - name: Expanded terminal graph regression
         run: node tests/terminal-graph-regression.test.js
+      - name: Project import and schematic regression
+        run: node tests/project-schematic-regression.test.js
       - name: Search-ranking regression
         run: node tests/V132-ranking.test.js
       - name: Conservative manufacturer and model matching
