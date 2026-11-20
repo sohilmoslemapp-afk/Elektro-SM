@@ -62,6 +62,8 @@ jobs:
         run: node tests/integrated-supply-reference.test.js
       - name: Manual terminal strip insertion
         run: node tests/terminal-strip.test.js
+      - name: Terminal strip editor UI
+        run: node tests/integrated-terminal-strip-ui.test.js
 
       - name: Integrated project import size guard
         run: node tests/integrated-import-size-guard.test.js
