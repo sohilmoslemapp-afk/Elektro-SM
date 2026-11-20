@@ -3,7 +3,7 @@
    No function in this module grants electrical safety approval. */
 (function(root){
 'use strict';
-function nonempty(s){return typeof s==='string' && s.trim().length>0 && s===s.trim();}
+function nonempty(s){return typeof s==='string' && s.length<=2000 && s.trim().length>0 && s===s.trim();}
 function validDocumentUrl(value){if(!nonempty(value))return false;try{const url=new URL(value);return url.protocol==='https:'&&!!url.hostname&&!url.username&&!url.password;}catch{return false;}}
 function validReviewDate(value){if(typeof value!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(value))return false;const d=new Date(value+'T00:00:00Z');return !Number.isNaN(d.getTime())&&d.toISOString().slice(0,10)===value;}
 function assessManufacturerEvidence(record){
@@ -29,9 +29,10 @@ function assessManufacturerEvidence(record){
  if(!nonempty(evidence.reviewer))errors.push('Fachprüfer fehlt');
  if(!validReviewDate(evidence.reviewDate))errors.push('Prüfdatum fehlt oder ist ungültig');
  if(!Array.isArray(terminals)||terminals.length===0)errors.push('Keine dokumentierten Anschlüsse');
+ else if(terminals.length>256)errors.push('Zu viele dokumentierte Anschlüsse');
  else{
   const names=new Set();
-  terminals.forEach((t,i)=>{
+  terminals.slice(0,256).forEach((t,i)=>{
    if(!t||!nonempty(t.name)||!nonempty(t.function)||!nonempty(t.sourceReference)){
     errors.push('Anschluss '+i+': Name, Funktion oder Quellenverweis fehlt');return;
    }
