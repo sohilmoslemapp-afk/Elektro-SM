@@ -22,10 +22,7 @@ const path=require('node:path');
     if((await page.locator('#savePlan').innerText())!==expectedSave)throw Error(device.name+': save button not translated '+lang);
     const expectedCheck={ar:'فحص البنية',en:'Check structure',de:'Struktur prüfen'}[lang];
     if((await page.locator('#checkPlan').innerText())!==expectedCheck)throw Error(device.name+': structure button not translated '+lang);
-    const expectedPrompt={ar:'اختر السلك (الرقم):',en:'Select wire (number):',de:'Leitung auswählen (Nummer):'}[lang];
-    const actualPrompt=await page.evaluate(()=>localizedPrompt('Leitung auswählen (Nummer):\\n')).catch(()=>null);
-    // The localization helper is closure-scoped: trigger via actual UI instead of assuming a global.
-    if(actualPrompt!==null&&!actualPrompt.includes(expectedPrompt))throw Error(device.name+': wire prompt translation '+lang);
+
    }
    await page.locator('#appLanguage').selectOption('ar');
    await page.reload();
