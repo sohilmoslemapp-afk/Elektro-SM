@@ -1,0 +1,14 @@
+'use strict';
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const path=require('node:path');
+const html=fs.readFileSync(path.join(__dirname,'../prototypes/ElektroPlan-SM-integriert.html'),'utf8');
+const start=html.indexOf("$('checkPlan').onclick=()=>{");
+assert.ok(start>=0);
+const source=html.slice(start,start+1800);
+assert.match(source,/const symbolsById=new Map\(data\.symbols\.map\(s=>\[s\.id,s\]\)\)/);
+assert.match(source,/symbolsById\.get\(w\.a\)/);
+assert.match(source,/symbolsById\.get\(w\.b\)/);
+assert.doesNotMatch(source,/data\.symbols\.find\(/);
+assert.ok(source.indexOf('symbolsById=new Map')<source.indexOf('invalidWires=assignedWires.filter'));
+console.log('Integrated Schaltplan terminal validation indexing: 5 static assertions passed');
