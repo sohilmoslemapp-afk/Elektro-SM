@@ -105,3 +105,9 @@ assert.ok(html.includes('Modell / Artikelnummer aus erkanntem Text auswählen'),
 assert.ok(html.includes('Auswahl übernehmen (manuell bestätigen)'),'OCR suggestions require user action');
 assert.ok(html.includes("if(preview.src!==original)return msg("),'OCR selections must reject a changed photo');
 assert.ok(html.includes("if(brandChoice.value===''||modelChoice.value==='')"),'OCR must not auto-fill unspecified manufacturer/model');
+
+assert.ok(html.includes('function appendSourceDetails(container,part)'),'Camera and library must share source dossier display');
+assert.ok(html.includes('appendSourceDetails(box,result.item)'),'Photo matches must expose their source dossier');
+assert.ok(html.includes('appendSourceDetails(li,p)'),'Library records must expose their source dossier');
+assert.ok(html.includes('Quellenstatus: manuell eingetragen, NICHT herstellerverifiziert'),'Source must not be labelled manufacturer verified');
+assert.ok(html.includes("ElektroPlanV134?.validHttps(part.docUrl)"),'Document links in source dossier must pass HTTPS validation');
