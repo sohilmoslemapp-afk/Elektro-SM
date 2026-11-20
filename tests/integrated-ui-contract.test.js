@@ -92,3 +92,10 @@ assert.ok(html.includes('sourceRecord:sourceSnapshot(p)'),'Inserted schematic sy
 assert.ok(html.includes('current.sourceRecord=sourceSnapshot(p)'),'Applying library details must update provenance');
 assert.ok(html.includes('Passendes Symbol in Schaltplan einfügen (ungeprüft)'),'Exact camera match must offer unverified schematic insertion');
 assert.ok(html.includes(".category!=='exact-text-match'"),'Camera match must be rechecked before schematic insertion');
+
+assert.ok(html.includes('src="../src/image-text-recognition.js"'),'Integrated camera must load optional OCR module');
+assert.ok(fs.existsSync('src/image-text-recognition.js'),'OCR module must exist');
+assert.ok(html.includes('id="photoReadText"'),'Camera must offer image-text extraction');
+assert.ok(html.includes("ElektroPlanImageText.readImageText(preview,window)"),'OCR must use the guarded recognition module');
+assert.ok(html.includes("preview.src!==original"),'OCR must discard stale image results');
+assert.ok(html.includes('OCR ist keine Anschlussfreigabe'),'OCR output must not authorize terminal assignments');
