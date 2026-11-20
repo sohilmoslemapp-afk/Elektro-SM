@@ -26,5 +26,5 @@ assert.match(html,/Nach Klemme \(manuell\)/,'Wiring CSV must label destination t
 assert.match(html,/Manuell zugeordnet – NICHT herstellerverifiziert/,'Wiring CSV must not imply manufacturer verification');
 assert.match(scripts[0],/save\.disabled=!fromSelect\.options\.length\|\|!toSelect\.options\.length/,'Terminal picker must prevent saving missing terminal selections');
 assert.match(html,/keine Herstellerprüfung, keine elektrische Freigabe/,'Manual terminal safety disclaimer required');
-assert.match(html,/keine verifizierten Anschlussklemmen/,'CSV export disclaimer required');
+assert.match(html,/manuelle Klemmen enthalten, keine Herstellerprüfung/,'CSV export must clearly disclaim manufacturer verification');
 console.log('Integrated UI contract: element/dependency/action/safety checks passed (static; not a browser run).');
