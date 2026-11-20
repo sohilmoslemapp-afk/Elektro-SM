@@ -3,7 +3,7 @@ const assert=require('node:assert/strict');
 const fs=require('node:fs');
 const path=require('node:path');
 const html=fs.readFileSync(path.join(__dirname,'../prototypes/ElektroPlan-SM-integriert.html'),'utf8');
-const persist=html.slice(html.indexOf('const persist=()=>'),html.indexOf('lastSnapshot=JSON.stringify(data);',html.indexOf('const persist=()=>'));
+const persist=html.slice(html.indexOf('const persist=()=>'),html.indexOf('lastSnapshot=JSON.stringify(data);',html.indexOf('const persist=()=>')));
 assert.match(persist,/localStorage\.setItem\(KEY,JSON\.stringify\(data\)\);msg\('✓ Lokal gespeichert'\);return true/);
 assert.match(persist,/Speichern abgebrochen:[^\n]*return false/);
 assert.match(persist,/Speichern fehlgeschlagen:[^\n]*return false/);
