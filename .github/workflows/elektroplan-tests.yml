@@ -1,10 +1,11 @@
-name: ElektroPlan V132-V133 tests
+name: ElektroPlan unit tests
 on:
   push:
     branches:
       - ElektroPlan-Entwicklung-1
     paths:
       - 'prototypes/**'
+      - 'src/**'
       - 'tests/**'
       - '.github/workflows/elektroplan-tests.yml'
   workflow_dispatch:
@@ -24,3 +25,5 @@ jobs:
         run: node tests/V133-safe-matching.test.js
       - name: V134 source provenance
         run: node tests/V134-source-records.test.js
+      - name: Schematic structural validation
+        run: node tests/schematic-validation.test.js
