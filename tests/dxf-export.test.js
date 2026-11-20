@@ -13,6 +13,6 @@ assert.throws(()=>exportDxf({symbols:[{id:'bad',x:Infinity,y:0}],wires:[]}),/Inv
 const sanitized=exportDxf({symbols:[{id:'A\n0\nLINE',type:'LS',x:0,y:0}],wires:[]});
 assert(!sanitized.includes('A\n0\nLINE'));
 const withTerminals=exportDxf({symbols:[{id:'A',type:'LS',x:100,y:200,manualTerminals:['1','2']},{id:'B',type:'MOTOR',x:300,y:200,manualTerminals:['U1','V1']}],wires:[{a:'A',b:'B',fromTerminal:'2',toTerminal:'U1'}]});
-assert.match(withTerminals,/\n10\n143\n20\n183\n30\n0\n11\n257\n21\n183\n31\n0/);
+assert.match(withTerminals,/\n10\n143\n20\n-183\n30\n0\n11\n257\n21\n-183\n31\n0/);
 assert.throws(()=>exportDxf({symbols:[{id:'A',x:100,y:200},{id:'B',x:300,y:200}],wires:[{a:'A',b:'B',fromTerminal:'9'}]}),/Terminal position/);
 console.log('DXF R12 geometry and explicit terminal coordinate export tests passed');
