@@ -1,0 +1,12 @@
+'use strict';
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const path=require('node:path');
+const html=fs.readFileSync(path.join(__dirname,'../prototypes/ElektroPlan-SM-integriert.html'),'utf8');
+const handler=html.slice(html.indexOf("$('importJson').onchange="),html.indexOf("$('importJson').onchange=")+1200);
+assert.match(handler,/f\.size>5\*1024\*1024/);
+assert.ok(handler.indexOf('f.size>5*1024*1024')<handler.indexOf('await f.text()'),'size guard must precede file read');
+assert.match(handler,/ElektroPlanImport\.validateImport\(obj\)/);
+assert.ok(handler.indexOf('ElektroPlanImport.validateImport(obj)')<handler.indexOf('data=obj.data'),'validate before replacing active project');
+assert.match(handler,/Import abgebrochen:/);
+console.log('Integrated project import guards: 5 static assertions passed (not a browser test)');
