@@ -22,3 +22,5 @@ jobs:
         run: node tests/V132-ranking.test.js
       - name: V133 manufacturer safety
         run: node tests/V133-safe-matching.test.js
+      - name: V134 source provenance
+        run: node tests/V134-source-records.test.js
