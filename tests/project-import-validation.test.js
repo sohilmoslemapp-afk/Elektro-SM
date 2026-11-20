@@ -17,7 +17,8 @@ for(const invalid of [{partBrand:42},{partModel:null},{partBrand:'X'.repeat(201)
 }
 const withManualTerminals={...valid,data:{...valid.data,symbols:[{...valid.data.symbols[0],manualTerminals:['1','2','A1','A2']},valid.data.symbols[1]]}};
 assert.equal(validateImport(withManualTerminals).ok,true,'manually entered terminals should import');
-for(const terminals of [['A1','A1'],[''],['x'.repeat(41)],Array(65).fill('A1'),'A1', [123]]){
+assert.equal(validateImport({...valid,data:{...valid.data,symbols:[{...valid.data.symbols[0],manualTerminals:Array.from({length:8},(_,i)=>'T'+i)},valid.data.symbols[1]]}}).ok,true,'eight drawable terminals must import');
+for(const terminals of [Array.from({length:9},(_,i)=>'T'+i),['A1','A1'],[''],['x'.repeat(41)],Array(65).fill('A1'),'A1', [123]]){
  const payload={...valid,data:{...valid.data,symbols:[{...valid.data.symbols[0],manualTerminals:terminals},valid.data.symbols[1]]}};
  assert.equal(validateImport(payload).ok,false,'invalid manual terminal labels must be rejected');
 }
