@@ -146,3 +146,6 @@ jobs:
 
       - name: DXF preview UI integration
         run: node tests/dxf-preview-ui.test.js
+
+      - name: DXF graphical preview security regression
+        run: node tests/dxf-svg-preview.test.js
