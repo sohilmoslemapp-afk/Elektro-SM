@@ -1,11 +1,13 @@
 // ElektroPlan SM: static prototype checks. No browser or electrical safety certification.
 const fs=require('node:fs');const vm=require('node:vm');const assert=require('node:assert/strict');
-const path='prototypes/integrated-titleblock-schematic-v130.html';
+const path='prototypes/integrated-titleblock-schematic-v131.html';
 const html=fs.readFileSync(path,'utf8');
 const scripts=[...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/gi)].map(m=>m[1]);
 assert.equal(scripts.length,1,'Expected one inline application script');
 new vm.Script(scripts[0],{filename:path});
 for(const id of ['validateProjectData','checkBackupHealth','runSelfDiagnostics','runRegressionChecks','exportDeviceReviewReport','recordDeviceReview','exportDeviceLibrary','importDeviceLibrary'])assert.ok(html.includes('id="'+id+'"'),'Missing UI control '+id);
+assert.ok(scripts[0].includes('modelOnly=records.filter'),'V131 must disclose model-only different-manufacturer matches');
+assert.ok(scripts[0].includes('ANDEREM Hersteller'),'V131 must flag manufacturer mismatch');
 assert.ok(html.includes('id="photoMatchExplanation"'),'Missing search-ranking disclosure');
 assert.ok(html.includes('keine Freigabe der Klemmenbelegung'),'Search ranking must not approve wiring');
 assert.ok(html.includes('UNVERIFIED_USER_ENTRY'),'Missing unverified provenance marker');
