@@ -1,0 +1,15 @@
+'use strict';
+const assert=require('node:assert/strict');
+const {exportDxf}=require('../src/dxf-export');
+const p={symbols:[{id:'S1',type:'LS',x:100,y:200},{id:'S2',type:'MOTOR',x:300,y:200}],wires:[{a:'S1',b:'S2'}]};
+const d=exportDxf(p);
+assert.match(d,/\$ACADVER\n1\nAC1009/);
+assert.equal((d.match(/\nCIRCLE\n/g)||[]).length,2);
+assert.equal((d.match(/\nLINE\n/g)||[]).length,1);
+assert.match(d,/\nWIRES\n/);
+assert.match(d,/\nEOF\n$/);
+assert.throws(()=>exportDxf({symbols:[],wires:[{a:'x',b:'y'}]}),/endpoint/);
+assert.throws(()=>exportDxf({symbols:[{id:'bad',x:Infinity,y:0}],wires:[]}),/Invalid symbol/);
+const sanitized=exportDxf({symbols:[{id:'A\n0\nLINE',type:'LS',x:0,y:0}],wires:[]});
+assert(!sanitized.includes('A\n0\nLINE'));
+console.log('DXF R12 geometry export tests passed');
