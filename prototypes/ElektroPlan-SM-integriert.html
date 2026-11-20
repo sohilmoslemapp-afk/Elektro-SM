@@ -57,7 +57,7 @@ $('checkPlan').onclick=()=>{
  const terminalModel={components:data.symbols.map(s=>({id:s.id,terminals:s.manualTerminals||[]})),connections:assignedWires.map(w=>({from:{component:w.a,terminal:w.fromTerminal},to:{component:w.b,terminal:w.toTerminal}}))};
  const terminalResult=window.ElektroPlanTerminals?.validateTerminalGraph(terminalModel);
  if(!terminalResult){box.textContent='Klemmenprüfung nicht geladen. Keine Freigabe möglich.';return}
- const h=document.createElement('strong');h.textContent=result.valid&&terminalResult.valid?'Strukturprüfung: keine Strukturfehler':'Strukturprüfung: Fehler gefunden';box.append(h);
+ const h=document.createElement('strong');h.textContent=!result.valid||!terminalResult.valid?'Strukturprüfung: Fehler gefunden':pendingWires?'Strukturprüfung: unvollständig – Leitungsenden fehlen':'Strukturprüfung: keine Strukturfehler (keine elektrische Freigabe)';box.append(h);
  const ul=document.createElement('ul');for(const line of [...result.errors,...result.warnings,...(pendingWires?['Nicht zugeordnete schematische Leitungen: '+pendingWires]:[]),...terminalResult.errors.map(x=>'Klemmenfehler: '+x),...terminalResult.warnings.map(x=>'Klemmenhinweis: '+x)]){const li=document.createElement('li');li.textContent=line;ul.append(li)}box.append(ul);
  const p=document.createElement('p');p.textContent=result.disclaimer+' Manuelle Klemmenbezeichnungen werden strukturell geprüft; keine Herstellerprüfung, keine elektrische Freigabe.';box.append(p);
 };
