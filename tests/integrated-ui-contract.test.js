@@ -157,3 +157,5 @@ assert.ok(html.includes("pending.reason"), 'Live net inspector must explain pend
 assert.ok(html.includes('w.fromTerminal!==pickerWires[index].fromTerminal||w.toTerminal!==pickerWires[index].toTerminal'),'Terminal picker must reject stale terminal assignments');
 
 assert.ok(html.includes('fromTerminal:w.fromTerminal,toTerminal:w.toTerminal'), 'Wire deletion must snapshot terminal endpoints as well as component identities');
+
+assert.match(html,/Ungültige Symbolposition:/,'Plan check must explicitly identify malformed symbol coordinates');
