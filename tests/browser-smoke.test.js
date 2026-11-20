@@ -56,6 +56,7 @@ const path = require('node:path');
     await page.locator('#photoToParts').click();
     if(!await page.locator('#parts').isVisible())throw Error('Camera manual transfer did not open parts');
     if(await page.locator('#brand').inputValue()!=='Test Hersteller'||await page.locator('#model').inputValue()!=='TEST-123')throw Error('Camera manual metadata transfer failed');
+    await page.locator('#type').selectOption({label:'Schütz'});
     await page.locator('#addPart').click();
     if(await page.locator('#partList li').count()!==1)throw Error('Transferred manual component was not saved');
     await page.locator('#partList li button').click();
