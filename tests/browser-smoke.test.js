@@ -56,6 +56,7 @@ const path = require('node:path');
     if(!await page.locator('#wires').textContent().then(t=>t.includes('A1 → A2')))throw Error('Existing terminal wire assignment changed unexpectedly');
     await page.locator('#checkPlan').click();
     if(!await page.locator('#planCheckResult').isVisible())throw Error('Structural validation not displayed');
+    if(!await page.locator('#planCheckResult').textContent().then(t=>t.includes('keine elektrische Freigabe')))throw Error('Electrical approval disclaimer missing');
     await page.locator('[data-tab="camera"]').click();
     if(!await page.locator('#takePhoto').count() || !await page.locator('#choosePhoto').count())throw Error('Camera inputs missing');
     const tinyPng=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9Y9M9S8AAAAASUVORK5CYII=','base64');
