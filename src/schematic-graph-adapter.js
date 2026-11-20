@@ -9,6 +9,7 @@ function fromSchematic(project){
  const connections=[],pending=[];
  wires.forEach((w,index)=>{
   if(typeof w?.fromTerminal!=='string'||!w.fromTerminal.trim()||typeof w?.toTerminal!=='string'||!w.toTerminal.trim()){pending.push({wire:index,reason:'Klemmenzuordnung unvollständig'});return}
+  if(typeof w.a!=='string'||!w.a.trim()||typeof w.b!=='string'||!w.b.trim()){pending.push({wire:index,reason:'Bauteilzuordnung unvollständig'});return}
   connections.push({from:{component:w.a,terminal:w.fromTerminal},to:{component:w.b,terminal:w.toTerminal},sourceWire:index});
  });
  return {components,connections,pending};
