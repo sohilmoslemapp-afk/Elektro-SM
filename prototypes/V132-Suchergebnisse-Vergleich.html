@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ElektroPlan SM – V132 Vergleichsprototyp</title>
+<style>body{font:16px system-ui,sans-serif;background:#edf3fa;color:#17283d;margin:0;padding:16px}main{max-width:680px;margin:auto;background:white;border-radius:16px;padding:22px}input,button{font:inherit;padding:12px;border:1px solid #aab9cc;border-radius:9px;max-width:100%;box-sizing:border-box}input{width:100%;margin:5px 0 14px}button{background:#125ac8;color:white;cursor:pointer}.result{border:1px solid #c7d4e4;border-radius:10px;padding:14px;margin:12px 0}.warning{background:#fff4dc;padding:12px;border-radius:8px}.meta{font-size:14px;color:#40516a}</style></head><body><main>
+<h1>⚡ ElektroPlan SM</h1><h2>V132 – Suchergebnisse vergleichen (Prototyp)</h2>
+<p>Vergleich von Hersteller und Modell. Nur lokal gespeicherte Bauteile werden durchsucht; keine automatische Bilderkennung.</p>
+<label for="brand">Gesuchter Hersteller</label><input id="brand" placeholder="z. B. ABB">
+<label for="model">Gesuchtes Modell / Artikelnummer</label><input id="model" placeholder="Exakte Modellbezeichnung">
+<button id="search" type="button">Ergebnisse vergleichen</button>
+<p id="summary" role="status"></p><div id="results"></div>
+<p class="warning"><strong>Sicherheit:</strong> Eine Übereinstimmung ist keine elektrische Freigabe. Klemmenbelegung, Datenblatt und Anschlussplan müssen anhand der Unterlagen des exakten Herstellers und Modells fachlich geprüft werden. Keine Verdrahtungsanweisung aus Suchtreffern ableiten.</p>
+<p class="meta">V132 ist ein isolierter Vergleichsprototyp und ersetzt weder die vorherigen Versionen noch die Kamera-Test-Sicherung.</p>
+</main><script>
+(function(){
+'use strict';
+const $=id=>document.getElementById(id);
+const norm=s=>String(s||'').normalize('NFKC').trim().replace(/\s+/g,' ').toLocaleLowerCase('de');
+function rank(qb,qm,b,m){
+ const eb=norm(b)===norm(qb), em=norm(m)===norm(qm);
+ if(eb&&em)return {score:0,label:'Hersteller und Modell stimmen exakt überein',difference:'Keine Abweichung in den eingegebenen Bezeichnungen'};
+ if(em)return {score:1,label:'Modell gleich – Hersteller abweichend',difference:'Hersteller stimmt nicht überein: '+b};
+ if(eb&&(norm(m).includes(norm(qm))||norm(qm).includes(norm(m))))return {score:2,label:'Hersteller gleich – Modell nur teilweise ähnlich',difference:'Modell abweichend: '+m};
+ if(eb)return {score:3,label:'Hersteller gleich – Modell abweichend',difference:'Modell stimmt nicht überein: '+m};
+ if(norm(b).includes(norm(qb))||norm(m).includes(norm(qm)))return {score:4,label:'Teilweise Textübereinstimmung',difference:'Hersteller/Modell nicht exakt bestätigt'};
+ return null;
+}
+$('search').addEventListener('click',()=>{
+ const qb=$('brand').value.trim(),qm=$('model').value.trim(),out=$('results');out.replaceChildren();
+ if(!qb||!qm){$('summary').textContent='Bitte Hersteller und Modell eingeben.';return;}
+ let items;try{items=JSON.parse(localStorage.getItem('elektroplan-components')||'[]');if(!Array.isArray(items))items=[];}catch(_){items=[];}
+ const matches=items.filter(x=>x&&typeof x==='object').map(x=>({item:x,match:rank(qb,qm,x.brand,x.model)})).filter(x=>x.match).sort((a,b)=>a.match.score-b.match.score);
+ $('summary').textContent=matches.length+' Treffer aus '+items.length+' lokal gespeicherten Bauteilen.';
+ for(const {item,match} of matches){
+ const card=document.createElement('article');card.className='result';
+ for(const [tag,value] of [['h3',String(item.brand||'')+' – '+String(item.model||'')],['p',match.label],['p','Unterschied: '+match.difference],['p','Bauteiltyp: '+String(item.type||'unbekannt')]]){
+ const el=document.createElement(tag);el.textContent=value;card.appendChild(el);
+ }
+ out.appendChild(card);
+ }
+});
+})();
+</script></body></html>
