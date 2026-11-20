@@ -1,0 +1,17 @@
+'use strict';
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const path=require('node:path');
+const html=fs.readFileSync(path.join(__dirname,'../prototypes/ElektroPlan-SM-integriert.html'),'utf8');
+const start=html.indexOf('function renderWires()');
+const end=html.indexOf('function render(){',start);
+assert.ok(start>=0&&end>start,'integrated wire renderer exists');
+const renderer=html.slice(start,end);
+assert.match(renderer,/const symbolsById=new Map\(data\.symbols\.map\(s=>\[s\.id,s\]\)\)/);
+assert.match(renderer,/symbolsById\.get\(edge\.a\)/);
+assert.match(renderer,/symbolsById\.get\(edge\.b\)/);
+assert.doesNotMatch(renderer,/data\.symbols\.find\(/);
+const symbols=[{id:'x',x:1,y:2},{id:'y',x:3,y:4}];
+const lookup=new Map(symbols.map(s=>[s.id,s]));
+assert.equal(lookup.get('x'),symbols[0]);assert.equal(lookup.get('y'),symbols[1]);
+console.log('Indexed integrated Schaltplan rendering regression passed (static contract)');
