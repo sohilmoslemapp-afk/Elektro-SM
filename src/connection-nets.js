@@ -14,7 +14,7 @@ function analyze(project){
   if(normalizedIds.has(normalized)){duplicateIds.add(id);duplicateIds.add(normalizedIds.get(normalized))}
   else normalizedIds.set(normalized,id);
  }
- const parent=new Map(),groups=new Map(),pending=[],seenEdges=new Set();
+ const parent=new Map(),groups=new Map(),pending=[],seenEdges=new Map();
  const validTerminals=s=>Array.isArray(s?.manualTerminals)&&s.manualTerminals.length<=8&&s.manualTerminals.every(t=>typeof t==='string'&&t.trim()===t&&t.length>0&&t.length<=40&&!unsafe.test(t))&&new Set(s.manualTerminals).size===s.manualTerminals.length;
  const validId=id=>typeof id==='string'&&id.trim()===id&&id.length>0&&id.length<=100&&!unsafe.test(id);
  const validEndpoint=t=>typeof t==='string'&&t.trim()===t&&t.length>0&&t.length<=40&&!unsafe.test(t);
@@ -32,10 +32,10 @@ function analyze(project){
   const endpoints=[key(w.a,w.fromTerminal),key(w.b,w.toTerminal)].sort();
   const edgeKey=JSON.stringify(endpoints);
   if(seenEdges.has(edgeKey)){
-   pending.push({wire:i,reason:'Doppelte Anschlussverbindung – fachlich prüfen'});
+   pending.push({wire:i,duplicateOf:seenEdges.get(edgeKey),reason:'Doppelte Anschlussverbindung – fachlich prüfen'});
    return;
   }
-  seenEdges.add(edgeKey);
+  seenEdges.set(edgeKey,i);
   join(endpoints[0],endpoints[1]);
  });
  for(const k of parent.keys()){const rootKey=find(k);if(!groups.has(rootKey))groups.set(rootKey,[]);groups.get(rootKey).push(JSON.parse(k))}
