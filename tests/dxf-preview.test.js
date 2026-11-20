@@ -20,4 +20,6 @@ assert.throws(()=>previewDxf('0\nSECTION\n2\nENTITIES\n0\nLINE\n10\n1\n20\n2\n11
 assert.throws(()=>previewDxf('0\nSECTION\n2\nENTITIES\n0\nSECTION\n2\nHEADER\n0\nENDSEC\n0\nEOF\n'),/Nested/);
 assert.throws(()=>previewDxf('0\nENDSEC\n0\nEOF\n'),/Unexpected/);
 assert.throws(()=>previewDxf('0\nSECTION\n2\nENTITIES\n0\nEOF\n'),/EOF before ENDSEC/);
+assert.throws(()=>previewDxf('0\nSECTION\n0\nENDSEC\n0\nEOF\n'),/Missing DXF section name/);
+assert.throws(()=>previewDxf('0\nSECTION\n8\nENTITIES\n0\nENDSEC\n0\nEOF\n'),/Missing DXF section name/);
 console.log('Read-only DXF geometry preview and export roundtrip passed');
