@@ -6,14 +6,17 @@ function analyze(project){
  const symbols=Array.isArray(project?.symbols)?project.symbols:[];
  const wires=Array.isArray(project?.wires)?project.wires:[];
  const byId=new Map(),duplicateIds=new Set();
+ const unsafe=/[\u0000-\u001f\u007f-\u009f\u200b-\u200f\u202a-\u202e\u2060-\u2069\ufeff]/u;
  for(const symbol of symbols){if(!symbol||typeof symbol.id!=='string'||!symbol.id.trim())continue;if(byId.has(symbol.id))duplicateIds.add(symbol.id);else byId.set(symbol.id,symbol)}
  const parent=new Map(),groups=new Map(),pending=[];
- const validTerminals=s=>Array.isArray(s?.manualTerminals)&&s.manualTerminals.length<=8&&s.manualTerminals.every(t=>typeof t==='string'&&t.trim()===t&&t.length>0&&t.length<=40)&&new Set(s.manualTerminals).size===s.manualTerminals.length;
+ const validTerminals=s=>Array.isArray(s?.manualTerminals)&&s.manualTerminals.length<=8&&s.manualTerminals.every(t=>typeof t==='string'&&t.trim()===t&&t.length>0&&t.length<=40&&!unsafe.test(t))&&new Set(s.manualTerminals).size===s.manualTerminals.length;
+ const validId=id=>typeof id==='string'&&id.trim()===id&&id.length>0&&id.length<=100&&!unsafe.test(id);
  const key=(id,t)=>JSON.stringify([id,t]);
  function find(k){if(!parent.has(k))parent.set(k,k);const p=parent.get(k);if(p!==k)parent.set(k,find(p));return parent.get(k)}
  function join(a,b){const x=find(a),y=find(b);if(x!==y)parent.set(y,x)}
  wires.forEach((w,i)=>{
   const a=byId.get(w?.a),b=byId.get(w?.b);
+  if(!validId(w?.a)||!validId(w?.b)){pending.push({wire:i,reason:'Ungültige Symbolkennung'});return}
   if(duplicateIds.has(w?.a)||duplicateIds.has(w?.b)){pending.push({wire:i,reason:'Mehrdeutige Symbolkennung'});return}
   if(w?.a===w?.b){pending.push({wire:i,reason:'Selbstverbindung'});return}
   if(!a||!b||!validTerminals(a)||!validTerminals(b)||typeof w.fromTerminal!=='string'||typeof w.toTerminal!=='string'||!a.manualTerminals.includes(w.fromTerminal)||!b.manualTerminals.includes(w.toTerminal)){
