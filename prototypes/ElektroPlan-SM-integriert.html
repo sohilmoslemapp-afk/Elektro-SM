@@ -26,7 +26,22 @@ button:active{transform:translateY(1px)}
 (()=>{'use strict';
 const $=id=>document.getElementById(id),KEY='elektroplan-sm-integrated-1';let data={name:'Neues Projekt',symbols:[],wires:[],parts:[]},selected=null,wireStart=null,wireMode=false,drag=null;
 const undoStack=[],redoStack=[];let lastSnapshot=null;
-const msg=t=>$('message').textContent=t;
+// Translate safety-critical status messages without changing stored data or validation logic.
+const statusTranslations={
+'Gespeichertes Projekt ungültig; bitte Projektdatei prüfen.':{en:'Saved project is invalid; check the project file.',ar:'المشروع المحفوظ غير صالح؛ يرجى مراجعة ملف المشروع.'},
+'Gespeicherte Daten konnten nicht geladen werden.':{en:'Saved data could not be loaded.',ar:'تعذّر تحميل البيانات المحفوظة.'},
+'Zuerst eine schematische Leitung erstellen':{en:'Create a schematic wire first.',ar:'أنشئ سلكاً تخطيطياً أولاً.'},
+'Zuerst an beiden Bauteilen Klemmen manuell erfassen':{en:'Enter terminals manually on both components first.',ar:'أدخل أطراف التوصيل يدوياً على المكوّنين أولاً.'},
+'Zuerst an beiden Symbolen Klemmen manuell erfassen':{en:'Enter terminals manually on both symbols first.',ar:'أدخل أطراف التوصيل يدوياً على الرمزين أولاً.'},
+'Leitungsenden manuell zugeordnet. KEINE herstellerverifizierte Verdrahtung.':{en:'Wire endpoints assigned manually. Wiring is NOT manufacturer-verified.',ar:'تم تعيين نهايات الأسلاك يدوياً. التوصيل غير معتمد من الشركة المصنّعة.'},
+'Klemmen müssen exakt den manuell erfassten Bezeichnungen entsprechen':{en:'Terminals must exactly match the manually entered labels.',ar:'يجب أن تطابق أطراف التوصيل التسميات المدخلة يدوياً تماماً.'},
+'Manuelle Klemmen gespeichert – NICHT herstellerverifiziert.':{en:'Manual terminals saved – NOT manufacturer-verified.',ar:'تم حفظ أطراف التوصيل اليدوية – غير معتمدة من الشركة المصنّعة.'},
+'Manuelle Klemmen gespeichert – NICHT herstellerverifiziert. Leitungen sind weiterhin nur schematisch.':{en:'Manual terminals saved – NOT manufacturer-verified. Wires remain schematic only.',ar:'تم حفظ أطراف التوصيل اليدوية – غير معتمدة من الشركة المصنّعة. الأسلاك لا تزال تخطيطية فقط.'},
+'Klemme wird von einer Leitung verwendet. Zuerst Leitungszuordnung ändern.':{en:'A wire uses this terminal. Change the wire assignment first.',ar:'هذا الطرف مستخدم بسلك. غيّر تعيين السلك أولاً.'},
+'Zuerst ein Bauteilsymbol im Plan auswählen':{en:'Select a component symbol in the diagram first.',ar:'اختر رمز مكوّن في المخطط أولاً.'},
+'Ungültige Klemmen: maximal 64 eindeutige Bezeichnungen, je 1–40 Zeichen':{en:'Invalid terminals: maximum 64 unique labels, each 1–40 characters.',ar:'أطراف غير صالحة: الحد الأقصى 64 تسمية فريدة، طول كل منها من 1 إلى 40 حرفاً.'}
+};
+const msg=t=>{const lang=$('appLanguage')?.value||'de';$('message').textContent=statusTranslations[t]?.[lang]||t;};
 try{const saved=JSON.parse(localStorage.getItem(KEY)||'null');if(saved&&window.ElektroPlanImport?.validateImport({format:'ElektroPlan-SM-1',data:saved}).ok)data=saved;else if(saved)msg('Gespeichertes Projekt ungültig; bitte Projektdatei prüfen.')}catch(e){msg('Gespeicherte Daten konnten nicht geladen werden.')}
 $('projectName').value=data.name||'Neues Projekt';
 document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('active',x===b));['plan','parts','camera','project','features'].forEach(id=>$(id).hidden=id!==b.dataset.tab)});
