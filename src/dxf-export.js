@@ -11,6 +11,14 @@ function exportDxf(project){
   if(!s||typeof s.id!=='string'||!Number.isFinite(s.x)||!Number.isFinite(s.y))throw Error('Invalid symbol');
   byId.set(s.id,s);
   add('CIRCLE',[[8,'SYMBOLS'],[10,s.x],[20,-s.y],[30,0],[40,8]]);
+  if(Array.isArray(s.manualTerminals)){
+   for(const label of s.manualTerminals.slice(0,8)){
+    const p=geometry?.terminalPosition(s,label);
+    if(!p)continue;
+    add('CIRCLE',[[8,'TERMINALS'],[10,p.x],[20,-p.y],[30,0],[40,2]]);
+    add('TEXT',[[8,'TERMINAL_LABELS'],[10,p.x+(p.side<0?-22:5)],[20,-p.y+3],[30,0],[40,3],[1,clean(label)]]);
+   }
+  }
   add('TEXT',[[8,'LABELS'],[10,s.x+10],[20,-s.y],[30,0],[40,5],[1,clean(s.type)+' '+clean(s.id)]]);
  }
  for(const w of project.wires){
