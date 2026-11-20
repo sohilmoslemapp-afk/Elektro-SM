@@ -13,8 +13,9 @@ const path=require('node:path');
   }
   await page.locator('#addContactor').click();
   await page.locator('#addMotorProtection').click();
-  for(const type of ['KM','MSS'])if(await page.locator('#symbols [data-pictogram="'+type+'"] > *').count()===0)throw Error('Missing '+type+' pictogram');
-  const terms=await page.locator('#symbols [data-terminal]').count();if(terms<14)throw Error('Expected manual contactor and motor-protection terminals');
+  await page.locator('#addMotor').click();
+  for(const type of ['KM','MSS','MOTOR'])if(await page.locator('#symbols [data-pictogram="'+type+'"] > *').count()===0)throw Error('Missing '+type+' pictogram');
+  const terms=await page.locator('#symbols [data-terminal]').count();if(terms<18)throw Error('Expected manual contactor and motor-protection terminals');
   if(errors.length)throw Error(errors.join('; '));
   console.log('Contactor and motor-protection mobile diagram test passed');
  }finally{await browser.close()}
