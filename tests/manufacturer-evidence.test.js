@@ -53,3 +53,16 @@ test('review flags without reviewer provenance cannot authorize terminal referen
  const x=copy();delete x.evidence.publisherReviewReference;delete x.evidence.reviewer;
  assert.equal(assessManufacturerEvidence(x).usableForTerminalReference,false);
 });
+
+test('invalid calendar review dates cannot authorize terminal references',()=>{
+ for(const date of ['2026-02-30','2026-13-01','2026-00-10','2026-11-31']){
+  const x=copy();x.evidence.reviewDate=date;
+  assert.equal(assessManufacturerEvidence(x).usableForTerminalReference,false,date);
+ }
+});
+test('manual reviewer evidence is never presented as verified by a manufacturer API',()=>{
+ const result=assessManufacturerEvidence(copy());
+ assert.equal(result.verificationMethod,'manual-record-only');
+ assert.equal(result.manufacturerApiVerified,false);
+ assert.equal(result.electricallyApproved,false);
+});
