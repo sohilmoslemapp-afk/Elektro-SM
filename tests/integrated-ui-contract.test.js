@@ -17,6 +17,8 @@ for(const id of ids.filter(x=>!['drawing','symbols','wires','projectName','previ
 }
 assert.match(scripts[0],/undoStack\.length=0;redoStack\.length=0;lastSnapshot=JSON\.stringify\(data\)/,'Import must reset undo history');
 assert.match(scripts[0],/wireStart=null;wireMode=false;drag=null/,'Import must reset connection and drag state');
+assert.match(scripts[0],/const check=window\.ElektroPlanImport\?\.validateImport\(payload\)/,'Export must validate the actual payload');
+assert.match(scripts[0],/Export abgebrochen:/,'Invalid exports must be blocked');
 assert.match(html,/Keine automatische Bilderkennung/,'Do not falsely advertise image recognition');
 assert.match(html,/keine realen Ger[aä]teklemmen/,'Schematic terminal disclaimer required');
 assert.match(html,/keine verifizierten Anschlussklemmen/,'CSV export disclaimer required');
