@@ -46,6 +46,8 @@ const path = require('node:path');
     await page.locator('#choosePhoto').setInputFiles({name:'test-photo.png',mimeType:'image/png',buffer:tinyPng});
     await page.waitForFunction(()=>document.querySelector('#photoStatus').textContent.includes('test-photo.png'));
     if(!await page.locator('#preview').getAttribute('src').then(x=>x?.startsWith('data:image/png;base64,')))throw Error('Image preview missing');
+    await page.reload();
+    if(await page.locator('#preview').getAttribute('src'))throw Error('Photo unexpectedly persisted after reload');
     await page.locator('[data-tab="plan"]').click();
     await page.locator('#savePlan').click();
     await page.reload();
