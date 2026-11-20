@@ -10,6 +10,7 @@ function fromSchematic(project){
  wires.forEach((w,index)=>{
   if(typeof w?.fromTerminal!=='string'||!w.fromTerminal.trim()||typeof w?.toTerminal!=='string'||!w.toTerminal.trim()){pending.push({wire:index,reason:'Klemmenzuordnung unvollständig'});return}
   if(typeof w.a!=='string'||!w.a.trim()||typeof w.b!=='string'||!w.b.trim()){pending.push({wire:index,reason:'Bauteilzuordnung unvollständig'});return}
+  if(!components.some(c=>c.id===w.a)||!components.some(c=>c.id===w.b)){pending.push({wire:index,reason:'Bauteilreferenz unbekannt'});return}
   connections.push({from:{component:w.a,terminal:w.fromTerminal},to:{component:w.b,terminal:w.toTerminal},sourceWire:index});
  });
  return {components,connections,pending};
