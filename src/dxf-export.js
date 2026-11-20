@@ -3,6 +3,7 @@
 const geometry=(typeof module!=='undefined'&&module.exports)?require('./terminal-geometry'):root.ElektroPlanTerminalGeometry;
 function exportDxf(project){
  if(!project||!Array.isArray(project.symbols)||!Array.isArray(project.wires))throw Error('Invalid project');
+ if(project.symbols.length>10000||project.wires.length>50000)throw Error('Project exceeds DXF export safety limits');
  const out=['0','SECTION','2','HEADER','9','$ACADVER','1','AC1009','0','ENDSEC','0','SECTION','2','ENTITIES'];
  const add=(type,fields)=>{out.push('0',type,...fields.flatMap(([k,v])=>[String(k),String(v)]));};
  const clean=x=>String(x??'').replace(/[\r\n\0-\x1f]/g,' ').slice(0,80);
@@ -37,7 +38,8 @@ function exportDxf(project){
   if(!a||!b)throw Error('Wire endpoint not found');
   const from=w.fromTerminal?geometry?.terminalPosition(a,w.fromTerminal):null;
   const to=w.toTerminal?geometry?.terminalPosition(b,w.toTerminal):null;
-  if(w.fromTerminal&&!from||w.toTerminal&&!to)throw Error('Terminal position not available for DXF export');
+  if(!w.fromTerminal||!w.toTerminal)throw Error('DXF export requires complete terminal assignments');
+  if(!from||!to)throw Error('Terminal position not available for DXF export');
   const p=from||a,q=to||b;
   add('LINE',[[8,'WIRES'],[10,p.x],[20,-p.y],[30,0],[11,q.x],[21,-q.y],[31,0]]);
  }
