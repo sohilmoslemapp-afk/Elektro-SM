@@ -1,0 +1,11 @@
+'use strict';
+const assert=require('node:assert/strict');
+const {exportDxf}=require('../src/dxf-export');
+const symbol=(id,manualTerminals)=>({id,type:'KM',x:100,y:100,manualTerminals});
+const project=symbols=>({symbols,wires:[]});
+assert.match(exportDxf(project([symbol('A',Array.from({length:8},(_,i)=>'T'+i))])),/TERMINAL_LABELS/);
+assert.throws(()=>exportDxf(project([symbol('A',Array.from({length:9},(_,i)=>'T'+i))])),/terminal list/);
+assert.throws(()=>exportDxf(project([symbol('A',['1','1'])])),/duplicate terminal/);
+assert.throws(()=>exportDxf(project([symbol('A',['1',42])])),/terminal label/);
+assert.throws(()=>exportDxf(project([symbol('A',['1']),symbol('A',['2'])])),/duplicate symbol ID/);
+console.log('DXF export schematic terminal integrity passed');
