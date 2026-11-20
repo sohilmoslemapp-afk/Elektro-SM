@@ -1,7 +1,7 @@
 /* ElektroPlan SM — schematic model validation. Structural checks only, not electrical approval. */
 (function(root){
 'use strict';
-const TYPES=new Set(['RCD','LS','SW','LAMP','KLEMME','KM','MSS']);
+const TYPES=new Set(['RCD','LS','SW','LAMP','KLEMME','KM','MSS','MOTOR']);
 function validate(project){
  const errors=[],warnings=[],symbols=project?.symbols,wires=project?.wires;
  if(!Array.isArray(symbols)||!Array.isArray(wires))return {valid:false,errors:['Projektstruktur ungültig'],warnings};
