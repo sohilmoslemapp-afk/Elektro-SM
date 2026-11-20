@@ -26,7 +26,7 @@ for(const phrase of ['Enter terminals manually','إدخال أطراف التو�
 assert.ok(html.includes('localizedTerminalControls[lang]'),'Terminal controls must change with language');
 assert.ok(html.includes('localizedGuidance[lang].diagram'),'Diagram guidance must change with language');
 for(const phrase of ['statusTranslations','Wiring is NOT manufacturer-verified','التوصيل غير معتمد من الشركة المصنّعة','Saved project is invalid','المشروع المحفوظ غير صالح','maximum 64 unique labels','الحد الأقصى 64 تسمية'])assert.ok(html.includes(phrase),'Missing critical trilingual runtime status: '+phrase);
-assert.ok(html.includes("statusTranslations[t]?.[lang]||t"),'Translated status must retain German fallback');
+assert.ok(html.includes("statusTranslations[t]?.[lang]||additionalStatusTranslations[t]?.[lang]||t"),'Translated status must retain German fallback');
 for(const phrase of ['additionalStatusTranslations','Project file exported successfully','تم تصدير ملف المشروع بنجاح','NO wiring approval','لا توجد موافقة على التوصيل'])assert.ok(html.includes(phrase),'Missing completed translated status: '+phrase);
 assert.ok(html.includes('additionalStatusTranslations[t]?.[lang]'),'Additional runtime statuses must follow selected language');
 console.log('German, English and Arabic language selector, RTL and camera safety translations: passed');
