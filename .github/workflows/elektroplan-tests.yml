@@ -62,5 +62,7 @@ jobs:
         run: node tests/project-import-evidence-url.test.js
       - name: Imported evidence calendar date safety
         run: node tests/project-import-evidence-date.test.js
+      - name: Legacy manufacturer document URL safety
+        run: node tests/project-import-legacy-document-url.test.js
       - name: Project import validation
         run: node tests/project-import-validation.test.js
