@@ -29,4 +29,6 @@ assert.equal(terminals.length,4,'every manually entered terminal must survive ge
 assert(terminals.some(e=>e[10]===143&&e[20]===-183),'source terminal geometry must survive');
 assert(terminals.some(e=>e[10]===257&&e[20]===-183),'target terminal geometry must survive');
 assert(parsed.entities.some(e=>e.type==='TEXT'&&e.layer==='TERMINAL_LABELS'&&e.text==='U1'));
+assert.throws(()=>exportDxf({symbols:[{id:'HUGE',type:'LS',x:1e10,y:0}],wires:[]}),/Invalid symbol/);
+assert.throws(()=>exportDxf({symbols:[{id:'EDGE',type:'LS',x:1e9,y:0,manualTerminals:['1','2']},{id:'B',type:'LS',x:0,y:0,manualTerminals:['1']}],wires:[{a:'EDGE',b:'B',fromTerminal:'2',toTerminal:'1'}]}),/coordinate out of bounds/);
 console.log('DXF R12 geometry and explicit terminal coordinate export tests passed');
