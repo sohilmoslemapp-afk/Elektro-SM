@@ -159,10 +159,10 @@ $('supplyRails').onclick=()=>{showSupplyReference=!showSupplyReference;$('supply
 $('wireMode').onclick=()=>{wireMode=!wireMode;wireStart=null;wireStartTerminal=null;$('wireMode').classList.toggle('primary',wireMode);msg(wireMode?'Zwei Bauteile auswählen':'Verbindungsmodus beendet')};
 $('deleteWire').onclick=()=>{
  if(!data.wires.length)return msg('Keine Leitung zum Löschen vorhanden');
- const choices=data.wires.map((w,i)=>(i+1)+': '+w.a+(w.fromTerminal?'/'+w.fromTerminal:'')+' → '+w.b+(w.toTerminal?'/'+w.toTerminal:'')).join('\\n');
- const answer=prompt(localizedPrompt('Leitung zum Löschen auswählen (Nummer):\\n')+choices,'1');
+ const choices=data.wires.map((w,i)=>(i+1)+': '+w.a+(w.fromTerminal?'/'+w.fromTerminal:'')+' → '+w.b+(w.toTerminal?'/'+w.toTerminal:'')).join('\n');
+ const answer=prompt(localizedPrompt('Leitung zum Löschen auswählen (Nummer):\n')+choices,'1');
  if(answer===null)return;
- if(!/^[1-9]\\d*$/.test(answer.trim()))return msg('Ungültige Leitungsnummer');
+ if(!/^[1-9]\d*$/.test(answer.trim()))return msg('Ungültige Leitungsnummer');
  const index=Number(answer.trim())-1;
  if(!Number.isSafeInteger(index)||index<0||index>=data.wires.length)return msg('Ungültige Leitungsnummer');
  data.wires.splice(index,1);recordHistory();render();persist();msg('Leitung gelöscht – Verbindungsgruppen werden beim Prüfen neu berechnet');
