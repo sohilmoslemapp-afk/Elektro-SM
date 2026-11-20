@@ -45,6 +45,7 @@ jobs:
           node tests/browser-smoke.test.js
           node tests/integrated-diagram-browser.test.js
           node tests/integrated-import-transaction-browser.test.js
+          node tests/integrated-print-browser.test.js
           node tests/integrated-pointer-cancel-browser.test.js
           node tests/tablet-desktop-smoke.test.js
           node tests/trilingual-browser.test.js
