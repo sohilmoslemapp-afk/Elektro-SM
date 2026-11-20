@@ -1,6 +1,6 @@
 /* ElektroPlan SM: defensive import validation for locally stored projects. */
 (function(root){'use strict';
-const types=new Set(['RCD','LS','SW','LAMP','KLEMME']);
+const types=new Set(['RCD','LS','SW','LAMP','KLEMME','KM','MSS']);
 function isHttpsUrl(value){try{const url=new URL(value);return url.protocol==='https:'&&!!url.hostname&&!!url.host&&!url.username&&!url.password}catch{return false}}
 function validDate(value){if(typeof value!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(value))return false;const date=new Date(value+'T00:00:00Z');return !Number.isNaN(date.getTime())&&date.toISOString().slice(0,10)===value}
 function validSource(r,brand,model){return r===null||!!(r&&typeof r==='object'&&['brand','model','documentUrl','documentTitle','documentRevision','checkedBy','checkedAt'].every(k=>typeof r[k]==='string'&&r[k].length<=2000)&&r.brand===brand&&r.model===model&&r.sourceType==='manually-entered-unverified'&&r.terminalMapping===null&&r.wiringApproved===false&&validDate(r.checkedAt)&&r.checkedBy.trim()&&isHttpsUrl(r.documentUrl))}
