@@ -80,6 +80,8 @@ jobs:
         run: node tests/terminal-strip-import.test.js
       - name: Schematic title block clearance
         run: node tests/title-block-clearance.test.js
+      - name: Orthogonal schematic wire routing
+        run: node tests/schematic-wire-routing.test.js
 
       - name: Integrated project import size guard
         run: node tests/integrated-import-size-guard.test.js
