@@ -21,4 +21,8 @@ for(const phrase of ['Import replaces the project currently loaded','الاست�
 assert.ok(html.includes('localizedExtraLabels[lang]'),'Extra form labels must follow language');
 assert.ok(html.includes('localizedExtraSafety[lang].project'),'Project import warning must follow language');
 assert.ok(html.includes('localizedExtraSafety[lang].features'),'Electrical safety warning must follow language');
+for(const id of ['diagramGuidance','manufacturerSearchNotice'])assert.ok(html.includes('id="'+id+'"'),'Missing safety guidance target '+id);
+for(const phrase of ['Enter terminals manually','إدخال أطراف التوصيل يدوياً','Connections are schematic only','التوصيلات تخطيطية فقط','Results are not automatically verified','النتائج ليست مصادر موثّقة تلقائياً'])assert.ok(html.includes(phrase),'Missing trilingual terminal/safety copy: '+phrase);
+assert.ok(html.includes('localizedTerminalControls[lang]'),'Terminal controls must change with language');
+assert.ok(html.includes('localizedGuidance[lang].diagram'),'Diagram guidance must change with language');
 console.log('German, English and Arabic language selector, RTL and camera safety translations: passed');
