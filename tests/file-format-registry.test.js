@@ -1,0 +1,14 @@
+'use strict';
+const assert=require('node:assert/strict');
+const {detect,capabilities}=require('../src/file-format-registry');
+assert.equal(detect('project.DXF').id,'dxf');
+assert.equal(detect('folder\\project.DWG').id,'dwg');
+assert.equal(detect('project.epsm.json').id,'native');
+assert.equal(detect('project.json').id,'json');
+assert.equal(detect('drawing.svg').export,'supported');
+assert.equal(capabilities('drawing.dxf').import,'planned');
+assert.equal(capabilities('unknown.xyz').detected,false);
+assert.equal(capabilities('secret.exe').import,'unsupported');
+assert.equal(capabilities('file.dxf.exe').format,'unknown');
+assert.equal(capabilities('').format,'unknown');
+console.log('File format detection and truthful capability status passed');
