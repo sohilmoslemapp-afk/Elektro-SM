@@ -27,3 +27,9 @@ assert.equal(check({components:[],connections:[]}).reviewRequired,true);
 assert.equal(check({components:[],connections:[]}).warnings.some(x=>x.includes('Keine Bauteile')),true);
 assert.equal(check({components:a.components,connections:[]}).reviewRequired,true);
 assert.equal(check({components:a.components,connections:[]}).warnings.some(x=>x.includes('Keine Verbindungen')),true);
+
+const orphanGraph=check({components:[],connections:[{from:{component:'X',terminal:'1'},to:{component:'Y',terminal:'2'}}]});
+assert.equal(orphanGraph.valid,false);
+assert.equal(orphanGraph.reviewRequired,true);
+assert.equal(orphanGraph.electricallyApproved,false);
+assert.equal(orphanGraph.errors.some(x=>x.includes('ohne Bauteile')),true);
