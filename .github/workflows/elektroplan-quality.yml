@@ -27,6 +27,10 @@ jobs:
         run: node tests/V132-ranking.test.js
       - name: Conservative manufacturer and model matching
         run: node tests/V133-safe-matching.test.js
+      - name: Manufacturer evidence and article-number gate
+        run: node --test tests/manufacturer-evidence.test.js
+      - name: OCR recognition unit tests
+        run: node --test tests/image-text-recognition.test.js
       - name: Source provenance validation
         run: node tests/V134-source-records.test.js
       - name: Integrated editor UI contract
