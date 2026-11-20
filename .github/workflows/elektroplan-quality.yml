@@ -29,6 +29,8 @@ jobs:
         run: node tests/V133-safe-matching.test.js
       - name: Source provenance validation
         run: node tests/V134-source-records.test.js
+      - name: Integrated editor UI contract
+        run: node tests/integrated-ui-contract.test.js
       - name: Integrated prototype inline JavaScript syntax
         run: |
           node - <<'NODE'
