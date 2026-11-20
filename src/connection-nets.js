@@ -17,6 +17,7 @@ function analyze(project){
  const parent=new Map(),groups=new Map(),pending=[];
  const validTerminals=s=>Array.isArray(s?.manualTerminals)&&s.manualTerminals.length<=8&&s.manualTerminals.every(t=>typeof t==='string'&&t.trim()===t&&t.length>0&&t.length<=40&&!unsafe.test(t))&&new Set(s.manualTerminals).size===s.manualTerminals.length;
  const validId=id=>typeof id==='string'&&id.trim()===id&&id.length>0&&id.length<=100&&!unsafe.test(id);
+ const validEndpoint=t=>typeof t==='string'&&t.trim()===t&&t.length>0&&t.length<=40&&!unsafe.test(t);
  const key=(id,t)=>JSON.stringify([id,t]);
  function find(k){if(!parent.has(k))parent.set(k,k);const p=parent.get(k);if(p!==k)parent.set(k,find(p));return parent.get(k)}
  function join(a,b){const x=find(a),y=find(b);if(x!==y)parent.set(y,x)}
@@ -25,7 +26,7 @@ function analyze(project){
   if(!validId(w?.a)||!validId(w?.b)){pending.push({wire:i,reason:'Ungültige Symbolkennung'});return}
   if(duplicateIds.has(w?.a)||duplicateIds.has(w?.b)){pending.push({wire:i,reason:'Mehrdeutige Symbolkennung'});return}
   if(w?.a===w?.b){pending.push({wire:i,reason:'Selbstverbindung'});return}
-  if(!a||!b||!validTerminals(a)||!validTerminals(b)||typeof w.fromTerminal!=='string'||typeof w.toTerminal!=='string'||!a.manualTerminals.includes(w.fromTerminal)||!b.manualTerminals.includes(w.toTerminal)){
+  if(!a||!b||!validTerminals(a)||!validTerminals(b)||!validEndpoint(w.fromTerminal)||!validEndpoint(w.toTerminal)||!a.manualTerminals.includes(w.fromTerminal)||!b.manualTerminals.includes(w.toTerminal)){
    pending.push({wire:i,reason:'Fehlende oder ungültige Anschlussreferenz'});return;
   }
   join(key(w.a,w.fromTerminal),key(w.b,w.toTerminal));
