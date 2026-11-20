@@ -142,7 +142,9 @@ assert.ok(html.includes('||unresolvedNets||terminalResult.reviewRequired'), 'Unr
 assert.ok(html.includes('id="deleteWire"'), 'Schaltplan must expose a wire deletion control');
 assert.ok(html.includes("$('deleteWire').onclick=()=>{"), 'Wire deletion action must be bound');
 assert.ok(html.includes('data.wires.splice(index,1);recordHistory();render();persist()'), 'Wire deletion must update history, diagram and saved project');
-assert.ok(html.includes('Number.isSafeInteger(index)'), 'Wire deletion must reject invalid indexes');
+assert.ok(html.includes("select.id='wireDeleteSelect'"), 'Wire deletion must use a mobile-friendly selector');
+assert.ok(html.includes("remove.id='confirmDeleteWire'"), 'Wire deletion must require explicit confirmation');
+assert.ok(html.includes('w!==snapshot.ref||w.a!==snapshot.a||w.b!==snapshot.b'), 'Wire deletion must reject stale selection');
 
 assert.ok(html.includes('id="netStatus"'), 'Schematic must display live connectivity summary');
 assert.ok(html.includes('function render(){renderNetStatus();renderDrawingTitleBlock()'), 'Live net status must refresh on schematic rendering');
