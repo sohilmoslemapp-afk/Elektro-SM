@@ -4,7 +4,7 @@
 'use strict';
 function validateTerminalGraph(project){
  const errors=[],warnings=[],parts=project?.components,edges=project?.connections;
- if(!Array.isArray(parts)||!Array.isArray(edges))return {valid:false,errors:['Ungültiges Anschlussmodell'],warnings};
+ if(!Array.isArray(parts)||!Array.isArray(edges))return {valid:false,reviewRequired:true,electricallyApproved:false,errors:['Ungültiges Anschlussmodell'],warnings};
  const ids=new Set(),ports=new Map(),used=new Map(),edgeKeys=new Set();
  parts.forEach((part,i)=>{
   if(!part||typeof part.id!=='string'||!part.id.trim()||ids.has(part.id)){errors.push('Bauteil '+i+': fehlende oder doppelte Kennung');return}
