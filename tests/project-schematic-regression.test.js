@@ -36,7 +36,7 @@ for(const [label,d,expected] of cases){
 assert.equal(validateImport({format:'wrong',data}).ok,false);
 assert.equal(validateImport(null).ok,false);
 assert.equal(validate(null).valid,false);
-const duplicates=validate({...data,wires:[data.wires[0],{a:'H1',b:'Q1'}]});
+const duplicates=validate({...data,symbols:data.symbols.map(s=>({...s,manualTerminals:['1']})),wires:[{a:'Q1',b:'H1',fromTerminal:'1',toTerminal:'1'},{a:'H1',b:'Q1',fromTerminal:'1',toTerminal:'1'}]});
 assert.equal(duplicates.valid,true);
 assert.ok(duplicates.warnings.some(w=>w.includes('doppelte')));
 const disconnected=validate({...data,wires:[]});
