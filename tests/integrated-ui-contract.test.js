@@ -79,3 +79,10 @@ assert.ok(html.includes('src="V134-source-records.js"'),'Integrated UI must load
 for(const id of ['docRevision','sourceReviewer','sourceDate'])assert.ok(html.includes('id="'+id+'"'),'Source dossier input missing: '+id);
 assert.ok(html.includes('ElektroPlanV134?.createReference(dossierInput)'),'Source dossiers must be validated before saving');
 assert.ok(html.includes('NICHT fachlich verifiziert'),'Source dossier must never imply manufacturer approval');
+
+assert.ok(html.includes('src="V133-safe-matching.js"'),'Integrated photo workflow must load conservative matching');
+assert.ok(html.includes('id="photoMatchLibrary"'),'Camera must offer library matching');
+assert.ok(html.includes('id="photoMatches"'),'Camera must display matching results');
+assert.ok(html.includes('ElektroPlanV133.search({brand,model},data.parts)'),'Camera must use safe manufacturer/model matching');
+assert.ok(html.includes("result.category==='exact-text-match'"),'Only exact text matches may offer library navigation');
+assert.ok(html.includes('KEINE Anschlussfreigabe'),'Photo matching must not imply wiring approval');
