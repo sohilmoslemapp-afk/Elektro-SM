@@ -9,6 +9,7 @@ function validateImport(payload){
  const d=payload.data;
  if(!Array.isArray(d.symbols)||!Array.isArray(d.wires)||!Array.isArray(d.parts))return {ok:false,errors:['Projektlisten fehlen']};
  if(d.symbols.length>10000||d.wires.length>50000||d.parts.length>10000)errors.push('Projekt überschreitet Sicherheitsgrenzen');
+ if(d.symbols.length>10000||d.wires.length>50000||d.parts.length>10000)return {ok:false,errors};
  if(typeof d.name!=='string'||d.name.length>200)errors.push('Ungültiger Projektname');
  const ids=new Set(),normalizedIds=new Set();
  const unsafeId=/[\u0000-\u001f\u007f-\u009f\u200b-\u200f\u202a-\u202e\u2060-\u2069\ufeff]/u;
