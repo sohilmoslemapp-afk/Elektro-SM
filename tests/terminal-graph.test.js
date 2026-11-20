@@ -33,3 +33,10 @@ assert.equal(orphanGraph.valid,false);
 assert.equal(orphanGraph.reviewRequired,true);
 assert.equal(orphanGraph.electricallyApproved,false);
 assert.equal(orphanGraph.errors.some(x=>x.includes('ohne Bauteile')),true);
+
+for(const badTerminal of [' A1','A1 ','\tA1','A1\n']){
+ const checked=check({components:[{id:'H1',terminals:['A1',badTerminal]}],connections:[]});
+ assert.equal(checked.valid,false,'Terminal with outer whitespace must be rejected');
+ assert.equal(checked.reviewRequired,true);
+ assert.equal(checked.electricallyApproved,false);
+}
