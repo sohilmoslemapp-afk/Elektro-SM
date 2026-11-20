@@ -1,0 +1,12 @@
+'use strict';
+const assert=require('node:assert/strict');
+const fs=require('node:fs'),path=require('node:path');
+const html=fs.readFileSync(path.join(__dirname,'../prototypes/ElektroPlan-SM-integriert.html'),'utf8');
+assert.match(html,/id="supplyRails"[^>]*aria-pressed="false"/);
+assert.match(html,/id="supplyReference"/);
+assert.match(html,/function renderSupplyReference\(\)/);
+assert.match(html,/\['L1','L2','L3','N','PE'\]/);
+assert.match(html,/Nur grafische Referenz – nicht elektrisch verbunden/);
+assert.match(html,/showSupplyReference=!showSupplyReference/);
+assert.match(html,/renderSupplyReference\(\);renderWires\(\)/);
+console.log('Optional supply reference overlay UI contract passed; no electrical connectivity inferred');
