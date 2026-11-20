@@ -10,7 +10,7 @@ function exportDxf(project){
  const byId=new Map();
  const ids=new Set();
  for(const s of project.symbols){
-  if(!s||typeof s.id!=='string'||!Number.isFinite(s.x)||!Number.isFinite(s.y))throw Error('Invalid symbol');
+  if(!s||typeof s.id!=='string'||!Number.isFinite(s.x)||!Number.isFinite(s.y)||Math.abs(s.x)>1e9||Math.abs(s.y)>1e9)throw Error('Invalid symbol');
   if(!s.id.trim()||ids.has(s.id))throw Error('Invalid or duplicate symbol ID');
   ids.add(s.id);
   if(s.manualTerminals!==undefined){
@@ -40,6 +40,7 @@ function exportDxf(project){
   const to=w.toTerminal?geometry?.terminalPosition(b,w.toTerminal):null;
   if(w.fromTerminal&&!from||w.toTerminal&&!to)throw Error('Terminal position not available for DXF export');
   const p=from||a,q=to||b;
+  if([p.x,p.y,q.x,q.y].some(v=>!Number.isFinite(v)||Math.abs(v)>1e9))throw Error('DXF wire coordinate out of bounds');
   add('LINE',[[8,'WIRES'],[10,p.x],[20,-p.y],[30,0],[11,q.x],[21,-q.y],[31,0]]);
  }
  out.push('0','ENDSEC','0','EOF');
