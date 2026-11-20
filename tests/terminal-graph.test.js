@@ -61,3 +61,10 @@ assert.equal(isolated.valid,true,'Isolated components are a review warning, not 
 assert.equal(isolated.reviewRequired,true);
 assert.ok(isolated.warnings.some(w=>w.includes('Bauteil ohne Verbindung: K9')));
 assert.ok(!check(a).warnings.some(w=>w.includes('Bauteil ohne Verbindung')));
+
+const samePart=check({components:[{id:'K1',terminals:['A1','A2']}],connections:[{from:{component:'K1',terminal:'A1'},to:{component:'K1',terminal:'A2'}}]});
+assert.equal(samePart.valid,true,'Two distinct terminals of the same component are not automatically structurally invalid');
+assert.equal(samePart.reviewRequired,true);
+assert.equal(samePart.electricallyApproved,false);
+assert.ok(samePart.warnings.some(w=>w.includes('Zwei Anschlüsse desselben Bauteils')));
+assert.ok(!check(a).warnings.some(w=>w.includes('Zwei Anschlüsse desselben Bauteils')));
