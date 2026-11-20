@@ -31,6 +31,11 @@ jobs:
         run: node tests/V134-source-records.test.js
       - name: Integrated editor UI contract
         run: node tests/integrated-ui-contract.test.js
+      - name: Mobile Chromium browser smoke test
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+          node tests/browser-smoke.test.js
       - name: Integrated prototype inline JavaScript syntax
         run: |
           node - <<'NODE'
