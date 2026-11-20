@@ -52,5 +52,7 @@ jobs:
         run: node tests/project-import-envelope.test.js
       - name: Oversized project import early rejection
         run: node tests/project-import-limits.test.js
+      - name: Indexed terminal-mapped import regression
+        run: node tests/project-import-terminal-index.test.js
       - name: Project import validation
         run: node tests/project-import-validation.test.js
