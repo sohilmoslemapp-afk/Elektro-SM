@@ -18,7 +18,7 @@ const path=require('node:path');
   page.once('dialog',d=>d.accept('1'));
   await page.locator('#deleteWire').click();
   if(await count()!==1)throw Error('Wire deletion did not refresh drawing');
-  if(!(await page.locator('#wires').innerText()).includes('W1'))throw Error('Wire numbering not refreshed');
+  if(!(await page.locator('#wires').textContent()).includes('W1'))throw Error('Wire numbering not refreshed');
   await page.locator('#undoEdit').click();
   if(await count()!==2)throw Error('Undo did not restore deleted wire');
   await page.locator('#redoEdit').click();
