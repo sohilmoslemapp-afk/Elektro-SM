@@ -22,6 +22,7 @@ assert.match(scripts[0],/const check=window\.ElektroPlanImport\?\.validateImport
 assert.match(scripts[0],/Export abgebrochen:/,'Invalid exports must be blocked');
 assert.match(html,/Keine automatische Bilderkennung/,'Do not falsely advertise image recognition');
 assert.match(html,/Hersteller \(manuell\)/,'BOM must label manufacturer as manually entered');
+assert.match(scripts[0],/const cleaned=\/\^\[\\s\\u0000-\\u001f\]\*\[=\+@-\]/,'CSV cells must neutralize formula prefixes');
 assert.match(html,/Modell \(manuell\)/,'BOM must label model as manually entered');
 assert.match(html,/Von Hersteller \(manuell\)/,'Wiring CSV must label source manufacturer as manual');
 assert.match(html,/Nach Modell \(manuell\)/,'Wiring CSV must label destination model as manual');
