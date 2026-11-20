@@ -20,6 +20,7 @@ const path=require('node:path');
   if(!(await page.locator('#netDetails').evaluate(el=>el.open)))throw Error('Net inspector did not expand');
   await page.locator('#netDetailsList button').nth(1).click();
   if(await page.locator('#terminalPicker select').first().inputValue()!=='1')throw Error('Pending wire action did not select its wire in terminal picker');
+  if(!(await page.locator('#terminalPicker select').first().evaluate(el=>document.activeElement===el)))throw Error('Pending wire action did not focus terminal picker');
   await page.locator('#showTerminalPicker').click();
   if(!(await page.locator('#netStatus').innerText()).includes('Offene/ungültige Leitungen: 2'))throw Error('Live net status did not reflect two unassigned wires');
   await page.locator('#deleteWire').click();
