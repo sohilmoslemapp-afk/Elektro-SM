@@ -149,3 +149,6 @@ jobs:
 
       - name: DXF graphical preview security regression
         run: node tests/dxf-svg-preview.test.js
+
+      - name: Schematic terminal integrity regression
+        run: node tests/schematic-terminal-validation.test.js
