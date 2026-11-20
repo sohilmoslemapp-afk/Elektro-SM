@@ -178,7 +178,7 @@ $('deleteWire').onclick=()=>{
  const label=document.createElement('label');label.textContent='Leitung auswählen';const select=document.createElement('select');select.id='wireDeleteSelect';
  const snapshots=data.wires.map(w=>({ref:w,a:w.a,b:w.b,fromTerminal:w.fromTerminal,toTerminal:w.toTerminal}));
  data.wires.forEach((w,i)=>{const option=document.createElement('option');option.value=String(i);option.textContent='W'+(i+1)+': '+w.a+(w.fromTerminal?'/'+w.fromTerminal:'')+' → '+w.b+(w.toTerminal?'/'+w.toTerminal:'');select.append(option)});
- label.append(select);panel.append(label);
+ label.append(select);panel.append(label);const warning=document.createElement('p');warning.textContent='Löschen entfernt nur die gewählte schematische Leitung; Rückgängig ist möglich.';panel.append(warning);
  const remove=document.createElement('button');remove.type='button';remove.id='confirmDeleteWire';remove.textContent='Ausgewählte Leitung löschen';
  remove.onclick=()=>{const index=Number(select.value),w=data.wires[index],snapshot=snapshots[index];if(!w||!snapshot||w!==snapshot.ref||w.a!==snapshot.a||w.b!==snapshot.b||w.fromTerminal!==snapshot.fromTerminal||w.toTerminal!==snapshot.toTerminal)return msg('Leitung geändert – Auswahl neu öffnen');data.wires.splice(index,1);recordHistory();render();persist();panel.remove();msg('Leitung gelöscht – Verbindungsgruppen aktualisiert')};
  const cancel=document.createElement('button');cancel.type='button';cancel.id='cancelDeleteWire';cancel.textContent='Abbrechen';cancel.onclick=()=>panel.remove();panel.append(remove,cancel);$('deleteWire').after(panel);
