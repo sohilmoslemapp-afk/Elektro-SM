@@ -8,6 +8,7 @@ function analyze(project){
  const byId=new Map(),duplicateIds=new Set();
  for(const symbol of symbols){if(!symbol||typeof symbol.id!=='string'||!symbol.id.trim())continue;if(byId.has(symbol.id))duplicateIds.add(symbol.id);else byId.set(symbol.id,symbol)}
  const parent=new Map(),groups=new Map(),pending=[];
+ const validTerminals=s=>Array.isArray(s?.manualTerminals)&&s.manualTerminals.length<=8&&s.manualTerminals.every(t=>typeof t==='string'&&t.trim()===t&&t.length>0&&t.length<=40)&&new Set(s.manualTerminals).size===s.manualTerminals.length;
  const key=(id,t)=>JSON.stringify([id,t]);
  function find(k){if(!parent.has(k))parent.set(k,k);const p=parent.get(k);if(p!==k)parent.set(k,find(p));return parent.get(k)}
  function join(a,b){const x=find(a),y=find(b);if(x!==y)parent.set(y,x)}
@@ -15,7 +16,7 @@ function analyze(project){
   const a=byId.get(w?.a),b=byId.get(w?.b);
   if(duplicateIds.has(w?.a)||duplicateIds.has(w?.b)){pending.push({wire:i,reason:'Mehrdeutige Symbolkennung'});return}
   if(w?.a===w?.b){pending.push({wire:i,reason:'Selbstverbindung'});return}
-  if(!a||!b||!w.fromTerminal||!w.toTerminal||!a.manualTerminals?.includes(w.fromTerminal)||!b.manualTerminals?.includes(w.toTerminal)){
+  if(!a||!b||!validTerminals(a)||!validTerminals(b)||typeof w.fromTerminal!=='string'||typeof w.toTerminal!=='string'||!a.manualTerminals.includes(w.fromTerminal)||!b.manualTerminals.includes(w.toTerminal)){
    pending.push({wire:i,reason:'Fehlende oder ungültige Anschlussreferenz'});return;
   }
   join(key(w.a,w.fromTerminal),key(w.b,w.toTerminal));
