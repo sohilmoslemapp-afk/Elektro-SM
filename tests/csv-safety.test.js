@@ -15,4 +15,8 @@ for(const value of ['=1+1','+SUM(1,2)','-2+3','@SUM(A1)','  =HYPERLINK("https://
 assert.equal(csvCell('Schneider Electric'),'"Schneider Electric"');
 assert.equal(csvCell('A"1'),'"A""1"');
 assert.equal(csvCell('A1'),'"A1"');
+assert.equal(csvCell('A;B'),'"A;B"');
+assert.equal(csvCell('Änderung'),'"Änderung"');
+assert.equal(csvCell(''),'""');
+assert.equal(csvCell(null),'""');
 console.log('CSV formula-injection and quoting regression passed');
