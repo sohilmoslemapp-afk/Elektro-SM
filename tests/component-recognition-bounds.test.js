@@ -1,0 +1,14 @@
+const assert=require('node:assert/strict');
+const {prepareIdentification}=require('../src/component-recognition');
+const many=Array.from({length:1000},(_,i)=>({manufacturer:'Maker'+i,model:'M'+i,partNumber:'P'+i,origin:'ocr',confidence:0.8}));
+const result=prepareIdentification({candidates:many});
+assert.equal(result.candidates.length,100);
+assert.equal(result.candidates[0].manufacturer,'Maker0');
+assert.equal(result.candidates[99].manufacturer,'Maker99');
+assert.equal(result.terminalMappingAllowed,false);
+assert.equal(result.electricallyApproved,false);
+const huge=prepareIdentification({candidates:[{manufacturer:' X '.repeat(1000),model:'M'.repeat(1000),partNumber:'P'.repeat(1000)}]});
+assert.equal(huge.candidates.length,1);
+for(const key of ['manufacturer','model','partNumber'])assert.ok(huge.candidates[0][key].length<=200);
+assert.equal(prepareIdentification({candidates:null}).status,'identity_missing');
+console.log('Bounded OCR candidate ingestion regression passed');
