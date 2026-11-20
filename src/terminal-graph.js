@@ -27,6 +27,7 @@ function validateTerminalGraph(project){
   if(edgeKeys.has(key))warnings.push('Verbindung '+i+': doppelt');edgeKeys.add(key);
   used.set(ak,(used.get(ak)||0)+1);used.set(bk,(used.get(bk)||0)+1);
  });
+ for(const [key,count] of used){if(count>1){const [component,terminal]=JSON.parse(key);warnings.push('Mehrfachbelegung prüfen: '+component+'/'+terminal+' ('+count+' Verbindungen)')}}
  parts.forEach(part=>{if(!part||!ports.has(part.id))return;for(const t of ports.get(part.id)){const key=JSON.stringify([part.id,t]);if(!used.has(key))warnings.push('Offener Anschluss: '+part.id+'/'+t)}});
  return {valid:errors.length===0,errors,warnings,checkedComponents:parts.length,checkedConnections:edges.length,
  disclaimer:'Nur grafische Anschlussreferenzen. Keine Herstellerprüfung, keine elektrische Sicherheitsprüfung oder Freigabe.'};
