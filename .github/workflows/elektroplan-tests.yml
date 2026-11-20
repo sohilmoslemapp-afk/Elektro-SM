@@ -155,3 +155,6 @@ jobs:
 
       - name: DXF schematic terminal integrity
         run: node tests/dxf-terminal-integrity.test.js
+
+      - name: DXF incomplete wiring export gate
+        run: node tests/dxf-export-ui-safety.test.js
