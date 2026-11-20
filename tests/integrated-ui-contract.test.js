@@ -40,3 +40,7 @@ assert.match(html,/<section id="features" hidden>/,'Capabilities page must exist
 assert.match(html,/Automatische Erkennung elektrischer Bauteile aus Fotos/,'Photo recognition must be marked as planned');
 assert.match(html,/Firmenkonten, Lizenzen und zeitlich begrenzte Testzugänge/,'Company licensing must be marked as planned');
 assert.match(html,/\['plan','parts','camera','project','features'\]/,'Navigation must support capabilities page');
+
+assert.match(html,/Dokumenttitel \(manuell\): /,'Saved parts must display manually entered document title');
+assert.match(html,/Manuell erfasst – NICHT herstellerverifiziert/,'Saved parts must disclose unverified provenance');
+assert.match(html,/Dokument öffnen \(ungeprüft\)/,'External document links must be labelled unverified');
