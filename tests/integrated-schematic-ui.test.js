@@ -1,0 +1,12 @@
+'use strict';
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const path=require('node:path');
+const html=fs.readFileSync(path.join(__dirname,'../prototypes/ElektroPlan-SM-integriert.html'),'utf8');
+assert.match(html,/id="checkPlan"/);
+assert.match(html,/id="planCheckResult"/);
+assert.match(html,/src="\.\.\/src\/schematic-validation\.js"/);
+assert.match(html,/ElektroPlanValidation\.validate\(data\)/);
+assert.match(html,/result\.disclaimer/);
+assert.match(html,/Strukturprüfung: Fehler gefunden/);
+console.log('Integrated schematic validation UI: 6 static assertions passed (not a browser test)');
