@@ -1,0 +1,18 @@
+'use strict';
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const html=fs.readFileSync('prototypes/ElektroPlan-SM-integriert.html','utf8');
+const {analyze}=require('../src/connection-nets');
+assert.match(html,/pending\.reason\.startsWith\('Doppelte Anschlussverbindung'\)/,'Duplicate wire review must have a distinct UI path');
+assert.match(html,/Doppelte Leitung im Schaltplan prüfen und gegebenenfalls entfernen/,'UI must explain how to resolve duplicates');
+assert.match(html,/list\.append\(item\);continue/,'Duplicate wire must not offer misleading terminal assignment action');
+assert.match(html,/netResult\.pending\.map/,'Plan check must report duplicate network connections');
+assert.match(html,/for\(const pending of result\.pending\)/,'Network CSV must include pending duplicate wires');
+const symbols=[{id:'A',manualTerminals:['1']},{id:'B',manualTerminals:['2']}];
+const wires=[{a:'A',fromTerminal:'1',b:'B',toTerminal:'2'},{a:'B',fromTerminal:'2',b:'A',toTerminal:'1'}];
+const check=analyze({symbols,wires});
+assert.equal(check.nets.length,1);
+assert.deepEqual(check.pending.map(x=>x.wire),[1]);
+assert.match(check.pending[0].reason,/Doppelte Anschlussverbindung/);
+assert.equal(check.electricallyApproved,false);
+console.log('Duplicate connection: model and UI safety contract passed.');
