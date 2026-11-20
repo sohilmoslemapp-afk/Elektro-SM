@@ -130,3 +130,7 @@ assert.equal(pendingGraphReview.reviewRequired,true,'Pending wires must always r
 assert.ok(pendingGraphReview.warnings.includes('Nicht zugeordnete Leitungen: 1'),'Terminal graph review must disclose pending wire count');
 const completeGraphReview=validateTerminalGraph(fromSchematic({...project,wires:[project.wires[0]]}));
 assert.equal(completeGraphReview.warnings.some(x=>x.startsWith('Nicht zugeordnete Leitungen:')),false,'Fully assigned wires must not create a pending-wire warning');
+
+const malformedPending=validateTerminalGraph({components:graph.components,connections:graph.connections,pending:'broken'});
+assert.equal(malformedPending.valid,false,'Malformed pending list must fail closed');
+assert.ok(malformedPending.errors.includes('Ungültige Liste nicht zugeordneter Leitungen'));
