@@ -74,3 +74,8 @@ assert.ok(html.includes('const structureWarnings=result.warnings.length,terminal
 assert.ok(html.includes("invalidWires+' ungültige Leitungszuordnungen, '+pendingWires+' offene Leitungszuordnungen"),'Plan check must display invalid and missing wire assignments separately');
 assert.ok(html.includes("summary.setAttribute('role','status')"),'Plan check summary must be accessible');
 assert.ok(html.includes('Hinweise – keine elektrische Freigabe.'),'Plan check summary must explicitly deny electrical approval');
+
+assert.ok(html.includes('src="V134-source-records.js"'),'Integrated UI must load provenance validation');
+for(const id of ['docRevision','sourceReviewer','sourceDate'])assert.ok(html.includes('id="'+id+'"'),'Source dossier input missing: '+id);
+assert.ok(html.includes('ElektroPlanV134?.createReference(dossierInput)'),'Source dossiers must be validated before saving');
+assert.ok(html.includes('NICHT fachlich verifiziert'),'Source dossier must never imply manufacturer approval');
