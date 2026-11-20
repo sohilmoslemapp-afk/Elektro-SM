@@ -5,7 +5,7 @@
 function validateTerminalGraph(project){
  const errors=[],warnings=[],parts=project?.components,edges=project?.connections;
  if(!Array.isArray(parts)||!Array.isArray(edges))return {valid:false,reviewRequired:true,electricallyApproved:false,errors:['Ungültiges Anschlussmodell'],warnings};
- const ids=new Set(),ports=new Map(),used=new Map(),edgeKeys=new Set();
+ const ids=new Set(),ports=new Map(),used=new Map(),edgeKeys=new Set(),connectedComponents=new Set();
  if(parts.length===0){warnings.push('Keine Bauteile vorhanden');if(edges.length>0)errors.push('Verbindungen ohne Bauteile sind unzulässig')}
  if(edges.length===0)warnings.push('Keine Verbindungen vorhanden');
  parts.forEach((part,i)=>{
@@ -27,8 +27,9 @@ function validateTerminalGraph(project){
   if(ak===bk){errors.push('Verbindung '+i+': Selbstverbindung desselben Anschlusses');return}
   const key=[ak,bk].sort().join('|');
   if(edgeKeys.has(key)){errors.push('Verbindung '+i+': doppelte Anschlussverbindung');return}edgeKeys.add(key);
-  used.set(ak,(used.get(ak)||0)+1);used.set(bk,(used.get(bk)||0)+1);
+  used.set(ak,(used.get(ak)||0)+1);used.set(bk,(used.get(bk)||0)+1);connectedComponents.add(a.component);connectedComponents.add(b.component);
  });
+ if(edges.length>0)for(const id of ids){if(!connectedComponents.has(id))warnings.push('Bauteil ohne Verbindung: '+id)}
  for(const [key,count] of used){if(count>1){const [component,terminal]=JSON.parse(key);warnings.push('Mehrfachbelegung prüfen: '+component+'/'+terminal+' ('+count+' Verbindungen)')}}
  parts.forEach(part=>{if(!part||!ports.has(part.id))return;for(const t of ports.get(part.id)){const key=JSON.stringify([part.id,t]);if(!used.has(key))warnings.push('Offener Anschluss: '+part.id+'/'+t)}});
  return {valid:errors.length===0,reviewRequired:errors.length>0||warnings.length>0,electricallyApproved:false,errors,warnings,checkedComponents:parts.length,checkedConnections:edges.length,
