@@ -1,0 +1,24 @@
+name: ElektroPlan V132-V133 tests
+on:
+  push:
+    branches:
+      - ElektroPlan-Entwicklung-1
+    paths:
+      - 'prototypes/**'
+      - 'tests/**'
+      - '.github/workflows/elektroplan-tests.yml'
+  workflow_dispatch:
+jobs:
+  unit-tests:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: V132 ranking
+        run: node tests/V132-ranking.test.js
+      - name: V133 manufacturer safety
+        run: node tests/V133-safe-matching.test.js
