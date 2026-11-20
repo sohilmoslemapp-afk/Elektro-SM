@@ -1,0 +1,12 @@
+'use strict';
+const assert=require('node:assert/strict');
+const {terminalPosition}=require('../src/terminal-geometry');
+const symbol={x:200,y:100,manualTerminals:['1','2','3','4','5','6','7','8','9']};
+assert.deepEqual(terminalPosition(symbol,'1'),{x:157,y:83,side:-1});
+assert.deepEqual(terminalPosition(symbol,'2'),{x:243,y:83,side:1});
+assert.deepEqual(terminalPosition(symbol,'3'),{x:157,y:94,side:-1});
+assert.deepEqual(terminalPosition(symbol,'8'),{x:243,y:116,side:1});
+assert.equal(terminalPosition(symbol,'9'),null,'Undrawn terminals must not be silently snapped to a false position');
+assert.equal(terminalPosition(symbol,'unknown'),null);
+assert.equal(terminalPosition({},'1'),null);
+console.log('Terminal endpoint geometry and visible marker positions passed');
