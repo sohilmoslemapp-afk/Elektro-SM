@@ -21,3 +21,7 @@ assert.deepEqual(check.pending.map(x=>x.wire),[1]);
 assert.match(check.pending[0].reason,/Doppelte Anschlussverbindung/);
 assert.equal(check.electricallyApproved,false);
 console.log('Duplicate connection: model and UI safety contract passed.');
+
+assert.match(html,/pending\.duplicateOf\+1/,'Review panel must identify the original wire number');
+assert.match(html,/data\.wires\[pending\.wire\]!==reviewedWire/,'Review must refuse stale wire references');
+assert.equal(check.pending[0].duplicateOf,0,'Duplicate must point to original wire');
