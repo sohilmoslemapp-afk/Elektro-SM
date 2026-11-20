@@ -81,3 +81,9 @@ assert.ok(!invalidOnly.warnings.some(w=>w.includes('Bauteil ohne erfasste Anschl
 const duplicateInternal=check({components:[{id:'K4',terminals:['1','2']}],connections:[{from:{component:'K4',terminal:'1'},to:{component:'K4',terminal:'2'}},{from:{component:'K4',terminal:'2'},to:{component:'K4',terminal:'1'}}]});
 assert.equal(duplicateInternal.valid,false);
 assert.equal(duplicateInternal.warnings.filter(w=>w.includes('Zwei Anschlüsse desselben Bauteils')).length,1,'Duplicate internal wire must not produce a second review warning');
+
+const equivalentNames=check({components:[{id:'X9',terminals:['é','e\u0301']}],connections:[]});
+assert.equal(equivalentNames.valid,false,'Canonically equivalent terminal labels must not coexist');
+assert.ok(equivalentNames.errors.some(e=>e.includes('doppelter Anschluss')));
+const distinctUnicode=check({components:[{id:'X9',terminals:['é','è']}],connections:[]});
+assert.equal(distinctUnicode.valid,true,'Distinct terminal names must remain accepted');
