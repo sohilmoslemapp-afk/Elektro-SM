@@ -8,11 +8,14 @@ function fromSchematic(project){
  const components=symbols.map(s=>({id:s?.id,terminals:Array.isArray(s?.manualTerminals)?s.manualTerminals.slice():[]}));
  const connections=[],pending=[];
  const knownIds=new Set(components.map(c=>c.id));
+ const idCounts=new Map();
+ components.forEach(c=>idCounts.set(c.id,(idCounts.get(c.id)||0)+1));
  const terminalSets=new Map(components.filter(c=>typeof c.id==='string').map(c=>[c.id,new Set(c.terminals)]));
  wires.forEach((w,index)=>{
   if(typeof w?.fromTerminal!=='string'||!w.fromTerminal.trim()||typeof w?.toTerminal!=='string'||!w.toTerminal.trim()){pending.push({wire:index,reason:'Klemmenzuordnung unvollständig'});return}
   if(typeof w.a!=='string'||!w.a.trim()||typeof w.b!=='string'||!w.b.trim()){pending.push({wire:index,reason:'Bauteilzuordnung unvollständig'});return}
   if(!knownIds.has(w.a)||!knownIds.has(w.b)){pending.push({wire:index,reason:'Bauteilreferenz unbekannt'});return}
+  if(idCounts.get(w.a)!==1||idCounts.get(w.b)!==1){pending.push({wire:index,reason:'Bauteilreferenz mehrdeutig'});return}
   if(!terminalSets.get(w.a)?.has(w.fromTerminal)||!terminalSets.get(w.b)?.has(w.toTerminal)){pending.push({wire:index,reason:'Klemmenreferenz unbekannt'});return}
   connections.push({from:{component:w.a,terminal:w.fromTerminal},to:{component:w.b,terminal:w.toTerminal},sourceWire:index});
  });
