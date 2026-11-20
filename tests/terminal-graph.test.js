@@ -93,3 +93,8 @@ assert.equal(equivalentIds.valid,false,'Canonically equivalent component IDs mus
 assert.ok(equivalentIds.errors.some(e=>e.includes('doppelte Kennung')));
 const distinctIds=check({components:[{id:'Café',terminals:['1']},{id:'Cafe',terminals:['2']}],connections:[]});
 assert.equal(distinctIds.valid,true,'Distinct component IDs must remain accepted');
+
+// Edge identity remains unambiguous with punctuation in user-defined labels.
+const punctuationGraph={components:[{id:'A|B',terminals:['1|2','3']},{id:'C',terminals:['x|y','z']}],connections:[{from:{component:'A|B',terminal:'1|2'},to:{component:'C',terminal:'x|y'}},{from:{component:'A|B',terminal:'3'},to:{component:'C',terminal:'z'}}]};
+assert.equal(check(punctuationGraph).valid,true);
+assert.equal(check({...punctuationGraph,connections:[...punctuationGraph.connections,{from:punctuationGraph.connections[0].to,to:punctuationGraph.connections[0].from}]}).errors.filter(x=>x.includes('doppelte Anschlussverbindung')).length,1);
