@@ -8,8 +8,9 @@ assert.match(persist,/localStorage\.setItem\(KEY,JSON\.stringify\(data\)\);msg\(
 assert.match(persist,/Speichern abgebrochen:[^\n]*return false/);
 assert.match(persist,/Speichern fehlgeschlagen:[^\n]*return false/);
 const importHandler=html.slice(html.indexOf("$('importJson').onchange="),html.indexOf('const translations=',html.indexOf("$('importJson').onchange=")));
-assert.match(importHandler,/const saved=persist\(\)/);
-assert.match(importHandler,/saved\?'Projekt importiert und lokal gespeichert/);
-assert.match(importHandler,/lokale Speicherung fehlgeschlagen/);
-assert.ok(importHandler.indexOf('validateImport(obj)')<importHandler.indexOf('data=obj.data'));
+assert.match(importHandler,/const candidate=obj\.data;try\{localStorage\.setItem\(KEY,JSON\.stringify\(candidate\)\)\}/);
+assert.match(importHandler,/bisheriges Projekt bleibt erhalten/);
+assert.match(importHandler,/Projekt importiert und lokal gespeichert/);
+assert.ok(importHandler.indexOf('validateImport(obj)')<importHandler.indexOf('localStorage.setItem(KEY,JSON.stringify(candidate))'));
+assert.ok(importHandler.indexOf('localStorage.setItem(KEY,JSON.stringify(candidate))')<importHandler.indexOf('data=candidate'));
 console.log('Integrated import persistence feedback regression passed (static contract)');
