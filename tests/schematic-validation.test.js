@@ -1,0 +1,11 @@
+const assert=require('node:assert/strict');const {validate}=require('../src/schematic-validation.js');
+const base={symbols:[{id:'a',type:'LS',x:10,y:20},{id:'b',type:'LAMP',x:30,y:20}],wires:[{a:'a',b:'b'}]};
+assert.equal(validate(base).valid,true);assert.equal(validate(base).warnings.length,0);
+assert.equal(validate({...base,wires:[{a:'a',b:'missing'}]}).valid,false);
+assert.equal(validate({...base,wires:[{a:'a',b:'a'}]}).valid,false);
+assert.equal(validate({...base,symbols:[base.symbols[0],base.symbols[0]]}).valid,false);
+assert.equal(validate({...base,wires:[]}).warnings.length,2);
+assert.equal(validate({...base,wires:[{a:'a',b:'b'},{a:'b',b:'a'}]}).warnings.length,1);
+assert.equal(validate({...base,symbols:[{id:'x',type:'INVALID',x:0,y:0}]}).valid,false);
+assert.equal(validate({}).valid,false);
+console.log('Schematic structural validation: 8 checks passed');
