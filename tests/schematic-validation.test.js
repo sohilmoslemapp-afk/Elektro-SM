@@ -5,7 +5,7 @@ assert.equal(validate({...base,wires:[{a:'a',b:'missing'}]}).valid,false);
 assert.equal(validate({...base,wires:[{a:'a',b:'a'}]}).valid,false);
 assert.equal(validate({...base,symbols:[base.symbols[0],base.symbols[0]]}).valid,false);
 assert.equal(validate({...base,wires:[]}).warnings.length,2);
-assert.ok(validate({...base,wires:[{a:'a',b:'b'},{a:'b',b:'a'}]}).warnings.some(w=>w.includes('doppelte Verbindung')));
+assert.equal(validate({...base,wires:[{a:'a',b:'b'},{a:'b',b:'a'}]}).warnings.filter(w=>w.includes('doppelte Verbindung')).length,0,'Unassigned terminal pairs must not be called duplicates');
 assert.equal(validate({...base,symbols:[{id:'x',type:'INVALID',x:0,y:0}]}).valid,false);
 assert.equal(validate({}).valid,false);
 const assigned={symbols:[{...base.symbols[0],manualTerminals:['1']},{...base.symbols[1],manualTerminals:['2']}],wires:[{a:'a',b:'b',fromTerminal:'1',toTerminal:'2'}]};
