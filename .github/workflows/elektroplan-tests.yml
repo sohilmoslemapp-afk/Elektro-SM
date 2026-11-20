@@ -31,6 +31,8 @@ jobs:
         run: node tests/component-exact-part-number.test.js
       - name: OCR recognition fallback and error handling
         run: node --test tests/image-text-recognition.test.js
+      - name: Bounded experimental image OCR output
+        run: node tests/image-text-bounds.test.js
       - name: Integrated OCR and source UI contract
         run: node tests/integrated-ui-contract.test.js
       - name: Trilingual interface safety contract
