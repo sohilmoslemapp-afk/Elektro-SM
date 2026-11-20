@@ -29,6 +29,8 @@ small{display:block;line-height:1.5;margin-top:16px}
 <p id="status">Seite geladen. Bereit.</p>
 <img id="preview" alt="Bildvorschau">
 <button id="check" type="button">🔎 Funktion prüfen</button>
+<button id="read-image-text" type="button">Bildtext erkennen (experimentell)</button>
+<p id="image-text-result" role="status" aria-live="polite">Noch keine Texterkennung durchgeführt.</p>
 <section>
 <h2>Bauteil erfassen</h2>
 <label for="type">Bauteiltyp</label>
@@ -57,6 +59,7 @@ small{display:block;line-height:1.5;margin-top:16px}
   <ul id="component-list"></ul>
 </section>
 </main>
+<script src="src/image-text-recognition.js"></script>
 <script src="src/manufacturer-evidence.js"></script>
 <script src="src/component-recognition.js"></script>
 <script>
@@ -65,6 +68,14 @@ var s=document.getElementById('status');
 var p=document.getElementById('preview');
 function msg(t){s.textContent=t}
 window.addEventListener('error',function(e){msg('JavaScript-Fehler: '+e.message)});
+document.getElementById('read-image-text').addEventListener('click',async function(){
+ const output=document.getElementById('image-text-result');
+ if(!p.src||p.style.display==='none'){output.textContent='Bitte zuerst ein Bild auswählen.';return}
+ if(!window.ElektroPlanImageText){output.textContent='Texterkennungsmodul nicht geladen.';return}
+ output.textContent='Texterkennung läuft …';
+ const result=await window.ElektroPlanImageText.readImageText(p,window);
+ output.textContent=result.message+(result.lines.length?'\\n'+result.lines.join('\\n'):'');
+});
 document.getElementById('check').onclick=function(){
 msg('✓ JavaScript funktioniert.\nAdresse: '+location.protocol+'\nBrowser: '+navigator.userAgent.slice(0,110));
 };
