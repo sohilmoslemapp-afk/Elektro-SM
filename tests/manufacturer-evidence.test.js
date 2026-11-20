@@ -3,7 +3,7 @@ const {test}=require('node:test');
 const {assessManufacturerEvidence}=require('../src/manufacturer-evidence');
 const valid={
  identity:{manufacturer:'Example Manufacturer',model:'EX-1',partNumber:'EX-1-01'},
- evidence:{documentTitle:'EX-1 Datasheet',documentUrl:'https://example.invalid/ex-1.pdf',documentRevision:'Rev A',pageReference:'p. 3',publisherVerified:true,modelMatchVerified:true,terminalMappingReviewed:true},
+ evidence:{documentTitle:'EX-1 Datasheet',documentPartNumber:'EX-1-01',publisherReviewReference:'manual reviewer check',modelReviewReference:'manual model check',reviewer:'Example Reviewer',reviewDate:'2026-11-20',documentUrl:'https://example.invalid/ex-1.pdf',documentRevision:'Rev A',pageReference:'p. 3',publisherVerified:true,modelMatchVerified:true,terminalMappingReviewed:true},
  terminals:[{name:'A1',function:'Documented function',sourceReference:'p. 3'}]
 };
 function copy(){return JSON.parse(JSON.stringify(valid))}
@@ -39,4 +39,17 @@ test('manufacturer document URL must be a valid HTTPS URL without embedded crede
   const x=copy();x.evidence.documentUrl=url;
   assert.equal(assessManufacturerEvidence(x).usableForTerminalReference,false,url);
  }
+});
+
+test('missing article number blocks terminal reference',()=>{
+ const x=copy();delete x.identity.partNumber;
+ assert.equal(assessManufacturerEvidence(x).usableForTerminalReference,false);
+});
+test('different article number in document blocks terminal reference',()=>{
+ const x=copy();x.evidence.documentPartNumber='EX-2-01';
+ assert.equal(assessManufacturerEvidence(x).usableForTerminalReference,false);
+});
+test('review flags without reviewer provenance cannot authorize terminal reference',()=>{
+ const x=copy();delete x.evidence.publisherReviewReference;delete x.evidence.reviewer;
+ assert.equal(assessManufacturerEvidence(x).usableForTerminalReference,false);
 });
