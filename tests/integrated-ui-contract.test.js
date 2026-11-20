@@ -68,3 +68,8 @@ assert.ok(html.includes('if(!w)return msg(\'Leitung nicht mehr vorhanden – Aus
 assert.ok(html.includes('const pickerWires=data.wires.map(w=>({ref:w,a:w.a,b:w.b}))'),'Terminal picker must snapshot wire identities and component endpoints');
 assert.ok(html.includes('w.a!==pickerWires[index].a||w.b!==pickerWires[index].b'),'Terminal picker must reject changed wire endpoints');
 assert.ok(html.includes('Leitung geändert – Auswahl neu öffnen'),'Terminal picker must explain stale selection');
+
+assert.ok(html.includes('const errorCount=result.errors.length+terminalResult.errors.length+invalidWires'),'Plan check must count structural and terminal errors');
+assert.ok(html.includes('const warningCount=result.warnings.length+terminalResult.warnings.length+pendingWires'),'Plan check must count pending wire assignments and review warnings');
+assert.ok(html.includes("summary.setAttribute('role','status')"),'Plan check summary must be accessible');
+assert.ok(html.includes('Hinweise – keine elektrische Freigabe.'),'Plan check summary must explicitly deny electrical approval');
