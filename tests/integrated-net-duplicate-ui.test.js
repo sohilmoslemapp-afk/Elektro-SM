@@ -26,3 +26,10 @@ assert.match(html,/pending\.duplicateOf\+1/,'Review panel must identify the orig
 assert.match(html,/data\.wires\[pending\.wire\]!==reviewedWire/,'Review must refuse stale wire references');
 assert.equal(check.pending[0].duplicateOf,0,'Duplicate must point to original wire');
 assert.match(html,/Duplikat von W/,'CSV export must identify original duplicate wire');
+
+
+// Duplicate connections must also be visible on the drawing, not only in diagnostics.
+assert.match(html,/const duplicateWireIndexes=new Set/,'Renderer must derive duplicate wire indexes from the topology analysis');
+assert.match(html,/const duplicate=duplicateWireIndexes\.has\(index\)/,'Each drawn wire must check its duplicate state');
+assert.match(html,/duplicate\?' ⚠ doppelt'/,'Duplicate wire label must be visibly marked');
+assert.match(html,/invalid\|\|duplicate\|\|missing\?'6 4'/,'Duplicate wire must use a caution dash pattern');
