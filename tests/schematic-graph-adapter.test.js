@@ -27,7 +27,7 @@ assert.deepEqual(malformedWire.pending.map(x=>x.wire),[0],'Null wires must remai
 const blankAndNonString=fromSchematic({...project,wires:[
  {a:'F3',b:'X1',fromTerminal:' ',toTerminal:'3'},
  {a:'F3',b:'X1',fromTerminal:2,toTerminal:'3'},
- {a:'F3',b:'X1',fromTerminal:'2',toTerminal:'\\t'},
+ {a:'F3',b:'X1',fromTerminal:'2',toTerminal:'\t'},
  {a:'F3',b:'X1',fromTerminal:'2',toTerminal:'3'}
 ]});
 assert.deepEqual(blankAndNonString.pending.map(p=>p.wire),[0,1,2],'Whitespace and non-string terminal references remain pending');
