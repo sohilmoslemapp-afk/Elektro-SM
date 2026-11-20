@@ -69,6 +69,8 @@ jobs:
         run: node tests/integrated-corrupt-history.test.js
       - name: Integrated undo redo history safety
         run: node tests/integrated-undo-redo-history.test.js
+      - name: Integrated interrupted touch drag rollback
+        run: node tests/integrated-pointer-cancel-rollback.test.js
       - name: Integrated Schaltplan UI wiring
         run: node tests/integrated-schematic-ui.test.js
 
