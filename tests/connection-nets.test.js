@@ -84,3 +84,16 @@ assert.deepEqual(removedBranch.nets.map(n=>n.terminals.length).sort(),[2,2]);
 const reversedWires=analyze({symbols:branchProject.symbols,wires:[...branchProject.wires].reverse()});
 assert.deepEqual(reversedWires.nets,branched.nets,'wire ordering must not change net grouping');
 console.log('Explicit terminal connectivity grouping regression passed');
+
+
+// Repeated and reversed wires are not silently accepted as independent evidence.
+const repeated=analyze({symbols:chainSymbols,wires:[chainWires[0],chainWires[0],{a:'B',fromTerminal:'1',b:'A',toTerminal:'1'}]});
+assert.equal(repeated.nets.length,1,'duplicate wires must not create phantom networks');
+assert.equal(repeated.nets[0].terminals.length,2);
+assert.equal(repeated.pending.length,2,'repeated and reversed duplicate wires require review');
+assert.ok(repeated.pending.every(item=>/Doppelte Anschlussverbindung/.test(item.reason)));
+assert.deepEqual(repeated.pending.map(item=>item.wire),[1,2],'pending indexes identify duplicate drawn wires');
+assert.equal(repeated.electricallyApproved,false);
+const distinctParallel=analyze({symbols:[{id:'A',manualTerminals:['1','2']},{id:'B',manualTerminals:['1','2']}],wires:[{a:'A',fromTerminal:'1',b:'B',toTerminal:'1'},{a:'A',fromTerminal:'2',b:'B',toTerminal:'2'}]});
+assert.equal(distinctParallel.pending.length,0,'different terminal pairs must not be treated as duplicates');
+assert.equal(distinctParallel.nets.length,2,'different terminal pairs remain independent networks');
