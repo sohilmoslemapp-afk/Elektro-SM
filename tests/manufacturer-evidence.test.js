@@ -33,3 +33,10 @@ test('OCR-only guesses without documentation cannot be used',()=>{
  assert.equal(result.usableForTerminalReference,false);
  assert.equal(result.electricallyApproved,false);
 });
+
+test('manufacturer document URL must be a valid HTTPS URL without embedded credentials',()=>{
+ for(const url of ['https://','https://user:pass@example.com/manual.pdf','javascript:alert(1)','http://example.com/manual.pdf','https://example.com@evil.test/manual.pdf']) {
+  const x=copy();x.evidence.documentUrl=url;
+  assert.equal(assessManufacturerEvidence(x).usableForTerminalReference,false,url);
+ }
+});
