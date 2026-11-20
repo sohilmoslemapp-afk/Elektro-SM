@@ -52,6 +52,8 @@ jobs:
 
       - name: Terminal graph validation
         run: node tests/terminal-graph.test.js
+      - name: Schematic terminal graph adapter
+        run: node tests/schematic-graph-adapter.test.js
 
       - name: Integrated project import size guard
         run: node tests/integrated-import-size-guard.test.js
