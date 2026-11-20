@@ -114,3 +114,7 @@ assert.ok(html.includes("ElektroPlanV134?.validHttps(part.docUrl)"),'Document li
 
 assert.ok(html.includes('id="partNumber"'),'Component library must capture article number separately from model');
 assert.ok(html.includes("partNumber:safe($('partNumber').value)"),'Article number must be saved in library records');
+
+assert.ok(html.includes('id="photoPartNumber"'),'Camera must capture article number separately');
+assert.ok(html.includes("safe($('photoPartNumber').value)!==result.item.partNumber"),'Camera insertion must reject article-number mismatch');
+assert.ok(html.includes("$('partNumber').value=safe($('photoPartNumber').value)"),'Camera must transfer article number to library form');
