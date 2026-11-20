@@ -1,0 +1,14 @@
+'use strict';
+const assert=require('node:assert/strict');
+const {exportDxf}=require('../src/dxf-export');
+const {previewDxf}=require('../src/dxf-preview');
+const dxf=exportDxf({symbols:[{id:'A',type:'LS',x:100,y:200,manualTerminals:['1','2']},{id:'B',type:'MOTOR',x:300,y:200}],wires:[{a:'A',b:'B'}]});
+const p=previewDxf(dxf);
+assert.equal(p.entities.filter(e=>e.type==='LINE').length,1);
+assert.equal(p.entities.filter(e=>e.type==='CIRCLE').length,4);
+assert(p.entities.some(e=>e.type==='TEXT'&&e.text.includes('MOTOR')));
+assert.equal(p.unsupportedCount,0);
+assert.throws(()=>previewDxf('0\nSECTION\n2\nENTITIES\n0\nLINE\n10\nInfinity\n0\nENDSEC\n'),/coordinate/);
+assert.throws(()=>previewDxf('0\nSECTION\n2\nENTITIES\n0\nLINE\n10'),/Truncated/);
+assert.throws(()=>previewDxf('x\nfoo\n'),/group code/);
+console.log('Read-only DXF geometry preview and export roundtrip passed');
