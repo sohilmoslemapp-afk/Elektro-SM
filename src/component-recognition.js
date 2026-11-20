@@ -6,9 +6,9 @@
 const evidence=(typeof module!=='undefined'&&module.exports)
  ? require('./manufacturer-evidence')
  : root.ElektroPlanManufacturerEvidence;
-function clean(s){return typeof s==='string'?s.trim():''}
+function clean(s){return typeof s==='string'?s.trim().slice(0,200):''}
 function prepareIdentification(input){
- const candidates=Array.isArray(input?.candidates)?input.candidates:[];
+ const candidates=Array.isArray(input?.candidates)?input.candidates.slice(0,100):[];
  const safe=candidates.filter(c=>c&&typeof c==='object').map(c=>({
   manufacturer:clean(c.manufacturer),model:clean(c.model),
   partNumber:clean(c.partNumber),origin:c.origin==='manual'?'manual':'ocr',
