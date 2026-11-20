@@ -52,3 +52,12 @@ const blankIds=fromSchematic({...project,wires:[
 assert.deepEqual(blankIds.pending.map(p=>p.wire),[0,1],'Blank and numeric component identifiers remain pending');
 assert.equal(blankIds.connections.length,1,'Only complete component references enter graph');
 assert.equal(blankIds.connections[0].sourceWire,2,'Connection retains source wire index');
+
+const orphanWires=fromSchematic({...project,wires:[
+ {a:'UNKNOWN',b:'X1',fromTerminal:'1',toTerminal:'3'},
+ {a:'F3',b:'MISSING',fromTerminal:'2',toTerminal:'3'},
+ {a:'F3',b:'X1',fromTerminal:'2',toTerminal:'3'}
+]});
+assert.deepEqual(orphanWires.pending,[{wire:0,reason:'Bauteilreferenz unbekannt'},{wire:1,reason:'Bauteilreferenz unbekannt'}],'Orphan symbol references must remain pending');
+assert.equal(orphanWires.connections.length,1,'Only existing schematic symbol references become graph connections');
+assert.equal(orphanWires.connections[0].sourceWire,2,'Valid edge must retain original index after orphan filtering');
