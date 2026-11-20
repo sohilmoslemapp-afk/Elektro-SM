@@ -80,3 +80,17 @@ assert.deepEqual(missingTerminals.pending.map(x=>x.wire),[0,1],'Both ends of unk
 assert.ok(missingTerminals.pending.every(x=>x.reason==='Klemmenreferenz unbekannt'));
 assert.equal(missingTerminals.connections.length,1);
 assert.equal(missingTerminals.connections[0].sourceWire,2);
+
+const duplicateSymbols=fromSchematic({symbols:[
+ {id:'F3',manualTerminals:['1','2']},
+ {id:'F3',manualTerminals:['1','2']},
+ {id:'X1',manualTerminals:['3']},
+ {id:'Y1',manualTerminals:['1']}
+],wires:[
+ {a:'F3',b:'X1',fromTerminal:'2',toTerminal:'3'},
+ {a:'X1',b:'Y1',fromTerminal:'3',toTerminal:'1'},
+ {a:'Y1',b:'F3',fromTerminal:'1',toTerminal:'1'}
+]});
+assert.deepEqual(duplicateSymbols.pending,[{wire:0,reason:'Bauteilreferenz mehrdeutig'},{wire:2,reason:'Bauteilreferenz mehrdeutig'}],'Ambiguous duplicate symbol identifiers must remain pending');
+assert.equal(duplicateSymbols.connections.length,1,'Unambiguous wires must still be converted');
+assert.equal(duplicateSymbols.connections[0].sourceWire,1,'Unambiguous wire source index remains unchanged');
