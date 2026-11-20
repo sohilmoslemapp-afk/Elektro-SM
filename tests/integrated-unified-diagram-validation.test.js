@@ -1,0 +1,18 @@
+'use strict';
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const path=require('node:path');
+const html=fs.readFileSync(path.join(__dirname,'../prototypes/ElektroPlan-SM-integriert.html'),'utf8');
+const start=html.indexOf('function validateDiagram(){');
+const end=html.indexOf("$('checkDiagram').onclick=validateDiagram",start);
+assert.ok(start>=0&&end>start);
+const handler=html.slice(start,end);
+assert.match(handler,/window\.ElektroPlanValidation\.validate\(data\)/);
+assert.match(handler,/if\(!window\.ElektroPlanValidation\)/);
+assert.match(handler,/result\.valid\?'✓ Keine Strukturfehler'/);
+assert.match(handler,/result\.errors\.length\+' Strukturfehler'/);
+assert.match(handler,/result\.disclaimer/);
+assert.doesNotMatch(handler,/new Set\(/);
+assert.match(html,/\$\('checkDiagram'\)\.onclick=validateDiagram/);
+assert.match(html,/\$\('checkPlan'\)\.onclick=\(\)=>\{/);
+console.log('Unified integrated diagram validation contract passed (static, not browser test)');
