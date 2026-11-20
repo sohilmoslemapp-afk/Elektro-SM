@@ -32,3 +32,22 @@ Nur grafische und strukturelle Prüfungen, keine elektrische Freigabe oder Normk
 - **Maus und Tastatur:** Vollständige Bedienung am Desktop, inklusive Fokus, Auswahl und verständlichen Fehlermeldungen.
 - **Funktionsparität:** Neue Kernfunktionen benötigen einen dokumentierten Weg über Sprache, Text, Touch und Maus; wo Sprach-APIs nicht verfügbar sind, muss die Texteingabe als Ersatz funktionieren.
 - **Qualität:** Tests für Befehlsinterpretation (de/en/ar), Touch-/Pointer-Ereignisse, Tastatur und Maus; reale Gerätetests vor Freigabe.
+
+
+## Dateiformate und CAD-Interoperabilität (verbindliche Produktanforderung)
+
+ElektroPlan SM soll möglichst viele relevante Formate für Elektrotechnik, CAD und Dokumentation **importieren, exportieren oder über überprüfbare Konverter austauschen**. Die drei Fähigkeiten sind getrennt zu dokumentieren; ein Anzeigeformat ist nicht automatisch ein bearbeitbares Projektformat.
+
+**Priorisierte Formate (nach realer technischer Verfügbarkeit):**
+- Native, verlustarme Projektdatei: versioniertes ElektroPlan-SM-JSON mit Symbolen, Leitungen, Klemmen, Metadaten und Prüfhistorie.
+- Dokumente und Vektorgrafik: PDF, SVG; Rasterbilder PNG, JPEG, TIFF und WebP, ggf. mit OCR und ausdrücklich ohne behauptete elektrische Semantik.
+- Austausch und Datenlisten: CSV, XML, JSON, XLSX; später strukturierte Klemmen-, Stücklisten- und Leitungsdaten.
+- CAD-Zeichnungen: DXF (priorisiert), DWG (nur mit rechtmäßig verfügbarer und getesteter Bibliothek oder Konvertierung), ggf. DGN.
+- Industrie-/Engineering-Austausch: AutomationML/CAEX (AML), EPLAN-spezifische Exporte, WSCAD-Exporte, EDZ (EPLAN-Datenpaket) und weitere Formate nur nach Schema-, Lizenz- und Rundlaufprüfung.
+- Weitere Formate wie DWF, IFC, STEP oder herstellerspezifische Dateitypen werden anhand konkreter Anwendungsfälle bewertet, nicht pauschal als unterstützt ausgegeben.
+
+**Vom Auftraggeber genannte Kürzel:** DF, BDF, XDF, VGD. Diese Bezeichnungen sind mehrdeutig bzw. nicht als eindeutige Elektro-CAD-Formate bestätigt. Vor Implementierung sind vollständige Dateiendung, Beispiel, erzeugende Software und gewünschte Funktion (Import/Export/Bearbeitung) zu ermitteln. Nicht mit DXF, DWG oder anderen Formaten gleichsetzen.
+
+**Qualitätskriterien je Format:** dokumentierte Versionsbereiche, Lesbarkeit, Schreiben, Erhalt der elektrischen Semantik, Layer/Symbole/Klemmen, Text und Sonderzeichen, sichere Dateiverarbeitung, große Dateien, Konvertierungsverluste, Lizenzbedingungen und automatisierte Roundtrip-Tests. Unbekannte oder proprietäre Formate niemals als voll unterstützt kennzeichnen. Keine Ausführung von Makros oder eingebetteten Skripten aus importierten Dateien.
+
+**Entwicklungsreihenfolge:** zuerst native Projekte und CSV/SVG/PDF zuverlässig; dann DXF sowie strukturierte XML/AML-Schnittstellen; danach priorisierte EPLAN/WSCAD-Workflows und weitere CAD-Formate nach validierten Testdateien. Unterstützung auf Mobilgeräten und Desktop muss getrennt geprüft werden.
