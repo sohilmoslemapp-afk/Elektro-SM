@@ -11,6 +11,7 @@ const path=require('node:path');
   await page.locator('[data-add="LS"]').click();
   const symbol=page.locator('#symbols > g').first();
   const before=await symbol.getAttribute('transform');
+  await symbol.scrollIntoViewIfNeeded();
   const rect=await symbol.boundingBox();
   if(!rect)throw Error('Symbol not visible');
   const x=rect.x+rect.width/2,y=rect.y+rect.height/2;
