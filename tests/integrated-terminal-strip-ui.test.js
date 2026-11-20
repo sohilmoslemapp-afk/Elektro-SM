@@ -1,0 +1,10 @@
+'use strict';
+const assert=require('node:assert/strict');
+const fs=require('node:fs'),path=require('node:path');
+const html=fs.readFileSync(path.join(__dirname,'../prototypes/ElektroPlan-SM-integriert.html'),'utf8');
+assert.match(html,/t\.textContent=s\.stripLabel\?\('KLEMME '\+s\.stripLabel\):s\.type/);
+assert.match(html,/Boolean\(wireStartTerminal\)!==Boolean\(picked\)/);
+assert.match(html,/keine Teilzuordnung/);
+assert.match(html,/if\(wireStartTerminal\)next\.fromTerminal=wireStartTerminal/);
+assert.match(html,/if\(picked\)next\.toTerminal=picked/);
+console.log('Terminal strip visible label and incomplete touch connection guard passed');
