@@ -13,4 +13,7 @@ assert.equal(Boolean(requiresReview(true,false,0,0,0,false)),true,'terminal erro
 assert.equal(Boolean(requiresReview(true,true,0,0,0,false)),false,'complete structural checks do not force extra review');
 assert.equal(Boolean(requiresReview(true,true,1,0,0,false)),true,'missing terminal mapping requires review');
 assert.equal(Boolean(requiresReview(true,true,0,0,1,false)),true,'unresolved connectivity requires review');
+assert.match(source,/const unresolvedGraph=terminalModel\.pending\.length/,'Adapter pending wires must be counted');
+assert.match(source,/terminalModel\.pending\.map\(x=>/,'Adapter pending wire reasons must be visible');
+assert.match(source,/pendingWires\|\|unresolvedNets\|\|unresolvedGraph/,'Adapter pending wires must prevent complete status');
 console.log('Integrated terminal graph failure review contract passed (static contract)');
