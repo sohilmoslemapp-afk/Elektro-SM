@@ -10,10 +10,11 @@ function validateImport(payload){
  if(!Array.isArray(d.symbols)||!Array.isArray(d.wires)||!Array.isArray(d.parts))return {ok:false,errors:['Projektlisten fehlen']};
  if(d.symbols.length>10000||d.wires.length>50000||d.parts.length>10000)errors.push('Projekt überschreitet Sicherheitsgrenzen');
  if(typeof d.name!=='string'||d.name.length>200)errors.push('Ungültiger Projektname');
- const ids=new Set();
+ const ids=new Set(),normalizedIds=new Set();
+ const unsafeId=/[\\u0000-\\u001f\\u007f-\\u009f\\u200b-\\u200f\\u202a-\\u202e\\u2060-\\u2069\\ufeff]/u;
  d.symbols.forEach((s,i)=>{
-  if(!s||typeof s.id!=='string'||s.id.length>100||!s.id||ids.has(s.id))errors.push('Symbol '+i+': ungültige Kennung');
-  else ids.add(s.id);
+  if(!s||typeof s.id!=='string'||s.id.length>100||!s.id||s.id!==s.id.trim()||unsafeId.test(s.id)||ids.has(s.id)||normalizedIds.has(s.id.normalize('NFC')))errors.push('Symbol '+i+': ungültige Kennung');
+  else {ids.add(s.id);normalizedIds.add(s.id.normalize('NFC'));}
   if(!types.has(s?.type)||!Number.isFinite(s?.x)||!Number.isFinite(s?.y)||Math.abs(s.x)>100000||Math.abs(s.y)>100000)errors.push('Symbol '+i+': ungültige Daten');
   if(['partBrand','partModel'].some(k=>s?.[k]!==undefined&&(typeof s[k]!=='string'||s[k].length>200)))errors.push('Symbol '+i+': ungültige Bauteilreferenz');
   if(s?.sourceRecord!==undefined&&!validSource(s.sourceRecord,s.partBrand,s.partModel))errors.push('Symbol '+i+': ungültiger Quellenbeleg');
