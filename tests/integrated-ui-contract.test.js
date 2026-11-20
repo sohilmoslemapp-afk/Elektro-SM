@@ -119,3 +119,7 @@ assert.ok(html.includes('id="photoPartNumber"'),'Camera must capture article num
 assert.ok(html.includes("if(!result.item.partNumber||!safe($('photoPartNumber').value))"),'Camera insertion must reject missing article numbers');
 assert.ok(html.includes("if(safe($('photoPartNumber').value)!==result.item.partNumber)"),'Camera insertion must reject article-number mismatch');
 assert.ok(html.includes("$('partNumber').value=safe($('photoPartNumber').value)"),'Camera must transfer article number to library form');
+
+assert.ok(html.includes('id="findManufacturerDocument"'),'Library must offer datasheet discovery');
+assert.ok(html.includes("encodeURIComponent(query)"),'Manufacturer datasheet search must URL-encode exact identity');
+assert.ok(html.includes('Ergebnisse sind nicht automatisch als Herstellerquellen bestätigt'),'Search results must not imply verified manufacturer source');
