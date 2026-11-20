@@ -46,6 +46,8 @@ small{display:block;line-height:1.5;margin-top:16px}
 <label for="model">Modell / Artikelnummer</label>
 <input id="model" class="field" placeholder="Modell eingeben">
 <button id="record" type="button">Bauteil erfassen</button>
+<button id="identify" type="button">Identität zur Prüfung vorbereiten</button>
+<p id="identity-review" role="status" aria-live="polite">Noch keine Identitätsprüfung durchgeführt.</p>
 <p id="result">Noch kein Bauteil erfasst.</p>
 <small>Entwicklungsstand: keine automatische Bilderkennung. Anschlussbelegung nur anhand geprüfter Herstellerunterlagen beurteilen.</small>
 </section>
@@ -55,6 +57,8 @@ small{display:block;line-height:1.5;margin-top:16px}
   <ul id="component-list"></ul>
 </section>
 </main>
+<script src="src/manufacturer-evidence.js"></script>
+<script src="src/component-recognition.js"></script>
 <script>
 (function(){
 var s=document.getElementById('status');
@@ -89,6 +93,19 @@ var m=document.getElementById('model').value.trim();
 document.getElementById('result').textContent=t&&b&&m?'✓ Erfasst: '+t+' | '+b+' | '+m:'Bitte Typ, Hersteller und Modell eingeben.';
 };
 
+document.getElementById('identify').addEventListener('click',function(){
+ const brand=document.getElementById('brand').value.trim();
+ const model=document.getElementById('model').value.trim();
+ const output=document.getElementById('identity-review');
+ if(!brand||!model){output.textContent='Hersteller und Modell eingeben.';return}
+ if(!window.ElektroPlanRecognition){output.textContent='Prüfmodul nicht geladen.';return}
+ const result=window.ElektroPlanRecognition.prepareIdentification({
+  candidates:[{manufacturer:brand,model:model,origin:'manual'}]
+ });
+ output.textContent=result.status==='identity_review_required'
+  ? 'Identität erfasst – Herstellerdokument und Modell müssen geprüft werden. Keine Anschlussfreigabe.'
+  : 'Identität unvollständig – Prüfung erforderlich.';
+});
 const componentList = document.getElementById('component-list');
 const savedComponents = JSON.parse(
   localStorage.getItem('elektroplan-components') || '[]'
