@@ -102,3 +102,13 @@ assert.deepEqual(repeated.pending.map(item=>item.duplicateOf),[0,0],'duplicate w
 const duplicateAfterReorder=analyze({symbols:chainSymbols,wires:[{a:'B',fromTerminal:'1',b:'A',toTerminal:'1'},chainWires[0]]});
 assert.equal(duplicateAfterReorder.pending[0].wire,1);
 assert.equal(duplicateAfterReorder.pending[0].duplicateOf,0,'reversed original must be identified deterministically');
+
+
+// Canonically equivalent terminal names must not be treated as distinct pins.
+const aliases=analyze({symbols:[{id:'A',manualTerminals:['é','e\u0301']},{id:'B',manualTerminals:['1']}],wires:[{a:'A',fromTerminal:'é',b:'B',toTerminal:'1'}]});
+assert.equal(aliases.nets.length,0,'Unicode-equivalent duplicate terminals must not create trusted connectivity');
+assert.equal(aliases.pending.length,1);
+assert.match(aliases.pending[0].reason,/Anschlussreferenz/);
+const safeUnicode=analyze({symbols:[{id:'A',manualTerminals:['é']},{id:'B',manualTerminals:['1']}],wires:[{a:'A',fromTerminal:'é',b:'B',toTerminal:'1'}]});
+assert.equal(safeUnicode.pending.length,0,'unique Unicode terminal names remain supported');
+assert.equal(safeUnicode.nets.length,1);
