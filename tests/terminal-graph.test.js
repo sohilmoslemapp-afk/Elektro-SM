@@ -74,3 +74,10 @@ assert.equal(noTerminals.valid,true,'No terminals is incomplete, not a malformed
 assert.equal(noTerminals.reviewRequired,true);
 assert.ok(noTerminals.warnings.some(w=>w.includes('Bauteil ohne erfasste Anschlüsse: K2')));
 assert.ok(!check(a).warnings.some(w=>w.includes('Bauteil ohne erfasste Anschlüsse')));
+
+const invalidOnly=check({components:[{id:'K3',terminals:[' bad ']}],connections:[]});
+assert.equal(invalidOnly.valid,false);
+assert.ok(!invalidOnly.warnings.some(w=>w.includes('Bauteil ohne erfasste Anschlüsse')),'Invalid terminal entry must not be misreported as an empty list');
+const duplicateInternal=check({components:[{id:'K4',terminals:['1','2']}],connections:[{from:{component:'K4',terminal:'1'},to:{component:'K4',terminal:'2'}},{from:{component:'K4',terminal:'2'},to:{component:'K4',terminal:'1'}}]});
+assert.equal(duplicateInternal.valid,false);
+assert.equal(duplicateInternal.warnings.filter(w=>w.includes('Zwei Anschlüsse desselben Bauteils')).length,1,'Duplicate internal wire must not produce a second review warning');
