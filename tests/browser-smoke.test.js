@@ -171,6 +171,8 @@ const path = require('node:path');
     const wireCsv=await wireCsvPromise;
     const wireCsvText=await require('node:fs/promises').readFile(await wireCsv.path(),'utf8');
     if(!wireCsvText.includes('Von Klemme (manuell)')||!wireCsvText.includes('Nach Klemme (manuell)'))throw Error('Wiring CSV omitted manual terminal headers');
+    if(!wireCsvText.includes('"Leitung Nr."')||!wireCsvText.includes('"W1"'))throw Error('Wiring CSV missing numbered schematic wire reference');
+    if(!await page.locator('#wires').textContent().then(t=>t.includes('W1')))throw Error('Schematic missing matching wire reference');
     if(!wireCsvText.includes('"A1"')||!wireCsvText.includes('"A2"')||!wireCsvText.includes('NICHT herstellerverifiziert'))throw Error('Wiring CSV omitted assigned terminal labels or safety warning');
     await page.locator('[data-tab="project"]').click();
     const downloadPromise=page.waitForEvent('download');
