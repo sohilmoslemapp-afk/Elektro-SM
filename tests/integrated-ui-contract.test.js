@@ -144,7 +144,7 @@ assert.ok(html.includes("$('deleteWire').onclick=()=>{"), 'Wire deletion action 
 assert.ok(html.includes('data.wires.splice(index,1);recordHistory();render();persist()'), 'Wire deletion must update history, diagram and saved project');
 assert.ok(html.includes("select.id='wireDeleteSelect'"), 'Wire deletion must use a mobile-friendly selector');
 assert.ok(html.includes("remove.id='confirmDeleteWire'"), 'Wire deletion must require explicit confirmation');
-assert.ok(html.includes('w!==snapshot.ref||w.a!==snapshot.a||w.b!==snapshot.b'), 'Wire deletion must reject stale selection');
+assert.ok(html.includes('w!==snapshot.ref||w.a!==snapshot.a||w.b!==snapshot.b||w.fromTerminal!==snapshot.fromTerminal||w.toTerminal!==snapshot.toTerminal'), 'Wire deletion must reject stale selection');
 
 assert.ok(html.includes('id="netStatus"'), 'Schematic must display live connectivity summary');
 assert.ok(html.includes('function render(){renderNetStatus();renderDrawingTitleBlock()'), 'Live net status must refresh on schematic rendering');
@@ -155,3 +155,5 @@ assert.ok(html.includes("list.id='netDetailsList'"), 'Live net inspector must li
 assert.ok(html.includes("pending.reason"), 'Live net inspector must explain pending wire status');
 
 assert.ok(html.includes('w.fromTerminal!==pickerWires[index].fromTerminal||w.toTerminal!==pickerWires[index].toTerminal'),'Terminal picker must reject stale terminal assignments');
+
+assert.ok(html.includes('fromTerminal:w.fromTerminal,toTerminal:w.toTerminal'), 'Wire deletion must snapshot terminal endpoints as well as component identities');
