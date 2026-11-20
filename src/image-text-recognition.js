@@ -16,7 +16,7 @@ async function readImageText(image,environment){
  try{
   const detector=new env.TextDetector();
   const blocks=await detector.detect(image);
-  const lines=Array.isArray(blocks)?blocks.map(b=>typeof b.rawValue==='string'?b.rawValue.trim():'').filter(Boolean):[];
+  const lines=Array.isArray(blocks)?blocks.slice(0,100).map(b=>typeof b?.rawValue==='string'?b.rawValue.trim().slice(0,300):'').filter(Boolean):[];
   return {status:lines.length?'review_required':'no_text',lines,verified:false,
    message:lines.length?'Bildtext erkannt – Hersteller und Modell manuell prüfen. Keine Anschlussfreigabe.':'Kein lesbarer Bildtext erkannt.'};
  }catch(e){
