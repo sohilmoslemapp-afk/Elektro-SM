@@ -61,3 +61,11 @@ const orphanWires=fromSchematic({...project,wires:[
 assert.deepEqual(orphanWires.pending,[{wire:0,reason:'Bauteilreferenz unbekannt'},{wire:1,reason:'Bauteilreferenz unbekannt'}],'Orphan symbol references must remain pending');
 assert.equal(orphanWires.connections.length,1,'Only existing schematic symbol references become graph connections');
 assert.equal(orphanWires.connections[0].sourceWire,2,'Valid edge must retain original index after orphan filtering');
+
+const manySymbols=Array.from({length:250},(_,i)=>({id:'K'+i,manualTerminals:['1','2']}));
+const manyWires=Array.from({length:249},(_,i)=>({a:'K'+i,b:'K'+(i+1),fromTerminal:'2',toTerminal:'1'}));
+manyWires.splice(100,0,{a:'K0',b:'GONE',fromTerminal:'1',toTerminal:'2'});
+const indexed=fromSchematic({symbols:manySymbols,wires:manyWires});
+assert.equal(indexed.connections.length,249,'Large schematic keeps all valid connections');
+assert.deepEqual(indexed.pending,[{wire:100,reason:'Bauteilreferenz unbekannt'}],'Orphan detection remains deterministic in large schematics');
+assert.equal(indexed.connections[100].sourceWire,101,'Original wire indices remain stable after pending entries');
