@@ -21,8 +21,9 @@ function reviewCandidate(candidate,record){
  const identification=prepareIdentification({candidates:[candidate]});
  if(!identification.candidates.length)return {status:'identity_missing',terminalMappingAllowed:false,electricallyApproved:false};
  const c=identification.candidates[0],identity=record?.identity||{};
- const matches=c.manufacturer&&c.model&&c.manufacturer===identity.manufacturer&&c.model===identity.model
-  &&(!c.partNumber||c.partNumber===identity.partNumber);
+ const matches=c.manufacturer&&c.model&&c.partNumber
+  &&c.manufacturer===identity.manufacturer&&c.model===identity.model
+  &&c.partNumber===identity.partNumber;
  if(!matches)return {status:'identity_mismatch',terminalMappingAllowed:false,electricallyApproved:false};
  const result=evidence.assessManufacturerEvidence(record);
  return {status:result.usableForTerminalReference?'document_reviewed':'evidence_review_required',
