@@ -164,6 +164,15 @@ const path = require('node:path');
     await page.locator('#partList li').last().getByText('Daten auf ausgewähltes Symbol übernehmen').click();
     if(!await page.locator('#message').textContent().then(t=>t.includes('manuell übernommen')))throw Error('Apply-to-selected-symbol confirmation missing');
     if(await page.locator('#symbols > g').count()!==3)throw Error('Applying library data unexpectedly changed symbol count');
+    await page.locator('[data-tab="parts"]').click();
+    await page.locator('#partList li').last().getByText('Bibliothekseintrag löschen').click();
+    if(await page.locator('#partList li').count()!==1)throw Error('Library deletion did not remove exactly one entry');
+    await page.locator('[data-tab="plan"]').click();
+    if(await page.locator('#symbols > g').count()!==3)throw Error('Library deletion damaged existing schematic symbols');
+    await page.locator('#undoEdit').click();
+    await page.locator('[data-tab="parts"]').click();
+    if(await page.locator('#partList li').count()!==2)throw Error('Undo of library deletion did not restore entry');
+    await page.locator('[data-tab="plan"]').click();
     await page.locator('#undoEdit').click();
     if(await page.locator('#symbols > g').count()!==2)throw Error('No-op metadata application should not add an undo step; symbol insertion undo failed');
 
