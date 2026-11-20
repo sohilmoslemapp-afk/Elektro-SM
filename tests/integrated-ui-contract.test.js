@@ -51,3 +51,6 @@ assert.match(html,/Bereits vorhandene Plansymbole bleiben unverändert/,'Deletio
 
 assert.match(html,/const invalid=!!\(edge\.fromTerminal/,'Invalid terminal references must be detected for schematic warnings');
 assert.ok(html.includes("invalid?' ✖':missing?' ⚠':''"),'Invalid and missing terminal references must have different schematic markers');
+
+assert.ok(html.includes('Leitungen mit ungültiger Klemmenreferenz:'),'Plan check must report invalid terminal reference count');
+assert.ok(html.includes('Strukturprüfung: Fehlerhafte Klemmenreferenzen'),'Plan check must show an explicit invalid-terminal summary');
