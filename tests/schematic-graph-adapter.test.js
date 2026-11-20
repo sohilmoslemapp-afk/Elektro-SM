@@ -140,3 +140,20 @@ for(const entry of [null,{}, {wire:-1,reason:'Fehlt'}, {wire:1.5,reason:'Fehlt'}
  assert.equal(malformed.valid,false,'Malformed pending entry must fail closed: '+JSON.stringify(entry));
  assert.ok(malformed.errors.some(x=>x.startsWith('Ungültige offene Leitungsreferenz')));
 }
+
+const graphWith=(connections,pending)=>validateTerminalGraph({components:graph.components,connections,pending});
+const duplicatePending=graphWith(graph.connections,[{wire:1,reason:'Offen'},{wire:1,reason:'Noch offen'}]);
+assert.equal(duplicatePending.valid,false,'Same wire cannot appear twice in pending diagnostics');
+assert.ok(duplicatePending.errors.includes('Doppelte offene Leitungsreferenz 1'));
+const collision=graphWith(graph.connections,[{wire:0,reason:'Offen'}]);
+assert.equal(collision.valid,false,'A wire cannot be both connected and pending');
+assert.ok(collision.errors.includes('Leitung gleichzeitig offen und verbunden: 0'));
+const duplicateSource=graphWith([...graph.connections,{...graph.connections[0],sourceWire:0}],[]);
+assert.ok(duplicateSource.errors.includes('Doppelter Quellleitungsindex 0'));
+for(const bad of [-1,1.5,NaN,'0']){
+ const result=graphWith([{...graph.connections[0],sourceWire:bad}],[]);
+ assert.equal(result.valid,false,'Invalid source wire index must fail closed');
+ assert.ok(result.errors.includes('Ungültiger Quellleitungsindex 0'));
+}
+const noSourceIndex=graphWith([{from:graph.connections[0].from,to:graph.connections[0].to}],[]);
+assert.equal(noSourceIndex.errors.some(x=>x.includes('Quellleitungsindex')),false,'Standalone graph edges need not carry schematic source indexes');
