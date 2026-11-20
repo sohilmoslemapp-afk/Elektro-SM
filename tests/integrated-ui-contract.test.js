@@ -143,3 +143,7 @@ assert.ok(html.includes('id="deleteWire"'), 'Schaltplan must expose a wire delet
 assert.ok(html.includes("$('deleteWire').onclick=()=>{"), 'Wire deletion action must be bound');
 assert.ok(html.includes('data.wires.splice(index,1);recordHistory();render();persist()'), 'Wire deletion must update history, diagram and saved project');
 assert.ok(html.includes('Number.isSafeInteger(index)'), 'Wire deletion must reject invalid indexes');
+
+assert.ok(html.includes('id="netStatus"'), 'Schematic must display live connectivity summary');
+assert.ok(html.includes('function render(){renderNetStatus();renderDrawingTitleBlock()'), 'Live net status must refresh on schematic rendering');
+assert.ok(html.includes('labels.length>8'), 'Manual terminal editor must match eight-terminal net analysis limit');
