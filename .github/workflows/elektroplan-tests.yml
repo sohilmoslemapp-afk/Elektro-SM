@@ -46,5 +46,7 @@ jobs:
 
       - name: Unicode project import safety regression
         run: node tests/project-import-unicode-ids.test.js
+      - name: Project import envelope shape regression
+        run: node tests/project-import-envelope.test.js
       - name: Project import validation
         run: node tests/project-import-validation.test.js
