@@ -123,3 +123,7 @@ assert.ok(html.includes("$('partNumber').value=safe($('photoPartNumber').value)"
 assert.ok(html.includes('id="findManufacturerDocument"'),'Library must offer datasheet discovery');
 assert.ok(html.includes("encodeURIComponent(query)"),'Manufacturer datasheet search must URL-encode exact identity');
 assert.ok(html.includes('Ergebnisse sind nicht automatisch als Herstellerquellen bestätigt'),'Search results must not imply verified manufacturer source');
+
+assert.ok(html.includes('id="photoFindDocument"'),'Camera must offer direct manufacturer datasheet discovery');
+assert.ok(html.includes("$('photoFindDocument').onclick=()=>searchManufacturerDocument"),'Camera must connect to datasheet search');
+assert.ok(html.includes('function searchManufacturerDocument(brand,partNumber)'),'Camera and library must share manufacturer datasheet search');
