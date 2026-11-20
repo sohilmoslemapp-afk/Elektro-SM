@@ -1,19 +1,21 @@
 name: ElektroPlan trial package
 on:
+  push:
+    branches: [ElektroPlan-Entwicklung-1]
   workflow_run:
     workflows: ["ElektroPlan quality gate"]
     types: [completed]
   workflow_dispatch:
 jobs:
   package:
-    if: ${{ github.event_name == 'workflow_dispatch' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'ElektroPlan-Entwicklung-1') }}
+    if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'ElektroPlan-Entwicklung-1') }}
     runs-on: ubuntu-latest
     permissions:
       contents: read
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event_name == 'workflow_dispatch' && github.ref || github.event.workflow_run.head_sha }}
+          ref: ${{ github.event_name != 'workflow_run' && github.sha || github.event.workflow_run.head_sha }}
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
