@@ -53,4 +53,9 @@ const duplicateBridge=analyze({symbols:chainSymbols,wires:[...chainWires,chainWi
 assert.equal(duplicateBridge.nets.length,1,'parallel duplicate links must not create phantom networks');
 assert.equal(duplicateBridge.nets[0].terminals.length,4);
 assert.equal(duplicateBridge.electricallyApproved,false,'topological analysis is never electrical approval');
+for(const badTerminal of [' 1','1 ','1\\u200b','1\\n','x'.repeat(41)]){
+ const unsafeWire=analyze({symbols:[{id:'A',manualTerminals:['1']},{id:'B',manualTerminals:['1']}],wires:[{a:'A',fromTerminal:badTerminal,b:'B',toTerminal:'1'}]});
+ assert.equal(unsafeWire.nets.length,0,'invalid wire terminal must not create connectivity');
+ assert.equal(unsafeWire.pending.length,1,'invalid wire terminal must be reported');
+}
 console.log('Explicit terminal connectivity grouping regression passed');
