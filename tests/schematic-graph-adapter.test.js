@@ -94,3 +94,17 @@ const duplicateSymbols=fromSchematic({symbols:[
 assert.deepEqual(duplicateSymbols.pending,[{wire:0,reason:'Bauteilreferenz mehrdeutig'},{wire:2,reason:'Bauteilreferenz mehrdeutig'}],'Ambiguous duplicate symbol identifiers must remain pending');
 assert.equal(duplicateSymbols.connections.length,1,'Unambiguous wires must still be converted');
 assert.equal(duplicateSymbols.connections[0].sourceWire,1,'Unambiguous wire source index remains unchanged');
+
+const unicodeId=fromSchematic({symbols:[
+ {id:'Café',manualTerminals:['1']},
+ {id:'Cafe\u0301',manualTerminals:['1']},
+ {id:'X1',manualTerminals:['2']}
+],wires:[{a:'Café',b:'X1',fromTerminal:'1',toTerminal:'2'}]});
+assert.deepEqual(unicodeId.pending,[{wire:0,reason:'Bauteilreferenz mehrdeutig'}],'Canonically equivalent symbol identifiers must be treated as ambiguous');
+assert.equal(unicodeId.connections.length,0);
+const unicodeTerminal=fromSchematic({symbols:[
+ {id:'F3',manualTerminals:['é','e\u0301']},
+ {id:'X1',manualTerminals:['2']}
+],wires:[{a:'F3',b:'X1',fromTerminal:'é',toTerminal:'2'}]});
+assert.deepEqual(unicodeTerminal.pending,[{wire:0,reason:'Klemmenreferenz mehrdeutig'}],'Canonically equivalent terminal names must be treated as ambiguous');
+assert.equal(unicodeTerminal.connections.length,0);
