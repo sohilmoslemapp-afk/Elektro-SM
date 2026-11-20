@@ -1,0 +1,15 @@
+'use strict';
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const path=require('node:path');
+const html=fs.readFileSync(path.join(__dirname,'../prototypes/ElektroPlan-SM-integriert.html'),'utf8');
+const start=html.indexOf("$('checkPlan').onclick=()=>{");
+const end=html.indexOf('function download(',start);
+assert.ok(start>=0&&end>start);
+const source=html.slice(start,end);
+assert.match(source,/review\.textContent=!result\.valid\|\|!terminalResult\.valid\|\|pendingWires\|\|invalidWires\|\|terminalResult\.reviewRequired/);
+const requiresReview=(structureValid,terminalValid,pending,invalid,reviewRequired)=>!structureValid||!terminalValid||pending||invalid||reviewRequired;
+assert.equal(Boolean(requiresReview(true,false,0,0,false)),true,'terminal errors must require review');
+assert.equal(Boolean(requiresReview(true,true,0,0,false)),false,'complete structural checks do not force extra review');
+assert.equal(Boolean(requiresReview(true,true,1,0,false)),true,'missing terminal mapping requires review');
+console.log('Integrated terminal graph failure review contract passed (static contract)');
