@@ -16,7 +16,7 @@ function validate(project){
   if(!Number.isFinite(s?.x)||!Number.isFinite(s?.y)||Math.abs(s.x)>100000||Math.abs(s.y)>100000)errors.push('Symbol '+i+': ungültige Position');
  });
  const symbolById=new Map(symbols.filter(s=>s&&typeof s.id==='string').map(s=>[s.id,s]));
- const seen=new Set(),degree=new Map();
+ const seen=new Set(),degree=new Map(),terminalConnections=new Map();
  wires.forEach((w,i)=>{
   if(!w||!ids.has(w.a)||!ids.has(w.b)){errors.push('Leitung '+i+': Endpunkt fehlt');return}
   if(w.a===w.b){errors.push('Leitung '+i+': Selbstverbindung');return}
@@ -26,8 +26,15 @@ function validate(project){
    if(terminal!==undefined&&terminal!==null&&terminal!==''&&(!Array.isArray(symbol?.manualTerminals)||!symbol.manualTerminals.includes(terminal)))errors.push('Leitung '+i+': '+side+'klemme nicht am Symbol erfasst');
   }
   const key=w.fromTerminal&&w.toTerminal?JSON.stringify([[w.a,w.fromTerminal],[w.b,w.toTerminal]].sort((a,b)=>JSON.stringify(a).localeCompare(JSON.stringify(b)))):null;
-  if(key!==null){if(seen.has(key))warnings.push('Leitung '+i+': doppelte Verbindung');seen.add(key)}degree.set(w.a,(degree.get(w.a)||0)+1);degree.set(w.b,(degree.get(w.b)||0)+1);
+  if(key!==null){if(seen.has(key))warnings.push('Leitung '+i+': doppelte Verbindung');seen.add(key)}
+  if(w.fromTerminal&&w.toTerminal){
+   for(const [symbol,terminal] of [[w.a,w.fromTerminal],[w.b,w.toTerminal]]){
+    const point=JSON.stringify([symbol,terminal]);terminalConnections.set(point,(terminalConnections.get(point)||0)+1);
+   }
+  }
+  degree.set(w.a,(degree.get(w.a)||0)+1);degree.set(w.b,(degree.get(w.b)||0)+1);
  });
+ for(const [point,count] of terminalConnections){if(count>1){const [id,terminal]=JSON.parse(point);warnings.push('Mehrfachbelegung prüfen: '+id+' / '+terminal+' ('+count+' Leitungen)')}}
  symbols.forEach(s=>{if(s?.id&&ids.has(s.id)&&!degree.has(s.id))warnings.push('Nicht verbunden: '+s.id)});
  return {valid:errors.length===0,errors,warnings,checkedSymbols:symbols.length,checkedWires:wires.length,
  disclaimer:'Nur Strukturprüfung. Keine Prüfung von Strombelastbarkeit, Schutzmaßnahmen, Normkonformität oder Anschlussbelegung.'};
