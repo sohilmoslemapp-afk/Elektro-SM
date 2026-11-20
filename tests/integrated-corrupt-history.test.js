@@ -1,0 +1,14 @@
+'use strict';
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const path=require('node:path');
+const html=fs.readFileSync(path.join(__dirname,'../prototypes/ElektroPlan-SM-integriert.html'),'utf8');
+const start=html.indexOf('function restoreSnapshot(snapshot){');
+const end=html.indexOf("$('showTerminalPicker').onclick",start);
+assert.ok(start>=0&&end>start);
+const source=html.slice(start,end);
+assert.match(source,/try\{parsed=JSON\.parse\(snapshot\);check=window\.ElektroPlanImport\?\.validateImport/);
+assert.match(source,/catch\(e\)\{msg\('Verlaufseintrag beschädigt – Wiederherstellung abgebrochen'\);return false\}/);
+assert.ok(source.indexOf('return false}')<source.indexOf('data=parsed'),'invalid snapshots must not mutate current project');
+assert.match(source,/if\(!check\?\.ok\)\{msg\('Verlaufseintrag ungültig'\);return false\}/);
+console.log('Corrupt undo/redo snapshot handling: static regression checks passed');
