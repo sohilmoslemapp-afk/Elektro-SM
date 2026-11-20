@@ -12,7 +12,8 @@ assert.deepEqual(graph.connections[0].from,{component:'F3',terminal:'2'});
 assert.equal(validateTerminalGraph(graph).valid,true);
 assert.equal(graph.components[0].terminals.includes('N'),false,'No inferred manufacturer terminals');
 const invalid=fromSchematic({...project,wires:[{a:'F3',b:'X1',fromTerminal:'99',toTerminal:'3'}]});
-assert.equal(validateTerminalGraph(invalid).valid,false,'Unknown terminal fails closed');
+assert.deepEqual(invalid.pending,[{wire:0,reason:'Klemmenreferenz unbekannt'}],'Unknown terminal remains pending instead of entering graph');
+assert.equal(invalid.connections.length,0,'Unknown terminal must not enter graph');
 const reversed=fromSchematic({...project,wires:[project.wires[0],{a:'X1',b:'F3',fromTerminal:'3',toTerminal:'2'}]});
 assert.equal(validateTerminalGraph(reversed).valid,false,'Reversed duplicate terminal edge rejected');
 console.log('Schematic-to-terminal graph adapter checks passed');
@@ -69,3 +70,13 @@ const indexed=fromSchematic({symbols:manySymbols,wires:manyWires});
 assert.equal(indexed.connections.length,249,'Large schematic keeps all valid connections');
 assert.deepEqual(indexed.pending,[{wire:100,reason:'Bauteilreferenz unbekannt'}],'Orphan detection remains deterministic in large schematics');
 assert.equal(indexed.connections[100].sourceWire,101,'Original wire indices remain stable after pending entries');
+
+const missingTerminals=fromSchematic({...project,wires:[
+ {a:'F3',b:'X1',fromTerminal:'99',toTerminal:'3'},
+ {a:'F3',b:'X1',fromTerminal:'2',toTerminal:'GONE'},
+ {a:'F3',b:'X1',fromTerminal:'2',toTerminal:'3'}
+]});
+assert.deepEqual(missingTerminals.pending.map(x=>x.wire),[0,1],'Both ends of unknown terminal references are flagged');
+assert.ok(missingTerminals.pending.every(x=>x.reason==='Klemmenreferenz unbekannt'));
+assert.equal(missingTerminals.connections.length,1);
+assert.equal(missingTerminals.connections[0].sourceWire,2);
