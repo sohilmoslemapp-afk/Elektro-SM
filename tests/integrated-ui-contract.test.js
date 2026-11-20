@@ -44,3 +44,7 @@ assert.match(html,/\['plan','parts','camera','project','features'\]/,'Navigation
 assert.match(html,/Dokumenttitel \(manuell\): /,'Saved parts must display manually entered document title');
 assert.match(html,/Manuell erfasst – NICHT herstellerverifiziert/,'Saved parts must disclose unverified provenance');
 assert.match(html,/Dokument öffnen \(ungeprüft\)/,'External document links must be labelled unverified');
+
+assert.match(html,/Bibliothekseintrag löschen/,'Library deletion control required');
+assert.match(html,/data\.parts\.splice\(index,1\)/,'Deletion must remove only the selected library record');
+assert.match(html,/Bereits vorhandene Plansymbole bleiben unverändert/,'Deletion must disclose that schematic symbols are retained');
