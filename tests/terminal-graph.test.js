@@ -41,3 +41,10 @@ for(const badTerminal of [' A1','A1 ','\tA1','A1\n']){
  assert.equal(checked.reviewRequired,true);
  assert.equal(checked.electricallyApproved,false);
 }
+
+for(const invisible of ['A\u200b1','A\u202e1','A\u20661','A\u00001','A\u007f1']){
+ const result=check({components:[{id:'X1',terminals:[invisible]}],connections:[]});
+ assert.equal(result.valid,false,'Invisible formatting and control characters must be rejected');
+ assert.equal(result.reviewRequired,true);
+}
+assert.equal(check({components:[{id:'X1',terminals:['A1','A2']}],connections:[]}).valid,true);
