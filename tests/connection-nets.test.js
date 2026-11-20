@@ -29,4 +29,8 @@ for(const badId of [' X','X\u200b','X\n']){
 const hiddenTerminal=analyze({symbols:[{id:'A',manualTerminals:['1\u200b']},{id:'B',manualTerminals:['1']}],wires:[{a:'A',fromTerminal:'1\u200b',b:'B',toTerminal:'1'}]});
 assert.equal(hiddenTerminal.nets.length,0);
 assert.equal(hiddenTerminal.pending.length,1);
+const unicodeAliases=analyze({symbols:[{id:'é',manualTerminals:['1']},{id:'e\u0301',manualTerminals:['1']},{id:'B',manualTerminals:['1']}],wires:[{a:'é',fromTerminal:'1',b:'B',toTerminal:'1'},{a:'e\u0301',fromTerminal:'1',b:'B',toTerminal:'1'}]});
+assert.equal(unicodeAliases.nets.length,0,'NFC-equivalent symbol identifiers must not produce nets');
+assert.equal(unicodeAliases.pending.length,2);
+assert.ok(unicodeAliases.pending.every(x=>/Mehrdeutige/.test(x.reason)));
 console.log('Explicit terminal connectivity grouping regression passed');
