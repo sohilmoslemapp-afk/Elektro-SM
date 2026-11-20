@@ -1,7 +1,7 @@
 /* File compatibility registry. Detection is not proof of parse/export support. */
 (function(root){'use strict';
 const entries=[
- {id:'native',extensions:['.epsm.json'],kind:'project',import:'supported',export:'supported'},
+ {id:'native',extensions:['.epsm.json'],kind:'project',import:'conditional',export:'conditional'},
  {id:'json',extensions:['.json'],kind:'data',import:'conditional',export:'conditional'},
  {id:'svg',extensions:['.svg'],kind:'vector',import:'unsupported',export:'supported'},
  {id:'csv',extensions:['.csv'],kind:'data',import:'unsupported',export:'supported'},
