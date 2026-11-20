@@ -50,4 +50,4 @@ assert.match(html,/data\.parts\.splice\(index,1\)/,'Deletion must remove only th
 assert.match(html,/Bereits vorhandene Plansymbole bleiben unverändert/,'Deletion must disclose that schematic symbols are retained');
 
 assert.match(html,/const invalid=!!\(edge\.fromTerminal/,'Invalid terminal references must be detected for schematic warnings');
-assert.match(html,/invalid\?' ✖':missing\?' ⚠':'','/,'Invalid and missing terminal references must have different schematic markers');
+assert.ok(html.includes("invalid?' ✖':missing?' ⚠':''"),'Invalid and missing terminal references must have different schematic markers');
