@@ -1,0 +1,15 @@
+'use strict';
+const assert=require('node:assert/strict');
+const {inspect}=require('../src/schematic-multipole-audit');
+const km={id:'K1',type:'KM',manualTerminals:['1','2','3','4','5','6','A1','A2']};
+const f={id:'F1',type:'MSS',manualTerminals:['1','2','3','4','5','6']};
+const x={id:'X1',type:'KLEMME',manualTerminals:['1','2']};
+assert.deepEqual(inspect({symbols:[km,f],wires:[]}).warnings,[]);
+const partial=inspect({symbols:[km,x],wires:[{a:'X1',fromTerminal:'1',b:'K1',toTerminal:'A1'}]});
+assert.ok(partial.warnings.some(w=>w.kind==='partially-wired-pair'&&w.symbol==='K1'&&w.terminals.includes('A1')));
+const full=inspect({symbols:[km,x],wires:[{a:'X1',fromTerminal:'1',b:'K1',toTerminal:'A1'},{a:'X1',fromTerminal:'2',b:'K1',toTerminal:'A2'}]});
+assert.ok(!full.warnings.some(w=>w.kind==='partially-wired-pair'));
+const missing=inspect({symbols:[{...f,manualTerminals:['1','2']}],wires:[]});
+assert.equal(missing.warnings.filter(w=>w.kind==='missing-pair').length,2);
+assert.equal(inspect(null).approved,false);
+console.log('Multipole terminal-pair structural diagnostics passed');
