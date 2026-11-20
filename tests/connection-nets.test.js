@@ -33,4 +33,24 @@ const unicodeAliases=analyze({symbols:[{id:'é',manualTerminals:['1']},{id:'e\u0
 assert.equal(unicodeAliases.nets.length,0,'NFC-equivalent symbol identifiers must not produce nets');
 assert.equal(unicodeAliases.pending.length,2);
 assert.ok(unicodeAliases.pending.every(x=>/Mehrdeutige/.test(x.reason)));
+// Editing a bridge wire must split and rejoin terminal groups deterministically.
+const chainSymbols=[{id:'A',manualTerminals:['1']},{id:'B',manualTerminals:['1']},{id:'C',manualTerminals:['1']},{id:'D',manualTerminals:['1']}];
+const chainWires=[{a:'A',fromTerminal:'1',b:'B',toTerminal:'1'},{a:'B',fromTerminal:'1',b:'C',toTerminal:'1'},{a:'C',fromTerminal:'1',b:'D',toTerminal:'1'}];
+const chain=analyze({symbols:chainSymbols,wires:chainWires});
+assert.equal(chain.nets.length,1,'three linked wires form one net');
+assert.equal(chain.nets[0].terminals.length,4,'net must contain all four component terminals');
+assert.equal(chain.pending.length,0);
+const withoutBridge=analyze({symbols:chainSymbols,wires:[chainWires[0],chainWires[2]]});
+assert.equal(withoutBridge.nets.length,2,'removing the middle wire must split the network');
+assert.deepEqual(withoutBridge.nets.map(n=>n.terminals.length),[2,2]);
+assert.equal(withoutBridge.pending.length,0);
+const missingEndpoint=analyze({symbols:chainSymbols,wires:[chainWires[0],{...chainWires[1],toTerminal:undefined},chainWires[2]]});
+assert.equal(missingEndpoint.nets.length,2,'incomplete bridge must not merge networks');
+assert.equal(missingEndpoint.pending.length,1,'incomplete bridge must be flagged');
+const restored=analyze({symbols:chainSymbols,wires:chainWires});
+assert.deepEqual(restored.nets,chain.nets,'reassigning the bridge must restore identical net groups');
+const duplicateBridge=analyze({symbols:chainSymbols,wires:[...chainWires,chainWires[1]]});
+assert.equal(duplicateBridge.nets.length,1,'parallel duplicate links must not create phantom networks');
+assert.equal(duplicateBridge.nets[0].terminals.length,4);
+assert.equal(duplicateBridge.electricallyApproved,false,'topological analysis is never electrical approval');
 console.log('Explicit terminal connectivity grouping regression passed');
