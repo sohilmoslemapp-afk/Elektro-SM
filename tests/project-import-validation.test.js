@@ -21,4 +21,9 @@ for(const terminals of [['A1','A1'],[''],['x'.repeat(41)],Array(65).fill('A1'),'
  const payload={...valid,data:{...valid.data,symbols:[{...valid.data.symbols[0],manualTerminals:terminals},valid.data.symbols[1]]}};
  assert.equal(validateImport(payload).ok,false,'invalid manual terminal labels must be rejected');
 }
+const terminalWires={...valid,data:{...valid.data,symbols:[{...valid.data.symbols[0],manualTerminals:['1','2']},{...valid.data.symbols[1],manualTerminals:['A1']}],wires:[{a:'a',b:'b',fromTerminal:'2',toTerminal:'A1'}]}};
+assert.equal(validateImport(terminalWires).ok,true,'valid terminal-specific wire should import');
+for(const wire of [{a:'a',b:'b',fromTerminal:'9',toTerminal:'A1'},{a:'a',b:'b',fromTerminal:'1'},{a:'a',b:'b',fromTerminal:42,toTerminal:'A1'}]){
+ assert.equal(validateImport({...terminalWires,data:{...terminalWires.data,wires:[wire]}}).ok,false,'invalid wire terminal assignment must fail');
+}
 console.log('Project import validation: 7 assertions passed.');
