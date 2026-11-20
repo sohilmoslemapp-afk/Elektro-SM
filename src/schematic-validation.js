@@ -12,6 +12,17 @@ function validate(project){
   if(!s||typeof s.id!=='string'||!s.id.trim()||s.id.length>100||s.id!==s.id.trim()||unsafeId.test(s.id))errors.push('Symbol '+i+': Kennung fehlt');
   else if(ids.has(s.id)||normalizedIds.has(s.id.normalize('NFC')))errors.push('Doppelte Symbolkennung: '+s.id);
   else {ids.add(s.id);normalizedIds.add(s.id.normalize('NFC'));}
+  if(s?.manualTerminals!==undefined){
+   if(!Array.isArray(s.manualTerminals)||s.manualTerminals.length>8)errors.push('Symbol '+i+': ungültige Klemmenliste');
+   else {
+    const terminals=new Set();
+    for(const terminal of s.manualTerminals){
+     if(typeof terminal!=='string'||!terminal.trim()||terminal!==terminal.trim()||terminal.length>40||unsafeId.test(terminal))errors.push('Symbol '+i+': ungültige Klemmenkennung');
+     else if(terminals.has(terminal))errors.push('Symbol '+i+': doppelte Klemme '+terminal);
+     else terminals.add(terminal);
+    }
+   }
+  }
   if(!TYPES.has(s?.type))errors.push('Symbol '+i+': unbekannter Typ');
   if(!Number.isFinite(s?.x)||!Number.isFinite(s?.y)||Math.abs(s.x)>100000||Math.abs(s.y)>100000)errors.push('Symbol '+i+': ungültige Position');
  });
