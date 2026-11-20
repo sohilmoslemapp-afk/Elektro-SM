@@ -13,10 +13,10 @@
 (()=>{'use strict';
 const $=id=>document.getElementById(id),KEY='elektroplan-sm-integrated-1';let data={name:'Neues Projekt',symbols:[],wires:[],parts:[]},selected=null,wireStart=null,wireMode=false,drag=null;
 const msg=t=>$('message').textContent=t;
-try{const saved=JSON.parse(localStorage.getItem(KEY)||'null');if(saved&&Array.isArray(saved.symbols)&&Array.isArray(saved.wires)&&Array.isArray(saved.parts))data=saved}catch(e){msg('Gespeicherte Daten konnten nicht geladen werden.')}
+try{const saved=JSON.parse(localStorage.getItem(KEY)||'null');if(saved&&window.ElektroPlanImport?.validateImport({format:'ElektroPlan-SM-1',data:saved}).ok)data=saved;else if(saved)msg('Gespeichertes Projekt ungültig; bitte Projektdatei prüfen.')}catch(e){msg('Gespeicherte Daten konnten nicht geladen werden.')}
 $('projectName').value=data.name||'Neues Projekt';
 document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('active',x===b));['plan','parts','camera','project'].forEach(id=>$(id).hidden=id!==b.dataset.tab)});
-const persist=()=>{data.name=$('projectName').value.trim()||'Neues Projekt';try{localStorage.setItem(KEY,JSON.stringify(data));msg('✓ Lokal gespeichert')}catch(e){msg('Speichern fehlgeschlagen: '+e.message)}};
+const persist=()=>{data.name=$('projectName').value.trim()||'Neues Projekt';try{const check=window.ElektroPlanImport?.validateImport({format:'ElektroPlan-SM-1',data});if(!check?.ok){msg('Speichern abgebrochen: '+(check?.errors?.[0]||'Prüfmodul fehlt'));return}localStorage.setItem(KEY,JSON.stringify(data));msg('✓ Lokal gespeichert')}catch(e){msg('Speichern fehlgeschlagen: '+e.message)}};
 const safe=s=>String(s??'').trim(),norm=s=>safe(s).normalize('NFKC').toLocaleLowerCase('de').replace(/\s+/g,' ');
 const ns='http://www.w3.org/2000/svg';function node(tag,attrs,parent){const n=document.createElementNS(ns,tag);Object.entries(attrs).forEach(([k,v])=>n.setAttribute(k,v));parent.appendChild(n);return n}
 function renderWires(){const w=$('wires');w.replaceChildren();data.wires.forEach(edge=>{const x=data.symbols.find(s=>s.id===edge.a),y=data.symbols.find(s=>s.id===edge.b);if(x&&y)node('path',{d:'M'+x.x+' '+x.y+' H'+((x.x+y.x)/2)+' V'+y.y+' H'+y.x,stroke:'#1d65a5','stroke-width':2,fill:'none'},w)})}
