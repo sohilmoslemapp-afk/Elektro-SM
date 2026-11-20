@@ -158,7 +158,8 @@ $('checkPlan').onclick=()=>{
  const result=window.ElektroPlanValidation.validate(data);
  const assignedWires=data.wires.filter(w=>w.fromTerminal&&w.toTerminal);
  const pendingWires=data.wires.length-assignedWires.length;
- const invalidWires=assignedWires.filter(w=>{const from=data.symbols.find(s=>s.id===w.a),to=data.symbols.find(s=>s.id===w.b);return !from?.manualTerminals?.includes(w.fromTerminal)||!to?.manualTerminals?.includes(w.toTerminal)}).length;
+ const symbolsById=new Map(data.symbols.map(s=>[s.id,s]));
+ const invalidWires=assignedWires.filter(w=>{const from=symbolsById.get(w.a),to=symbolsById.get(w.b);return !from?.manualTerminals?.includes(w.fromTerminal)||!to?.manualTerminals?.includes(w.toTerminal)}).length;
  const terminalModel={components:data.symbols.map(s=>({id:s.id,terminals:s.manualTerminals||[]})),connections:assignedWires.map(w=>({from:{component:w.a,terminal:w.fromTerminal},to:{component:w.b,terminal:w.toTerminal}}))};
  const terminalResult=window.ElektroPlanTerminals?.validateTerminalGraph(terminalModel);
  if(!terminalResult){box.textContent=uiText('Klemmenprüfung nicht geladen. Keine Freigabe möglich.');return}
