@@ -13,4 +13,7 @@ assert.ok(html.includes("localizedSafety[lang].camera"),'Camera safety text must
 assert.match(html,/id="librarySafetyNotice"/,'Library safety warning must have stable target');
 for(const phrase of ['Suchtreffer und Dokumentlinks sind keine Bestätigung','Search results and document links do not verify','نتائج البحث وروابط الوثائق لا تثبت'])assert.ok(html.includes(phrase),'Missing translated library safety notice: '+phrase);
 assert.ok(html.includes("localizedSafety[lang].library"),'Library safety text must update on language switch');
+for(const id of ['projectNameLabel','brandLabel','modelLabel','partNumberLabel','docTitleLabel'])assert.ok(html.includes('id="'+id+'"'),'Missing stable translatable field '+id);
+for(const phrase of ['Project name','Article number from nameplate','اسم المشروع','رقم القطعة من لوحة البيانات'])assert.ok(html.includes(phrase),'Missing trilingual form text '+phrase);
+assert.ok(html.includes('localizedLabels[lang]'),'Form labels must switch with selected language');
 console.log('German, English and Arabic language selector, RTL and camera safety translations: passed');
