@@ -68,6 +68,8 @@ jobs:
         run: node tests/integrated-touch-targets.test.js
       - name: Terminal strip schedule CSV
         run: node tests/integrated-terminal-list-export.test.js
+      - name: Explicit terminal connection groups
+        run: node tests/connection-nets.test.js
 
       - name: Integrated project import size guard
         run: node tests/integrated-import-size-guard.test.js
