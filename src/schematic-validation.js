@@ -15,10 +15,16 @@ function validate(project){
   if(!TYPES.has(s?.type))errors.push('Symbol '+i+': unbekannter Typ');
   if(!Number.isFinite(s?.x)||!Number.isFinite(s?.y)||Math.abs(s.x)>100000||Math.abs(s.y)>100000)errors.push('Symbol '+i+': ungültige Position');
  });
+ const symbolById=new Map(symbols.filter(s=>s&&typeof s.id==='string').map(s=>[s.id,s]));
  const seen=new Set(),degree=new Map();
  wires.forEach((w,i)=>{
   if(!w||!ids.has(w.a)||!ids.has(w.b)){errors.push('Leitung '+i+': Endpunkt fehlt');return}
   if(w.a===w.b){errors.push('Leitung '+i+': Selbstverbindung');return}
+  const from=symbolById.get(w.a),to=symbolById.get(w.b);
+  if(!w.fromTerminal||!w.toTerminal)warnings.push('Leitung '+i+': Klemmenzuordnung unvollständig');
+  for(const [terminal,symbol,side] of [[w.fromTerminal,from,'Start'],[w.toTerminal,to,'Ziel']]){
+   if(terminal!==undefined&&terminal!==null&&terminal!==''&&(!Array.isArray(symbol?.manualTerminals)||!symbol.manualTerminals.includes(terminal)))errors.push('Leitung '+i+': '+side+'klemme nicht am Symbol erfasst');
+  }
   const key=JSON.stringify([w.a,w.b].sort());
   if(seen.has(key))warnings.push('Leitung '+i+': doppelte Verbindung');
   seen.add(key);degree.set(w.a,(degree.get(w.a)||0)+1);degree.set(w.b,(degree.get(w.b)||0)+1);
