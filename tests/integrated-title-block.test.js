@@ -1,0 +1,12 @@
+'use strict';
+const assert=require('node:assert/strict');
+const fs=require('node:fs'),path=require('node:path');
+const html=fs.readFileSync(path.join(__dirname,'../prototypes/ElektroPlan-SM-integriert.html'),'utf8');
+assert.match(html,/<g id="drawingTitleBlock"><\/g>/);
+assert.match(html,/function renderDrawingTitleBlock\(\)/);
+assert.match(html,/title\.textContent=String\(data\.name\|\|'Neues Projekt'\)\.slice\(0,65\)/);
+assert.match(html,/Blatt 1\/1/);
+assert.match(html,/Schematischer Entwurf – nicht elektrisch geprüft/);
+assert.match(html,/Keine Freigabe/);
+assert.match(html,/function render\(\)\{renderDrawingTitleBlock\(\)/);
+console.log('Drawing title block and non-approved export status contract passed');
