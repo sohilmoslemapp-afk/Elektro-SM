@@ -37,6 +37,8 @@ jobs:
         run: node tests/V134-source-records.test.js
       - name: Schematic Unicode identifier safety
         run: node tests/schematic-unicode-ids.test.js
+      - name: Schematic structural safety bounds
+        run: node tests/schematic-bounds.test.js
       - name: Schematic structural validation
         run: node tests/schematic-validation.test.js
 
