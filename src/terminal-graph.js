@@ -26,7 +26,7 @@ function validateTerminalGraph(project){
   const ak=JSON.stringify([a.component,a.terminal]),bk=JSON.stringify([b.component,b.terminal]);
   if(ak===bk){errors.push('Verbindung '+i+': Selbstverbindung desselben Anschlusses');return}
   const key=[ak,bk].sort().join('|');
-  if(edgeKeys.has(key))warnings.push('Verbindung '+i+': doppelt');edgeKeys.add(key);
+  if(edgeKeys.has(key)){errors.push('Verbindung '+i+': doppelte Anschlussverbindung');return}edgeKeys.add(key);
   used.set(ak,(used.get(ak)||0)+1);used.set(bk,(used.get(bk)||0)+1);
  });
  for(const [key,count] of used){if(count>1){const [component,terminal]=JSON.parse(key);warnings.push('Mehrfachbelegung prüfen: '+component+'/'+terminal+' ('+count+' Verbindungen)')}}
