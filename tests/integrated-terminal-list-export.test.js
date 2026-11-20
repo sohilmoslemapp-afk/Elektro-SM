@@ -1,0 +1,13 @@
+'use strict';
+const assert=require('node:assert/strict');
+const fs=require('node:fs'),path=require('node:path');
+const html=fs.readFileSync(path.join(__dirname,'../prototypes/ElektroPlan-SM-integriert.html'),'utf8');
+assert.match(html,/id="exportTerminalList"/);
+assert.match(html,/\$\('exportTerminalList'\)\.onclick=/);
+assert.match(html,/s\.type==='KLEMME'&&s\.stripLabel/);
+assert.match(html,/w\.a===strip\.id&&w\.fromTerminal===terminal/);
+assert.match(html,/w\.b===strip\.id&&w\.toTerminal===terminal/);
+assert.match(html,/Offen – prüfen/);
+assert.match(html,/Klemmenzuordnung unvollständig/);
+assert.match(html,/csvDocument\(rows\);download\('ElektroPlan-Klemmenplan\.csv'/);
+console.log('Terminal strip schedule CSV export contract passed');
