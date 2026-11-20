@@ -1,0 +1,18 @@
+'use strict';
+const assert=require('node:assert/strict');
+const {fromSchematic}=require('../src/schematic-graph-adapter');
+const {validateTerminalGraph}=require('../src/terminal-graph');
+const project={symbols:[{id:'F3',manualTerminals:['1','2']},{id:'X1',manualTerminals:['3','N','PE']}],wires:[{a:'F3',b:'X1',fromTerminal:'2',toTerminal:'3'},{a:'F3',b:'X1'}]};
+const graph=fromSchematic(project);
+assert.equal(graph.components.length,2);
+assert.equal(graph.connections.length,1);
+assert.equal(graph.pending.length,1);
+assert.equal(graph.connections[0].sourceWire,0);
+assert.deepEqual(graph.connections[0].from,{component:'F3',terminal:'2'});
+assert.equal(validateTerminalGraph(graph).valid,true);
+assert.equal(graph.components[0].terminals.includes('N'),false,'No inferred manufacturer terminals');
+const invalid=fromSchematic({...project,wires:[{a:'F3',b:'X1',fromTerminal:'99',toTerminal:'3'}]});
+assert.equal(validateTerminalGraph(invalid).valid,false,'Unknown terminal fails closed');
+const reversed=fromSchematic({...project,wires:[project.wires[0],{a:'X1',b:'F3',fromTerminal:'3',toTerminal:'2'}]});
+assert.equal(validateTerminalGraph(reversed).valid,false,'Reversed duplicate terminal edge rejected');
+console.log('Schematic-to-terminal graph adapter checks passed');
