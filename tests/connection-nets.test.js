@@ -58,4 +58,18 @@ for(const badTerminal of [' 1','1 ','1\\u200b','1\\n','x'.repeat(41)]){
  assert.equal(unsafeWire.nets.length,0,'invalid wire terminal must not create connectivity');
  assert.equal(unsafeWire.pending.length,1,'invalid wire terminal must be reported');
 }
+// A shared component must not electrically bridge its distinct terminal pins.
+const distinctPins={symbols:[{id:'Q1',manualTerminals:['1','2']},{id:'X1',manualTerminals:['1']},{id:'X2',manualTerminals:['1']}],wires:[{a:'Q1',fromTerminal:'1',b:'X1',toTerminal:'1'},{a:'Q1',fromTerminal:'2',b:'X2',toTerminal:'1'}]};
+const isolated=analyze(distinctPins);
+assert.equal(isolated.nets.length,2,'different pins on one device must remain separate networks');
+assert.deepEqual(isolated.nets.map(n=>n.terminals.length),[2,2]);
+assert.equal(isolated.pending.length,0);
+const reassigned=analyze({symbols:distinctPins.symbols,wires:[distinctPins.wires[0],{...distinctPins.wires[1],fromTerminal:'1'}]});
+assert.equal(reassigned.nets.length,1,'reassigning both wires to the same pin must merge networks');
+assert.equal(reassigned.nets[0].terminals.length,3);
+assert.equal(reassigned.pending.length,0);
+const invalidReassignment=analyze({symbols:distinctPins.symbols,wires:[distinctPins.wires[0],{...distinctPins.wires[1],fromTerminal:'3'}]});
+assert.equal(invalidReassignment.nets.length,1,'unknown pin must not merge separate networks');
+assert.equal(invalidReassignment.pending.length,1,'unknown pin must require manual review');
+assert.deepEqual(invalidReassignment.nets[0].terminals.map(t=>t.component),['Q1','X1']);
 console.log('Explicit terminal connectivity grouping regression passed');
