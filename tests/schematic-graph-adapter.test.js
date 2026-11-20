@@ -108,3 +108,18 @@ const unicodeTerminal=fromSchematic({symbols:[
 ],wires:[{a:'F3',b:'X1',fromTerminal:'é',toTerminal:'2'}]});
 assert.deepEqual(unicodeTerminal.pending,[{wire:0,reason:'Klemmenreferenz mehrdeutig'}],'Canonically equivalent terminal names must be treated as ambiguous');
 assert.equal(unicodeTerminal.connections.length,0);
+
+const unsafeReferences=fromSchematic({symbols:[
+ {id:'F3 ',manualTerminals:['1']},
+ {id:'X1',manualTerminals:[' 2','3','N\u200b']}
+],wires:[
+ {a:'F3 ',b:'X1',fromTerminal:'1',toTerminal:'3'},
+ {a:'X1',b:'X1',fromTerminal:' 2',toTerminal:'3'},
+ {a:'X1',b:'X1',fromTerminal:'N\u200b',toTerminal:'3'}
+]});
+assert.deepEqual(unsafeReferences.pending,[
+ {wire:0,reason:'Bauteilreferenz ungültig'},
+ {wire:1,reason:'Klemmenreferenz ungültig'},
+ {wire:2,reason:'Klemmenreferenz ungültig'}
+],'Padded and invisible control-character references must never enter the graph');
+assert.equal(unsafeReferences.connections.length,0);
