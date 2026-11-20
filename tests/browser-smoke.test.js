@@ -41,6 +41,15 @@ const path = require('node:path');
     await page.reload();
     if(await page.locator('#symbols > g').count()!==2)throw Error('Saved symbols not restored after reload');
     if(await page.locator('#wires > path').count()!==1)throw Error('Saved wire not restored after reload');
+    await page.locator('[data-tab="project"]').click();
+    const downloadPromise=page.waitForEvent('download');
+    await page.locator('#exportJson').click();
+    const projectDownload=await downloadPromise;
+    if(projectDownload.suggestedFilename()!=='ElektroPlan-Projekt.json')throw Error('Project export filename incorrect');
+    await page.locator('#importJson').setInputFiles({name:'invalid-project.json',mimeType:'application/json',buffer:Buffer.from('{"format":"invalid","data":{}}')});
+    await page.waitForFunction(()=>document.querySelector('#message').textContent.includes('Import abgebrochen'));
+    await page.locator('[data-tab="plan"]').click();
+    if(await page.locator('#symbols > g').count()!==2 || await page.locator('#wires > path').count()!==1)throw Error('Invalid import damaged current project');
     if(errors.length)throw Error('Browser errors: '+errors.join(' | '));
     console.log('Mobile Chromium smoke test passed: drag, add, undo, redo, tabs, camera image selection, save and reload');
   } finally {await browser.close()}
