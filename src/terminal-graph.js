@@ -9,7 +9,7 @@ function validateTerminalGraph(project){
  if(parts.length===0){warnings.push('Keine Bauteile vorhanden');if(edges.length>0)errors.push('Verbindungen ohne Bauteile sind unzulässig')}
  if(edges.length===0)warnings.push('Keine Verbindungen vorhanden');
  parts.forEach((part,i)=>{
-  if(!part||typeof part.id!=='string'||!part.id.trim()||ids.has(part.id)){errors.push('Bauteil '+i+': fehlende oder doppelte Kennung');return}
+  if(!part||typeof part.id!=='string'||!part.id.trim()||part.id!==part.id.trim()||/[\u0000-\u001f\u007f-\u009f\u200b-\u200f\u202a-\u202e\u2060-\u2069\ufeff]/u.test(part.id)||ids.has(part.id)){errors.push('Bauteil '+i+': fehlende oder doppelte Kennung');return}
   ids.add(part.id);
   if(!Array.isArray(part.terminals)){errors.push('Bauteil '+part.id+': Anschlussliste fehlt');return}
   const names=new Set();
