@@ -17,8 +17,9 @@ function previewDxf(source){
  for(const [code,value] of pairs){
   if(code===0&&value==='SECTION'){if(section||awaitSection)throw Error('Nested or malformed DXF SECTION');flush();awaitSection=true;continue}
   if(awaitSection&&code===2){section=value;awaitSection=false;if(section==='ENTITIES')hasEntities=true;continue}
-  if(code===0&&value==='ENDSEC'){if(!section||awaitSection)throw Error('Unexpected DXF ENDSEC');flush();section='';continue}
-  if(code===0&&value==='EOF'){if(section||awaitSection)throw Error('DXF EOF before ENDSEC');flush();hasEof=true;break}
+  if(awaitSection)throw Error('Missing DXF section name');
+  if(code===0&&value==='ENDSEC'){if(!section)throw Error('Unexpected DXF ENDSEC');flush();section='';continue}
+  if(code===0&&value==='EOF'){if(section)throw Error('DXF EOF before ENDSEC');flush();hasEof=true;break}
   if(section!=='ENTITIES')continue;
   if(code===0){flush();if(['LINE','CIRCLE','TEXT'].includes(value))current={type:value,layer:'0'};else if(++unsupportedEntities>10000)throw Error('Too many unsupported DXF entities');continue}
   if(!current)continue;
