@@ -15,6 +15,8 @@ new vm.Script(scripts[0],{filename:'ElektroPlan-SM-integriert.html'});
 for(const id of ids.filter(x=>!['drawing','symbols','wires','projectName','preview','partList','partResults'].includes(x))){
  assert.ok(scripts[0].includes("'"+id+"'"),'UI action not referenced in application '+id);
 }
+assert.match(scripts[0],/undoStack\.length=0;redoStack\.length=0;lastSnapshot=JSON\.stringify\(data\)/,'Import must reset undo history');
+assert.match(scripts[0],/wireStart=null;wireMode=false;drag=null/,'Import must reset connection and drag state');
 assert.match(html,/Keine automatische Bilderkennung/,'Do not falsely advertise image recognition');
 assert.match(html,/keine realen Ger[aä]teklemmen/,'Schematic terminal disclaimer required');
 assert.match(html,/keine verifizierten Anschlussklemmen/,'CSV export disclaimer required');
