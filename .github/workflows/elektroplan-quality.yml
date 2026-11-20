@@ -48,6 +48,7 @@ jobs:
           node tests/integrated-print-browser.test.js
           node tests/integrated-png-export-browser.test.js
           node tests/integrated-wire-warning-browser.test.js
+          node tests/integrated-terminal-strip-browser.test.js
           node tests/integrated-pointer-cancel-browser.test.js
           node tests/tablet-desktop-smoke.test.js
           node tests/trilingual-browser.test.js
