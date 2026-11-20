@@ -165,9 +165,7 @@ const path = require('node:path');
     if(!await page.locator('#message').textContent().then(t=>t.includes('manuell übernommen')))throw Error('Apply-to-selected-symbol confirmation missing');
     if(await page.locator('#symbols > g').count()!==3)throw Error('Applying library data unexpectedly changed symbol count');
     await page.locator('#undoEdit').click();
-    if(await page.locator('#symbols > g').count()!==3)throw Error('Undo of library metadata application unexpectedly removed a symbol');
-    await page.locator('#undoEdit').click();
-    if(await page.locator('#symbols > g').count()!==2)throw Error('Undo of library symbol insertion failed');
+    if(await page.locator('#symbols > g').count()!==2)throw Error('No-op metadata application should not add an undo step; symbol insertion undo failed');
 
     await page.locator('[data-tab="plan"]').click();
     await page.locator('#savePlan').click();
