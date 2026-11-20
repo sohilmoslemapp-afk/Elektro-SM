@@ -41,4 +41,14 @@ const independent=fromSchematic(project);
 independent.components[0].terminals.push('TEST');
 assert.equal(JSON.stringify(project),untouched,'Adapter output must not mutate original project terminals');
 const absentIds=fromSchematic({symbols:[{id:'F3',manualTerminals:['1']},{id:'X1',manualTerminals:['2']}],wires:[{a:null,b:'X1',fromTerminal:'1',toTerminal:'2'}]});
-assert.equal(validateTerminalGraph(absentIds).valid,false,'Missing component references must fail terminal validation');
+assert.equal(absentIds.connections.length,0,'Missing component references must not enter the connection graph');
+assert.deepEqual(absentIds.pending,[{wire:0,reason:'Bauteilzuordnung unvollständig'}],'Missing component references must remain visibly pending');
+
+const blankIds=fromSchematic({...project,wires:[
+ {a:' ',b:'X1',fromTerminal:'2',toTerminal:'3'},
+ {a:'F3',b:17,fromTerminal:'2',toTerminal:'3'},
+ {a:'F3',b:'X1',fromTerminal:'2',toTerminal:'3'}
+]});
+assert.deepEqual(blankIds.pending.map(p=>p.wire),[0,1],'Blank and numeric component identifiers remain pending');
+assert.equal(blankIds.connections.length,1,'Only complete component references enter graph');
+assert.equal(blankIds.connections[0].sourceWire,2,'Connection retains source wire index');
