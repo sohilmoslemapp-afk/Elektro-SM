@@ -159,6 +159,11 @@ const path = require('node:path');
     if(await page.locator('#symbols > g').count()!==3)throw Error('RCD library-to-plan insertion failed');
     if(!await page.locator('#message').textContent().then(t=>t.includes('Anschlussbelegung NICHT verifiziert')))throw Error('Unverified terminal warning missing');
     if(!await page.locator('#symbols > g').last().textContent().then(t=>t.includes('Test Hersteller TEST-123')))throw Error('Manual manufacturer/model label missing');
+    await page.locator('#symbols > g').last().click();
+    await page.locator('[data-tab="parts"]').click();
+    await page.locator('#partList li').last().getByText('Daten auf ausgewähltes Symbol übernehmen').click();
+    if(!await page.locator('#message').textContent().then(t=>t.includes('manuell übernommen')))throw Error('Apply-to-selected-symbol confirmation missing');
+    if(await page.locator('#symbols > g').count()!==3)throw Error('Applying library data unexpectedly changed symbol count');
     await page.locator('#undoEdit').click();
     if(await page.locator('#symbols > g').count()!==2)throw Error('Undo of library symbol insertion failed');
 
