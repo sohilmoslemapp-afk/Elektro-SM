@@ -57,6 +57,7 @@ jobs:
           node tests/schematic-pictograms-browser.test.js
           node tests/motor-control-browser.test.js
           node tests/schematic-wire-numbering-browser.test.js
+          node tests/schematic-wire-edit-lifecycle-browser.test.js
           node tests/schematic-capacity-browser.test.js
           node tests/file-format-inspector-browser.test.js
       - name: Integrated prototype inline JavaScript syntax
