@@ -19,8 +19,8 @@ function validateTerminalGraph(project){
  });
  edges.forEach((edge,i)=>{
   const a=edge?.from,b=edge?.to;
-  if(!a||!b||!ids.has(a.component)||!ids.has(b.component)){errors.push('Verbindung '+i+': Bauteil fehlt');return}
-  if(!ports.get(a.component)?.has(a.terminal)||!ports.get(b.component)?.has(b.terminal)){errors.push('Verbindung '+i+': Anschluss fehlt');return}
+  if(!a||!b||typeof a.component!=='string'||typeof b.component!=='string'||!ids.has(a.component)||!ids.has(b.component)){errors.push('Verbindung '+i+': Bauteil fehlt');return}
+  if(typeof a.terminal!=='string'||typeof b.terminal!=='string'||!ports.get(a.component)?.has(a.terminal)||!ports.get(b.component)?.has(b.terminal)){errors.push('Verbindung '+i+': Anschluss fehlt');return}
   const ak=JSON.stringify([a.component,a.terminal]),bk=JSON.stringify([b.component,b.terminal]);
   if(ak===bk){errors.push('Verbindung '+i+': Selbstverbindung desselben Anschlusses');return}
   const key=[ak,bk].sort().join('|');
