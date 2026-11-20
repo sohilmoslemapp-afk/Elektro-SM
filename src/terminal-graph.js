@@ -4,6 +4,8 @@
 'use strict';
 function validateTerminalGraph(project){
  const errors=[],warnings=[],parts=project?.components,edges=project?.connections;
+ const pending=Array.isArray(project?.pending)?project.pending:[];
+ if(pending.length)warnings.push('Nicht zugeordnete Leitungen: '+pending.length);
  if(!Array.isArray(parts)||!Array.isArray(edges))return {valid:false,reviewRequired:true,electricallyApproved:false,errors:['Ungültiges Anschlussmodell'],warnings};
  const ids=new Set(),normalizedIds=new Set(),ports=new Map(),used=new Map(),edgeKeys=new Set(),connectedComponents=new Set();
  if(parts.length===0){warnings.push('Keine Bauteile vorhanden');if(edges.length>0)errors.push('Verbindungen ohne Bauteile sind unzulässig')}
