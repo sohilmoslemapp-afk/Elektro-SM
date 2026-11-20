@@ -153,9 +153,10 @@ function renderNetStatus(){
  const box=$('netStatus');if(!box)return;
  const analysis=window.ElektroPlanNets?.analyze(data);
  if(!analysis){box.textContent='Verbindungsanalyse nicht verfügbar – keine elektrische Freigabe';return}
+ const wasExpanded=box.querySelector('#netDetails')?.open===true;
  box.replaceChildren();
  const summary=document.createElement('p');summary.textContent='Verbindungsgruppen: '+analysis.nets.length+' · Offene/ungültige Leitungen: '+analysis.pending.length+' · Keine elektrische Freigabe';box.append(summary);
- const details=document.createElement('details');details.id='netDetails';const title=document.createElement('summary');title.textContent='Verbindungsgruppen und offene Leitungen anzeigen';details.append(title);
+ const details=document.createElement('details');details.id='netDetails';details.open=wasExpanded;const title=document.createElement('summary');title.textContent='Verbindungsgruppen und offene Leitungen anzeigen';details.append(title);
  const list=document.createElement('ul');list.id='netDetailsList';
  for(const net of analysis.nets){const item=document.createElement('li');item.textContent=net.id+': '+net.terminals.map(t=>t.component+'/'+t.terminal).join(' ↔ ');list.append(item)}
  for(const pending of analysis.pending){const item=document.createElement('li');item.textContent='W'+(pending.wire+1)+': '+pending.reason;list.append(item)}
