@@ -9,7 +9,7 @@ for(const path of ['../src/schematic-validation.js','../src/project-import-valid
  assert.ok(html.includes('src="'+path+'"'),'Missing dependency '+path);
  assert.ok(fs.existsSync('prototypes/'+path),'Dependency does not exist '+path);
 }
-const scripts=[...html.matchAll(/<script(?:\\s[^>]*)?>([\\s\\S]*?)<\\/script>/g)].map(m=>m[1]);
+const scripts=html.split('<script>').slice(1).map(block=>block.split('</script>')[0]);
 assert.equal(scripts.length,1,'Exactly one inline application script expected');
 new vm.Script(scripts[0],{filename:'ElektroPlan-SM-integriert.html'});
 for(const id of ids.filter(x=>!['drawing','symbols','wires','projectName','preview','partList','partResults'].includes(x))){
