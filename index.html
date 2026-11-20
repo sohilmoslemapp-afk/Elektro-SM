@@ -107,9 +107,18 @@ document.getElementById('identify').addEventListener('click',function(){
   : 'Identität unvollständig – Prüfung erforderlich.';
 });
 const componentList = document.getElementById('component-list');
-const savedComponents = JSON.parse(
-  localStorage.getItem('elektroplan-components') || '[]'
-);
+let savedComponents = [];
+try {
+  const stored = JSON.parse(localStorage.getItem('elektroplan-components') || '[]');
+  if (Array.isArray(stored)) {
+    savedComponents = stored.filter(item => item && typeof item.type === 'string' &&
+      typeof item.brand === 'string' && typeof item.model === 'string');
+  } else {
+    document.getElementById('result').textContent = 'Gespeicherte Daten ungültig – bitte prüfen.';
+  }
+} catch (error) {
+  document.getElementById('result').textContent = 'Gespeicherte Daten konnten nicht gelesen werden.';
+}
 
 function showSavedComponents() {
   componentList.innerHTML = '';
@@ -128,8 +137,13 @@ document.getElementById('record').addEventListener('click', function() {
   if (!type || !brand || !model) return;
 
   savedComponents.push({ type, brand, model });
-  localStorage.setItem('elektroplan-components', JSON.stringify(savedComponents));
-  showSavedComponents();
+  try {
+    localStorage.setItem('elektroplan-components', JSON.stringify(savedComponents));
+    showSavedComponents();
+  } catch (error) {
+    savedComponents.pop();
+    document.getElementById('result').textContent = 'Speichern fehlgeschlagen – Speicherplatz oder Browser-Einstellungen prüfen.';
+  }
 });
 
 showSavedComponents();
