@@ -28,6 +28,7 @@ assert.match(html,/Nach Modell \(manuell\)/,'Wiring CSV must label destination m
 assert.match(html,/Von Klemme \(manuell\)/,'Wiring CSV must label source terminal as manual');
 assert.match(html,/Nach Klemme \(manuell\)/,'Wiring CSV must label destination terminal as manual');
 assert.match(html,/Manuell zugeordnet – NICHT herstellerverifiziert/,'Wiring CSV must not imply manufacturer verification');
+assert.match(html,/Ungültige Klemmenreferenz/,'Wiring CSV must flag invalid terminal references');
 assert.match(scripts[0],/save\.disabled=!fromSelect\.options\.length\|\|!toSelect\.options\.length/,'Terminal picker must prevent saving missing terminal selections');
 assert.match(html,/keine Herstellerprüfung, keine elektrische Freigabe/,'Manual terminal safety disclaimer required');
 assert.match(html,/manuelle Klemmen enthalten, keine Herstellerprüfung/,'CSV export must clearly disclaim manufacturer verification');
