@@ -30,3 +30,6 @@ jobs:
 
       - name: Terminal graph validation
         run: node tests/terminal-graph.test.js
+
+      - name: Integrated Schaltplan UI wiring
+        run: node tests/integrated-schematic-ui.test.js
