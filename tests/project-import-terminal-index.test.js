@@ -1,0 +1,10 @@
+const assert=require('node:assert/strict');
+const {validateImport}=require('../src/project-import-validation');
+const symbols=Array.from({length:1500},(_,i)=>({id:'S'+i,type:'SW',x:i,y:0,manualTerminals:['A','B']}));
+const wires=Array.from({length:4000},(_,i)=>({a:'S'+(i%1499),b:'S'+((i%1499)+1),fromTerminal:'A',toTerminal:'B'}));
+const payload={format:'ElektroPlan-SM-1',data:{name:'Large valid import',symbols,wires,parts:[]}};
+assert.equal(validateImport(payload).ok,true);
+const invalid=structuredClone(payload);invalid.data.wires[3999].toTerminal='UNKNOWN';
+assert.equal(validateImport(invalid).ok,false);
+assert.ok(validateImport(invalid).errors.some(e=>e.includes('Klemmenbezeichnung')));
+console.log('Indexed terminal import validation regression passed');
