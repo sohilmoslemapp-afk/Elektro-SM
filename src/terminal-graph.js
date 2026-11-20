@@ -29,7 +29,7 @@ function validateTerminalGraph(project){
  });
  for(const [key,count] of used){if(count>1){const [component,terminal]=JSON.parse(key);warnings.push('Mehrfachbelegung prüfen: '+component+'/'+terminal+' ('+count+' Verbindungen)')}}
  parts.forEach(part=>{if(!part||!ports.has(part.id))return;for(const t of ports.get(part.id)){const key=JSON.stringify([part.id,t]);if(!used.has(key))warnings.push('Offener Anschluss: '+part.id+'/'+t)}});
- return {valid:errors.length===0,errors,warnings,checkedComponents:parts.length,checkedConnections:edges.length,
+ return {valid:errors.length===0,reviewRequired:errors.length>0||warnings.length>0,electricallyApproved:false,errors,warnings,checkedComponents:parts.length,checkedConnections:edges.length,
  disclaimer:'Nur grafische Anschlussreferenzen. Keine Herstellerprüfung, keine elektrische Sicherheitsprüfung oder Freigabe.'};
 }
 const api={validateTerminalGraph};if(typeof module!=='undefined'&&module.exports)module.exports=api;else root.ElektroPlanTerminals=api;
