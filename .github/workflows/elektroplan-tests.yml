@@ -44,5 +44,7 @@ jobs:
       - name: Integrated Schaltplan UI wiring
         run: node tests/integrated-schematic-ui.test.js
 
+      - name: Unicode project import safety regression
+        run: node tests/project-import-unicode-ids.test.js
       - name: Project import validation
         run: node tests/project-import-validation.test.js
