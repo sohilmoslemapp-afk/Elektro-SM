@@ -5,11 +5,12 @@ const TYPES=new Set(['RCD','LS','SW','LAMP','KLEMME']);
 function validate(project){
  const errors=[],warnings=[],symbols=project?.symbols,wires=project?.wires;
  if(!Array.isArray(symbols)||!Array.isArray(wires))return {valid:false,errors:['Projektstruktur ungültig'],warnings};
- const ids=new Set();
+ const ids=new Set(),normalizedIds=new Set();
+ const unsafeId=/[\u0000-\u001f\u007f-\u009f\u200b-\u200f\u202a-\u202e\u2060-\u2069\ufeff]/u;
  symbols.forEach((s,i)=>{
-  if(!s||typeof s.id!=='string'||!s.id.trim())errors.push('Symbol '+i+': Kennung fehlt');
-  else if(ids.has(s.id))errors.push('Doppelte Symbolkennung: '+s.id);
-  else ids.add(s.id);
+  if(!s||typeof s.id!=='string'||!s.id.trim()||s.id!==s.id.trim()||unsafeId.test(s.id))errors.push('Symbol '+i+': Kennung fehlt');
+  else if(ids.has(s.id)||normalizedIds.has(s.id.normalize('NFC')))errors.push('Doppelte Symbolkennung: '+s.id);
+  else {ids.add(s.id);normalizedIds.add(s.id.normalize('NFC'));}
   if(!TYPES.has(s?.type))errors.push('Symbol '+i+': unbekannter Typ');
   if(!Number.isFinite(s?.x)||!Number.isFinite(s?.y))errors.push('Symbol '+i+': ungültige Position');
  });
