@@ -22,8 +22,8 @@ const cases=[
 for(const [name,input,expected] of cases){const result=validateTerminalGraph(input);assert.equal(result.valid,expected,name);assert.ok(Array.isArray(result.errors),name);assert.ok(Array.isArray(result.warnings),name);assert.ok(result.disclaimer||!expected,name);}
 const sample={components:[part('Q1',['1','2']),part('H1',['A1','A2'])],connections:[edge('Q1','2','H1','A1')]};
 const duplicate=validateTerminalGraph({...sample,connections:[sample.connections[0],edge('H1','A1','Q1','2')]});
-assert.equal(duplicate.valid,true);
-assert.ok(duplicate.warnings.some(w=>w.includes('doppelt')),'reverse duplicate must be flagged');
+assert.equal(duplicate.valid,false);
+assert.ok(duplicate.errors.some(e=>e.includes('doppelte Anschlussverbindung')),'reverse duplicate must be rejected');
 const open=validateTerminalGraph(sample);
 assert.ok(open.warnings.some(w=>w.includes('Q1/1')),'open source terminal');
 assert.ok(open.warnings.some(w=>w.includes('H1/A2')),'open target terminal');
