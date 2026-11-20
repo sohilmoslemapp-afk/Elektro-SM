@@ -26,6 +26,7 @@ const path = require('node:path');
     await page.locator('#redoEdit').click();
     if(await page.locator('#symbols > g').count()!==2)throw Error('Redo failed');
     const firstSymbol=page.locator('#symbols > g').first();
+    await firstSymbol.scrollIntoViewIfNeeded();
     const beforePosition=await firstSymbol.getAttribute('transform');
     const rect=await firstSymbol.boundingBox();
     if(!rect)throw Error('Symbol is not visible for drag');
