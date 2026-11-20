@@ -176,11 +176,11 @@ $('deleteWire').onclick=()=>{
  const old=$('wireDeletePanel');if(old){old.remove();return}
  const panel=document.createElement('div');panel.id='wireDeletePanel';panel.setAttribute('role','group');panel.setAttribute('aria-label','Leitung zum Löschen auswählen');
  const label=document.createElement('label');label.textContent='Leitung auswählen';const select=document.createElement('select');select.id='wireDeleteSelect';
- const snapshots=data.wires.map(w=>({ref:w,a:w.a,b:w.b}));
+ const snapshots=data.wires.map(w=>({ref:w,a:w.a,b:w.b,fromTerminal:w.fromTerminal,toTerminal:w.toTerminal}));
  data.wires.forEach((w,i)=>{const option=document.createElement('option');option.value=String(i);option.textContent='W'+(i+1)+': '+w.a+(w.fromTerminal?'/'+w.fromTerminal:'')+' → '+w.b+(w.toTerminal?'/'+w.toTerminal:'');select.append(option)});
  label.append(select);panel.append(label);
  const remove=document.createElement('button');remove.type='button';remove.id='confirmDeleteWire';remove.textContent='Ausgewählte Leitung löschen';
- remove.onclick=()=>{const index=Number(select.value),w=data.wires[index],snapshot=snapshots[index];if(!w||!snapshot||w!==snapshot.ref||w.a!==snapshot.a||w.b!==snapshot.b)return msg('Leitung geändert – Auswahl neu öffnen');data.wires.splice(index,1);recordHistory();render();persist();panel.remove();msg('Leitung gelöscht – Verbindungsgruppen aktualisiert')};
+ remove.onclick=()=>{const index=Number(select.value),w=data.wires[index],snapshot=snapshots[index];if(!w||!snapshot||w!==snapshot.ref||w.a!==snapshot.a||w.b!==snapshot.b||w.fromTerminal!==snapshot.fromTerminal||w.toTerminal!==snapshot.toTerminal)return msg('Leitung geändert – Auswahl neu öffnen');data.wires.splice(index,1);recordHistory();render();persist();panel.remove();msg('Leitung gelöscht – Verbindungsgruppen aktualisiert')};
  const cancel=document.createElement('button');cancel.type='button';cancel.id='cancelDeleteWire';cancel.textContent='Abbrechen';cancel.onclick=()=>panel.remove();panel.append(remove,cancel);$('deleteWire').after(panel);
 };
 $('deleteSelected').onclick=()=>{if(!selected)return;data.symbols=data.symbols.filter(s=>s.id!==selected);data.wires=data.wires.filter(w=>w.a!==selected&&w.b!==selected);selected=null;recordHistory();render();persist()};
