@@ -16,4 +16,9 @@ assert.ok(html.includes("localizedSafety[lang].library"),'Library safety text mu
 for(const id of ['projectNameLabel','brandLabel','modelLabel','partNumberLabel','docTitleLabel'])assert.ok(html.includes('id="'+id+'"'),'Missing stable translatable field '+id);
 for(const phrase of ['Project name','Article number from nameplate','اسم المشروع','رقم القطعة من لوحة البيانات'])assert.ok(html.includes(phrase),'Missing trilingual form text '+phrase);
 assert.ok(html.includes('localizedLabels[lang]'),'Form labels must switch with selected language');
+for(const id of ['photoBrandLabel','photoModelLabel','photoPartNumberLabel','docRevisionLabel','sourceReviewerLabel','sourceDateLabel','projectImportSafety','featuresSafety'])assert.ok(html.includes('id="'+id+'"'),'Missing trilingual field or safety anchor: '+id);
+for(const phrase of ['Import replaces the project currently loaded','الاستيراد يستبدل بيانات المشروع','Safety: This prototype does not provide','السلامة: هذا النموذج التجريبي'])assert.ok(html.includes(phrase),'Missing critical translated warning: '+phrase);
+assert.ok(html.includes('localizedExtraLabels[lang]'),'Extra form labels must follow language');
+assert.ok(html.includes('localizedExtraSafety[lang].project'),'Project import warning must follow language');
+assert.ok(html.includes('localizedExtraSafety[lang].features'),'Electrical safety warning must follow language');
 console.log('German, English and Arabic language selector, RTL and camera safety translations: passed');
