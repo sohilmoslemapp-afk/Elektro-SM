@@ -58,3 +58,7 @@ assert.ok(html.includes('Strukturprüfung: Fehlerhafte Klemmenreferenzen'),'Plan
 assert.ok(html.includes('terminalResult.reviewRequired'),'Plan check must consume terminal graph review-required state');
 assert.ok(html.includes('Fachliche Nachprüfung erforderlich'),'Plan check must visibly require specialist review');
 assert.ok(html.includes('Strukturell vollständig – weiterhin keine elektrische Freigabe'),'Even complete structural graphs must not imply electrical approval');
+
+assert.ok(html.includes('Ungültige gespeicherte Klemmenreferenz – bitte neu zuordnen.'),'Terminal picker must explain invalid saved references');
+assert.ok(html.includes('Leitungsenden noch nicht vollständig zugeordnet.'),'Terminal picker must distinguish incomplete assignments');
+assert.ok(html.includes('Manuelle Leitungsenden vorhanden – nicht herstellerverifiziert.'),'Terminal picker must not imply manufacturer verification');
