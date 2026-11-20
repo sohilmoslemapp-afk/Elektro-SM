@@ -86,3 +86,9 @@ assert.ok(html.includes('id="photoMatches"'),'Camera must display matching resul
 assert.ok(html.includes('ElektroPlanV133.search({brand,model},data.parts)'),'Camera must use safe manufacturer/model matching');
 assert.ok(html.includes("result.category==='exact-text-match'"),'Only exact text matches may offer library navigation');
 assert.ok(html.includes('KEINE Anschlussfreigabe'),'Photo matching must not imply wiring approval');
+
+assert.ok(html.includes('function insertLibraryPart(p)'),'Library and camera must share a schematic insertion workflow');
+assert.ok(html.includes('sourceRecord:sourceSnapshot(p)'),'Inserted schematic symbols must retain source evidence');
+assert.ok(html.includes('current.sourceRecord=sourceSnapshot(p)'),'Applying library details must update provenance');
+assert.ok(html.includes('Passendes Symbol in Schaltplan einfügen (ungeprüft)'),'Exact camera match must offer unverified schematic insertion');
+assert.ok(html.includes(".category!=='exact-text-match'"),'Camera match must be rechecked before schematic insertion');
