@@ -17,7 +17,7 @@ function validateTerminalGraph(project){
    if(typeof term!=='string'||!term.trim()||term!==term.trim()||/[\u0000-\u001f\u007f-\u009f\u200b-\u200f\u202a-\u202e\u2060-\u2069\ufeff]/u.test(term)||names.has(term)){errors.push('Bauteil '+part.id+': ungültiger oder doppelter Anschluss '+j);return}
    names.add(term);
   });
-  if(names.size===0)warnings.push('Bauteil ohne erfasste Anschlüsse: '+part.id);
+  if(part.terminals.length===0)warnings.push('Bauteil ohne erfasste Anschlüsse: '+part.id);
   ports.set(part.id,names);
  });
  edges.forEach((edge,i)=>{
@@ -26,9 +26,9 @@ function validateTerminalGraph(project){
   if(typeof a.terminal!=='string'||typeof b.terminal!=='string'||!ports.get(a.component)?.has(a.terminal)||!ports.get(b.component)?.has(b.terminal)){errors.push('Verbindung '+i+': Anschluss fehlt');return}
   const ak=JSON.stringify([a.component,a.terminal]),bk=JSON.stringify([b.component,b.terminal]);
   if(ak===bk){errors.push('Verbindung '+i+': Selbstverbindung desselben Anschlusses');return}
-  if(a.component===b.component)warnings.push('Verbindung '+i+': Zwei Anschlüsse desselben Bauteils verbunden – fachlich prüfen');
   const key=[ak,bk].sort().join('|');
   if(edgeKeys.has(key)){errors.push('Verbindung '+i+': doppelte Anschlussverbindung');return}edgeKeys.add(key);
+  if(a.component===b.component)warnings.push('Verbindung '+i+': Zwei Anschlüsse desselben Bauteils verbunden – fachlich prüfen');
   used.set(ak,(used.get(ak)||0)+1);used.set(bk,(used.get(bk)||0)+1);connectedComponents.add(a.component);connectedComponents.add(b.component);
  });
  if(edges.length>0)for(const id of ids){if(!connectedComponents.has(id))warnings.push('Bauteil ohne Verbindung: '+id)}
