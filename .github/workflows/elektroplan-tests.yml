@@ -78,6 +78,8 @@ jobs:
         run: node tests/schematic-pictograms.test.js
       - name: Terminal strip import integrity
         run: node tests/terminal-strip-import.test.js
+      - name: Schematic title block clearance
+        run: node tests/title-block-clearance.test.js
 
       - name: Integrated project import size guard
         run: node tests/integrated-import-size-guard.test.js
