@@ -90,6 +90,9 @@ $('checkPlan').onclick=()=>{
  const terminalModel={components:data.symbols.map(s=>({id:s.id,terminals:s.manualTerminals||[]})),connections:assignedWires.map(w=>({from:{component:w.a,terminal:w.fromTerminal},to:{component:w.b,terminal:w.toTerminal}}))};
  const terminalResult=window.ElektroPlanTerminals?.validateTerminalGraph(terminalModel);
  if(!terminalResult){box.textContent='Klemmenprüfung nicht geladen. Keine Freigabe möglich.';return}
+ const errorCount=result.errors.length+terminalResult.errors.length+invalidWires;
+ const warningCount=result.warnings.length+terminalResult.warnings.length+pendingWires;
+ const summary=document.createElement('p');summary.setAttribute('role','status');summary.textContent='Prüfergebnis: '+errorCount+' Fehler, '+warningCount+' Hinweise – keine elektrische Freigabe.';box.append(summary);
  const h=document.createElement('strong');h.textContent=!result.valid||!terminalResult.valid?'Strukturprüfung: Fehler gefunden':invalidWires?'Strukturprüfung: Fehlerhafte Klemmenreferenzen':pendingWires?'Strukturprüfung: unvollständig – Leitungsenden fehlen':'Strukturprüfung: keine Strukturfehler (keine elektrische Freigabe)';box.append(h);
  const ul=document.createElement('ul');for(const line of [...result.errors,...result.warnings,...(pendingWires?['Nicht zugeordnete schematische Leitungen: '+pendingWires]:[]),...(invalidWires?['Leitungen mit ungültiger Klemmenreferenz: '+invalidWires]:[]),...terminalResult.errors.map(x=>'Klemmenfehler: '+x),...terminalResult.warnings.map(x=>'Klemmenhinweis: '+x)]){const li=document.createElement('li');li.textContent=line;ul.append(li)}box.append(ul);
  const review=document.createElement('strong');review.textContent=!result.valid||pendingWires||invalidWires||terminalResult.reviewRequired?'⚠ Fachliche Nachprüfung erforderlich':'Strukturell vollständig – weiterhin keine elektrische Freigabe';box.append(review);
