@@ -5,7 +5,7 @@
 function fromSchematic(project){
  const symbols=Array.isArray(project?.symbols)?project.symbols:[];
  const wires=Array.isArray(project?.wires)?project.wires:[];
- const components=symbols.map(s=>({id:s.id,terminals:Array.isArray(s.manualTerminals)?s.manualTerminals.slice():[]}));
+ const components=symbols.map(s=>({id:s?.id,terminals:Array.isArray(s?.manualTerminals)?s.manualTerminals.slice():[]}));
  const connections=[],pending=[];
  wires.forEach((w,index)=>{
   if(!w?.fromTerminal||!w?.toTerminal){pending.push({wire:index,reason:'Klemmenzuordnung unvollständig'});return}
