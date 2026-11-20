@@ -21,6 +21,7 @@ assert.match(scripts[0],/wireStart=null;wireMode=false;drag=null/,'Import must r
 assert.match(scripts[0],/const check=window\.ElektroPlanImport\?\.validateImport\(payload\)/,'Export must validate the actual payload');
 assert.match(scripts[0],/Export abgebrochen:/,'Invalid exports must be blocked');
 assert.match(html,/Keine automatische Bilderkennung/,'Do not falsely advertise image recognition');
+assert.match(scripts[0],/save\.disabled=!fromSelect\.options\.length\|\|!toSelect\.options\.length/,'Terminal picker must prevent saving missing terminal selections');
 assert.match(html,/keine Herstellerprüfung, keine elektrische Freigabe/,'Manual terminal safety disclaimer required');
 assert.match(html,/keine verifizierten Anschlussklemmen/,'CSV export disclaimer required');
 console.log('Integrated UI contract: element/dependency/action/safety checks passed (static; not a browser run).');
