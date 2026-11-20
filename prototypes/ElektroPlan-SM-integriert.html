@@ -52,12 +52,14 @@ $('checkPlan').onclick=()=>{
  const box=$('planCheckResult');box.hidden=false;box.replaceChildren();
  if(!window.ElektroPlanValidation){box.textContent='Prüfmodul nicht geladen. Keine Freigabe möglich.';return}
  const result=window.ElektroPlanValidation.validate(data);
- const terminalModel={components:data.symbols.map(s=>({id:s.id,terminals:['schematic']})),connections:data.wires.map(w=>({from:{component:w.a,terminal:'schematic'},to:{component:w.b,terminal:'schematic'}}))};
+ const assignedWires=data.wires.filter(w=>w.fromTerminal&&w.toTerminal);
+ const pendingWires=data.wires.length-assignedWires.length;
+ const terminalModel={components:data.symbols.map(s=>({id:s.id,terminals:s.manualTerminals||[]})),connections:assignedWires.map(w=>({from:{component:w.a,terminal:w.fromTerminal},to:{component:w.b,terminal:w.toTerminal}}))};
  const terminalResult=window.ElektroPlanTerminals?.validateTerminalGraph(terminalModel);
  if(!terminalResult){box.textContent='Klemmenprüfung nicht geladen. Keine Freigabe möglich.';return}
  const h=document.createElement('strong');h.textContent=result.valid&&terminalResult.valid?'Strukturprüfung: keine Strukturfehler':'Strukturprüfung: Fehler gefunden';box.append(h);
- const ul=document.createElement('ul');for(const line of [...result.errors,...result.warnings,...terminalResult.errors.map(x=>'Klemmenfehler: '+x),...terminalResult.warnings.map(x=>'Klemmenhinweis: '+x)]){const li=document.createElement('li');li.textContent=line;ul.append(li)}box.append(ul);
- const p=document.createElement('p');p.textContent=result.disclaimer+' Anschlussmodell derzeit schematisch, keine realen Geräteklemmen.';box.append(p);
+ const ul=document.createElement('ul');for(const line of [...result.errors,...result.warnings,...(pendingWires?['Nicht zugeordnete schematische Leitungen: '+pendingWires]:[]),...terminalResult.errors.map(x=>'Klemmenfehler: '+x),...terminalResult.warnings.map(x=>'Klemmenhinweis: '+x)]){const li=document.createElement('li');li.textContent=line;ul.append(li)}box.append(ul);
+ const p=document.createElement('p');p.textContent=result.disclaimer+' Manuelle Klemmenbezeichnungen werden strukturell geprüft; keine Herstellerprüfung, keine elektrische Freigabe.';box.append(p);
 };
 
 function download(name,blob){const u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(u),1500)}
