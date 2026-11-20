@@ -13,4 +13,8 @@ assert.equal(validate(assigned).valid,true);
 assert.equal(validate(assigned).warnings.length,0);
 assert.equal(validate({...assigned,wires:[{a:'a',b:'b',fromTerminal:'X',toTerminal:'2'}]}).valid,false);
 assert.match(validate({...assigned,wires:[{a:'a',b:'b',fromTerminal:'X',toTerminal:'2'}]}).errors.join(' '),/Startklemme/);
+const multi={symbols:[{...base.symbols[0],manualTerminals:['1','3']},{...base.symbols[1],manualTerminals:['2','4']}],wires:[{a:'a',b:'b',fromTerminal:'1',toTerminal:'2'},{a:'a',b:'b',fromTerminal:'3',toTerminal:'4'}]};
+assert.equal(validate(multi).valid,true);
+assert.equal(validate(multi).warnings.length,0,'Distinct terminal pairs must not be mistaken for duplicate wires');
+assert.ok(validate({...multi,wires:[multi.wires[0],{a:'b',b:'a',fromTerminal:'2',toTerminal:'1'}]}).warnings.some(w=>w.includes('doppelte Verbindung')),'Reversed same-terminal wire should be detected as duplicate');
 console.log('Schematic structural and manual-terminal validation checks passed');
