@@ -143,3 +143,6 @@ jobs:
 
       - name: DXF read-only geometry preview regression
         run: node tests/dxf-preview.test.js
+
+      - name: DXF preview UI integration
+        run: node tests/dxf-preview-ui.test.js
