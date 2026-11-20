@@ -58,5 +58,7 @@ jobs:
         run: node tests/project-import-terminal-index.test.js
       - name: Manual terminal label import safety
         run: node tests/project-import-terminal-labels.test.js
+      - name: Imported evidence HTTPS URL safety
+        run: node tests/project-import-evidence-url.test.js
       - name: Project import validation
         run: node tests/project-import-validation.test.js
