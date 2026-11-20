@@ -31,6 +31,8 @@ jobs:
         run: node tests/V134-source-records.test.js
       - name: Integrated editor UI contract
         run: node tests/integrated-ui-contract.test.js
+      - name: CSV export formula injection regression
+        run: node tests/csv-safety.test.js
       - name: Mobile Chromium browser smoke test
         timeout-minutes: 8
         run: |
