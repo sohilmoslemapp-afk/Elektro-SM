@@ -131,3 +131,6 @@ assert.ok(html.includes('function searchManufacturerDocument(brand,partNumber)')
 assert.ok(html.includes('p.documentIdentity={manufacturer:p.brand,model:p.model,articleNumber:p.partNumber'),'Saved parts must retain structured document-to-article identity');
 assert.ok(html.includes("verificationStatus:'manual-unverified',terminalAssignmentApproved:false"),'Manual document references must not imply approved terminal assignments');
 assert.ok(html.includes('if(part.documentIdentity)'),'Library must display structured document identity');
+
+assert.ok(html.includes("const articleChoice=selectLine('Artikelnummer aus erkanntem Text auswählen (optional)')"),'OCR must offer distinct article number selection');
+assert.ok(html.includes("$('photoPartNumber').value=articleChoice.value"),'OCR article number must reach camera matching form');
