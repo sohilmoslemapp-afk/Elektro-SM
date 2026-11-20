@@ -5,6 +5,7 @@
 'use strict';
 function nonempty(s){return typeof s==='string' && s.trim().length>0 && s===s.trim();}
 function validDocumentUrl(value){if(!nonempty(value))return false;try{const url=new URL(value);return url.protocol==='https:'&&!!url.hostname&&!url.username&&!url.password;}catch{return false;}}
+function validReviewDate(value){if(typeof value!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(value))return false;const d=new Date(value+'T00:00:00Z');return !Number.isNaN(d.getTime())&&d.toISOString().slice(0,10)===value;}
 function assessManufacturerEvidence(record){
  const errors=[],warnings=[];
  if(!record||typeof record!=='object'||Array.isArray(record)){
@@ -26,7 +27,7 @@ function assessManufacturerEvidence(record){
  if(!nonempty(evidence.modelReviewReference))errors.push('Nachweis der Modellzuordnung fehlt');
  if(evidence.terminalMappingReviewed!==true)errors.push('Anschlusszuordnung nicht fachlich geprüft');
  if(!nonempty(evidence.reviewer))errors.push('Fachprüfer fehlt');
- if(!nonempty(evidence.reviewDate)||!/^\\d{4}-\\d{2}-\\d{2}$/.test(evidence.reviewDate))errors.push('Prüfdatum fehlt oder ist ungültig');
+ if(!validReviewDate(evidence.reviewDate))errors.push('Prüfdatum fehlt oder ist ungültig');
  if(!Array.isArray(terminals)||terminals.length===0)errors.push('Keine dokumentierten Anschlüsse');
  else{
   const names=new Set();
@@ -40,11 +41,11 @@ function assessManufacturerEvidence(record){
   });
  }
  const usableForTerminalReference=errors.length===0;
- return {usableForTerminalReference,reviewRequired:!usableForTerminalReference||warnings.length>0,
+ return {usableForTerminalReference,reviewRequired:!usableForTerminalReference||warnings.length>0,verificationMethod:'manual-record-only',manufacturerApiVerified:false,
   electricallyApproved:false,errors,warnings,
   disclaimer:'Prüfvermerke sind manuell erfasst und nicht automatisch bei Herstellern bestätigt. Keine elektrische Sicherheitsprüfung oder Freigabe.'};
 }
-const api={assessManufacturerEvidence,validDocumentUrl};
+const api={assessManufacturerEvidence,validDocumentUrl,validReviewDate};
 if(typeof module!=='undefined'&&module.exports)module.exports=api;
 else root.ElektroPlanManufacturerEvidence=api;
 })(typeof globalThis!=='undefined'?globalThis:this);
