@@ -58,6 +58,17 @@ const path = require('node:path');
     if(await page.locator('#brand').inputValue()!=='Test Hersteller'||await page.locator('#model').inputValue()!=='TEST-123')throw Error('Camera manual metadata transfer failed');
     await page.locator('#addPart').click();
     if(await page.locator('#partList li').count()!==1)throw Error('Transferred manual component was not saved');
+    await page.locator('#partList li button').click();
+    if(!await page.locator('#plan').isVisible())throw Error('Part insertion did not open schematic');
+    if(await page.locator('#symbols > g').count()!==2)throw Error('Unsupported component type unexpectedly added a symbol');
+    if(!await page.locator('#message').textContent().then(t=>t.includes('fehlt noch ein passendes Plansymbol')))throw Error('Unsupported symbol mapping warning missing');
+    await page.locator('[data-tab="parts"]').click();
+    await page.locator('#type').selectOption({label:'FI / RCD'});
+    await page.locator('#addPart').click();
+    await page.locator('#partList li').last().locator('button').click();
+    if(await page.locator('#symbols > g').count()!==3)throw Error('RCD library-to-plan insertion failed');
+    if(!await page.locator('#message').textContent().then(t=>t.includes('NICHT mit dem Symbol verknüpft')))throw Error('Unlinked manufacturer warning missing');
+
     await page.locator('[data-tab="plan"]').click();
     await page.locator('#savePlan').click();
     await page.reload();
