@@ -87,3 +87,9 @@ assert.equal(equivalentNames.valid,false,'Canonically equivalent terminal labels
 assert.ok(equivalentNames.errors.some(e=>e.includes('doppelter Anschluss')));
 const distinctUnicode=check({components:[{id:'X9',terminals:['é','è']}],connections:[]});
 assert.equal(distinctUnicode.valid,true,'Distinct terminal names must remain accepted');
+
+const equivalentIds=check({components:[{id:'Café',terminals:['1']},{id:'Cafe\u0301',terminals:['2']}],connections:[]});
+assert.equal(equivalentIds.valid,false,'Canonically equivalent component IDs must not coexist');
+assert.ok(equivalentIds.errors.some(e=>e.includes('doppelte Kennung')));
+const distinctIds=check({components:[{id:'Café',terminals:['1']},{id:'Cafe',terminals:['2']}],connections:[]});
+assert.equal(distinctIds.valid,true,'Distinct component IDs must remain accepted');
