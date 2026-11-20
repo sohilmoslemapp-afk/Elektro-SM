@@ -14,7 +14,7 @@ function validateTerminalGraph(project){
   if(!Array.isArray(part.terminals)){errors.push('Bauteil '+part.id+': Anschlussliste fehlt');return}
   const names=new Set();
   part.terminals.forEach((term,j)=>{
-   if(typeof term!=='string'||!term.trim()||term!==term.trim()||names.has(term)){errors.push('Bauteil '+part.id+': ungültiger oder doppelter Anschluss '+j);return}
+   if(typeof term!=='string'||!term.trim()||term!==term.trim()||/[\u0000-\u001f\u007f-\u009f\u200b-\u200f\u202a-\u202e\u2060-\u2069\ufeff]/u.test(term)||names.has(term)){errors.push('Bauteil '+part.id+': ungültiger oder doppelter Anschluss '+j);return}
    names.add(term);
   });
   ports.set(part.id,names);
