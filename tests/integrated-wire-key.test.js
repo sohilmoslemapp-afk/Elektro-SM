@@ -1,0 +1,14 @@
+'use strict';
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const path=require('node:path');
+const html=fs.readFileSync(path.join(__dirname,'../prototypes/ElektroPlan-SM-integriert.html'),'utf8');
+const start=html.indexOf('function validateDiagram()');
+assert.ok(start>=0,'integrated diagram validation exists');
+const source=html.slice(start,start+2000);
+assert.match(source,/JSON\.stringify\(\[w\.a,w\.b\]\.sort\(\)\)/);
+assert.doesNotMatch(source,/\[w\.a,w\.b\]\.sort\(\)\.join\('\|'\)/);
+const key=(a,b)=>JSON.stringify([a,b].sort());
+assert.equal(key('a|b','c'),key('c','a|b'));
+assert.notEqual(key('a|b','c'),key('a','b|c'));
+console.log('Integrated Schaltplan duplicate wire key regression passed (static contract)');
