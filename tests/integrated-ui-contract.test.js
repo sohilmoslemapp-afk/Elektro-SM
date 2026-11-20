@@ -101,7 +101,7 @@ assert.ok(html.includes("preview.src!==original"),'OCR must discard stale image 
 assert.ok(html.includes('Keine Anschlussfreigabe.'),'OCR output must not authorize terminal assignments');
 
 assert.ok(html.includes('Hersteller aus erkanntem Text auswählen'),'OCR must let the user explicitly choose manufacturer text');
-assert.ok(html.includes('Modell / Artikelnummer aus erkanntem Text auswählen'),'OCR must let the user explicitly choose model text');
+assert.ok(html.includes('Modell aus erkanntem Text auswählen'),'OCR must let the user explicitly choose model text');
 assert.ok(html.includes('Auswahl übernehmen (manuell bestätigen)'),'OCR suggestions require user action');
 assert.ok(html.includes("if(preview.src!==original)return msg("),'OCR selections must reject a changed photo');
 assert.ok(html.includes("if(brandChoice.value===''||modelChoice.value==='')"),'OCR must not auto-fill unspecified manufacturer/model');
