@@ -18,7 +18,7 @@ function validate(project){
  wires.forEach((w,i)=>{
   if(!w||!ids.has(w.a)||!ids.has(w.b)){errors.push('Leitung '+i+': Endpunkt fehlt');return}
   if(w.a===w.b){errors.push('Leitung '+i+': Selbstverbindung');return}
-  const key=[w.a,w.b].sort().join('|');
+  const key=JSON.stringify([w.a,w.b].sort());
   if(seen.has(key))warnings.push('Leitung '+i+': doppelte Verbindung');
   seen.add(key);degree.set(w.a,(degree.get(w.a)||0)+1);degree.set(w.b,(degree.get(w.b)||0)+1);
  });
