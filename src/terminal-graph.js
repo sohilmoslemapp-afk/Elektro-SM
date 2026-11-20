@@ -5,12 +5,12 @@
 function validateTerminalGraph(project){
  const errors=[],warnings=[],parts=project?.components,edges=project?.connections;
  if(!Array.isArray(parts)||!Array.isArray(edges))return {valid:false,reviewRequired:true,electricallyApproved:false,errors:['Ungültiges Anschlussmodell'],warnings};
- const ids=new Set(),ports=new Map(),used=new Map(),edgeKeys=new Set(),connectedComponents=new Set();
+ const ids=new Set(),normalizedIds=new Set(),ports=new Map(),used=new Map(),edgeKeys=new Set(),connectedComponents=new Set();
  if(parts.length===0){warnings.push('Keine Bauteile vorhanden');if(edges.length>0)errors.push('Verbindungen ohne Bauteile sind unzulässig')}
  if(edges.length===0)warnings.push('Keine Verbindungen vorhanden');
  parts.forEach((part,i)=>{
-  if(!part||typeof part.id!=='string'||!part.id.trim()||part.id!==part.id.trim()||/[\u0000-\u001f\u007f-\u009f\u200b-\u200f\u202a-\u202e\u2060-\u2069\ufeff]/u.test(part.id)||ids.has(part.id)){errors.push('Bauteil '+i+': fehlende oder doppelte Kennung');return}
-  ids.add(part.id);
+  if(!part||typeof part.id!=='string'||!part.id.trim()||part.id!==part.id.trim()||/[\u0000-\u001f\u007f-\u009f\u200b-\u200f\u202a-\u202e\u2060-\u2069\ufeff]/u.test(part.id)||ids.has(part.id)||normalizedIds.has(part.id.normalize('NFC'))){errors.push('Bauteil '+i+': fehlende oder doppelte Kennung');return}
+  ids.add(part.id);normalizedIds.add(part.id.normalize('NFC'));
   if(!Array.isArray(part.terminals)){errors.push('Bauteil '+part.id+': Anschlussliste fehlt');return}
   const names=new Set(),normalizedNames=new Set();
   part.terminals.forEach((term,j)=>{
