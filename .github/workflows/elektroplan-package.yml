@@ -1,0 +1,59 @@
+name: ElektroPlan trial package
+on:
+  workflow_run:
+    workflows: ["ElektroPlan quality gate"]
+    types: [completed]
+  workflow_dispatch:
+jobs:
+  package:
+    if: ${{ github.event_name == 'workflow_dispatch' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'ElektroPlan-Entwicklung-1') }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && github.ref || github.event.workflow_run.head_sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify integrated editor entry and linked local scripts
+        run: |
+          node - <<'NODE'
+          const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm');
+          const entry='prototypes/ElektroPlan-SM-integriert.html';
+          const html=fs.readFileSync(entry,'utf8');
+          for(const [,src] of html.matchAll(/<script\s+src="([^"]+)"/g)){
+            if(/^(?:[a-z]+:|\/\/)/i.test(src))throw Error('External script not permitted in trial package: '+src);
+            const resolved=path.resolve(path.dirname(entry),src);
+            if(!resolved.startsWith(path.resolve('.')+path.sep)||!fs.existsSync(resolved))throw Error('Missing script: '+src);
+            new vm.Script(fs.readFileSync(resolved,'utf8'),{filename:src});
+          }
+          const blocks=[...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)].map(x=>x[1]).filter(x=>x.trim());
+          if(blocks.length!==1)throw Error('Expected one inline editor script');
+          new vm.Script(blocks[0],{filename:entry});
+          console.log('Offline entry and JavaScript syntax OK');
+          NODE
+      - name: Create portable trial archive and checksums
+        run: |
+          python3 - <<'PY'
+          import pathlib,zipfile,hashlib
+          root=pathlib.Path('.')
+          target=pathlib.Path('dist')
+          target.mkdir(exist_ok=True)
+          archive=target/'ElektroPlan-SM-1-Testpaket.zip'
+          paths=[p for folder in ('prototypes','src') for p in (root/folder).rglob('*') if p.is_file()]
+          paths.append(root/'docs'/'TESTPAKET.md')
+          with zipfile.ZipFile(archive,'w',compression=zipfile.ZIP_DEFLATED) as z:
+              for p in sorted(paths): z.write(p,p.as_posix())
+          digest=hashlib.sha256(archive.read_bytes()).hexdigest()
+          (target/'SHA256SUMS.txt').write_text(f'{digest}  {archive.name}\n',encoding='utf-8')
+          print('Archive:',archive,'files:',len(paths),'sha256:',digest)
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ElektroPlan-SM-1-Testpaket
+          path: |
+            dist/ElektroPlan-SM-1-Testpaket.zip
+            dist/SHA256SUMS.txt
+          retention-days: 30
