@@ -55,3 +55,9 @@ for(const invalidId of [' Q1','Q1 ','Q\u200b1','Q\u202e1','Q\u00001']){
  assert.equal(result.reviewRequired,true);
 }
 assert.equal(check({components:[{id:'Q1',terminals:['1']}],connections:[]}).valid,true);
+
+const isolated=check({components:[...a.components,{id:'K9',terminals:['A1']}],connections:a.connections});
+assert.equal(isolated.valid,true,'Isolated components are a review warning, not an automatic wiring error');
+assert.equal(isolated.reviewRequired,true);
+assert.ok(isolated.warnings.some(w=>w.includes('Bauteil ohne Verbindung: K9')));
+assert.ok(!check(a).warnings.some(w=>w.includes('Bauteil ohne Verbindung')));
