@@ -57,6 +57,8 @@ jobs:
         run: node tests/integrated-import-size-guard.test.js
       - name: Integrated duplicate wire key regression
         run: node tests/integrated-wire-key.test.js
+      - name: Indexed integrated wire rendering
+        run: node tests/integrated-wire-render-index.test.js
       - name: Integrated Schaltplan UI wiring
         run: node tests/integrated-schematic-ui.test.js
 
