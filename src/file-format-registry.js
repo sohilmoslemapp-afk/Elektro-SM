@@ -6,7 +6,7 @@ const entries=[
  {id:'svg',extensions:['.svg'],kind:'vector',import:'unsupported',export:'supported'},
  {id:'csv',extensions:['.csv'],kind:'data',import:'unsupported',export:'supported'},
  {id:'pdf',extensions:['.pdf'],kind:'document',import:'unsupported',export:'conditional'},
- {id:'dxf',extensions:['.dxf'],kind:'cad',import:'planned',export:'planned'},
+ {id:'dxf',extensions:['.dxf'],kind:'cad',import:'planned',export:'conditional'},
  {id:'dwg',extensions:['.dwg'],kind:'cad',import:'planned',export:'planned'},
  {id:'dgn',extensions:['.dgn'],kind:'cad',import:'planned',export:'planned'},
  {id:'aml',extensions:['.aml'],kind:'engineering',import:'planned',export:'planned'},
