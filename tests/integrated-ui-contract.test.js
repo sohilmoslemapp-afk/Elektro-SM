@@ -134,3 +134,7 @@ assert.ok(html.includes('if(part.documentIdentity)'),'Library must display struc
 
 assert.ok(html.includes("const articleChoice=selectLine('Artikelnummer aus erkanntem Text auswählen (optional)')"),'OCR must offer distinct article number selection');
 assert.ok(html.includes("$('photoPartNumber').value=articleChoice.value"),'OCR article number must reach camera matching form');
+
+assert.ok(html.includes('const netResult=window.ElektroPlanNets?.analyze(data)'), 'Schaltplan check must analyze terminal connectivity');
+assert.ok(html.includes('netResult.pending.map(x=>'), 'Schaltplan check must show unresolved net reasons');
+assert.ok(html.includes('||unresolvedNets||terminalResult.reviewRequired'), 'Unresolved connectivity must require review');
