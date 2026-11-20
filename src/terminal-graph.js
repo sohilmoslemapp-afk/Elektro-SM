@@ -17,6 +17,7 @@ function validateTerminalGraph(project){
    if(typeof term!=='string'||!term.trim()||term!==term.trim()||/[\u0000-\u001f\u007f-\u009f\u200b-\u200f\u202a-\u202e\u2060-\u2069\ufeff]/u.test(term)||names.has(term)){errors.push('Bauteil '+part.id+': ungültiger oder doppelter Anschluss '+j);return}
    names.add(term);
   });
+  if(names.size===0)warnings.push('Bauteil ohne erfasste Anschlüsse: '+part.id);
   ports.set(part.id,names);
  });
  edges.forEach((edge,i)=>{
