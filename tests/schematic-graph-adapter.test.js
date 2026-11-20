@@ -16,3 +16,9 @@ assert.equal(validateTerminalGraph(invalid).valid,false,'Unknown terminal fails 
 const reversed=fromSchematic({...project,wires:[project.wires[0],{a:'X1',b:'F3',fromTerminal:'3',toTerminal:'2'}]});
 assert.equal(validateTerminalGraph(reversed).valid,false,'Reversed duplicate terminal edge rejected');
 console.log('Schematic-to-terminal graph adapter checks passed');
+
+const malformedSymbol=fromSchematic({symbols:[null,{id:'X1',manualTerminals:['1']}],wires:[]});
+assert.equal(malformedSymbol.components.length,2,'Malformed symbols must not silently disappear');
+assert.equal(validateTerminalGraph(malformedSymbol).valid,false,'Malformed symbols must fail terminal validation without throwing');
+const malformedWire=fromSchematic({symbols:[{id:'X1',manualTerminals:['1']}],wires:[null]});
+assert.deepEqual(malformedWire.pending.map(x=>x.wire),[0],'Null wires must remain explicitly pending');
