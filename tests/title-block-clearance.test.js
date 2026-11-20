@@ -1,0 +1,12 @@
+'use strict';
+const assert=require('node:assert/strict');
+const fs=require('node:fs'),path=require('node:path');
+const html=fs.readFileSync(path.join(__dirname,'../prototypes/ElektroPlan-SM-integriert.html'),'utf8');
+assert.match(html,/<svg id="drawing" viewBox="0 0 800 500"/);
+const block=html.slice(html.indexOf('function renderDrawingTitleBlock()'),html.indexOf('function render(){'));
+assert.match(block,/node\('rect',\{x:8,y:455,width:784,height:42/);
+assert.match(block,/y2:497/);
+assert.doesNotMatch(block,/y:372/);
+assert.match(html,/Math\.min\(390,p\.y\)/);
+assert.ok(390+42<455,'Lowest draggable symbol annotations must not intersect title block');
+console.log('Title block separated from diagram working area');
