@@ -68,6 +68,8 @@ const path = require('node:path');
     await page.locator('#partList li').last().locator('button').click();
     if(await page.locator('#symbols > g').count()!==3)throw Error('RCD library-to-plan insertion failed');
     if(!await page.locator('#message').textContent().then(t=>t.includes('NICHT mit dem Symbol verknüpft')))throw Error('Unlinked manufacturer warning missing');
+    await page.locator('#undoEdit').click();
+    if(await page.locator('#symbols > g').count()!==2)throw Error('Undo of library symbol insertion failed');
 
     await page.locator('[data-tab="plan"]').click();
     await page.locator('#savePlan').click();
