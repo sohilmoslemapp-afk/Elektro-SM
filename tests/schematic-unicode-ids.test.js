@@ -5,7 +5,7 @@ assert.equal(validate(project(['A','B'])).valid,true);
 for(const ids of [['A','A'],['é','e\u0301'],['A\u200b'],[' A'],['A\u202e']])assert.equal(validate(project(ids)).valid,false,JSON.stringify(ids));
 
 // Distinct wires must not collide when an identifier contains the separator character.
-const graph={symbols:['a|b','c','a','b|c'].map((id,i)=>({id,type:'SW',x:i,y:0})),wires:[{a:'a|b',b:'c',fromTerminal:'1',toTerminal:'1'},{a:'a',b:'b|c',fromTerminal:'1',toTerminal:'1'}]};
+const graph={symbols:['a|b','c','a','b|c'].map((id,i)=>({id,type:'SW',x:i,y:0,manualTerminals:['1']})),wires:[{a:'a|b',b:'c',fromTerminal:'1',toTerminal:'1'},{a:'a',b:'b|c',fromTerminal:'1',toTerminal:'1'}]};
 const distinct=validate(graph);
 assert.equal(distinct.valid,true);
 assert.equal(distinct.warnings.some(w=>w.includes('doppelte Verbindung')),false);
