@@ -27,3 +27,6 @@ jobs:
         run: node tests/V134-source-records.test.js
       - name: Schematic structural validation
         run: node tests/schematic-validation.test.js
+
+      - name: Terminal graph validation
+        run: node tests/terminal-graph.test.js
