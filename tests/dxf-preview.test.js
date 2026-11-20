@@ -22,4 +22,6 @@ assert.throws(()=>previewDxf('0\nENDSEC\n0\nEOF\n'),/Unexpected/);
 assert.throws(()=>previewDxf('0\nSECTION\n2\nENTITIES\n0\nEOF\n'),/EOF before ENDSEC/);
 assert.throws(()=>previewDxf('0\nSECTION\n0\nENDSEC\n0\nEOF\n'),/Missing DXF section name/);
 assert.throws(()=>previewDxf('0\nSECTION\n8\nENTITIES\n0\nENDSEC\n0\nEOF\n'),/Missing DXF section name/);
+assert.throws(()=>previewDxf('0\nSECTION\n2\nENTITIES\n0\nENDSEC\n0\nSECTION\n2\nENTITIES\n0\nENDSEC\n0\nEOF\n'),/Duplicate DXF ENTITIES/);
+assert.throws(()=>previewDxf('0\nSECTION\n2\nENTITIES\n0\nENDSEC\n0\nEOF\n0\nLINE\n'),/after EOF/);
 console.log('Read-only DXF geometry preview and export roundtrip passed');
