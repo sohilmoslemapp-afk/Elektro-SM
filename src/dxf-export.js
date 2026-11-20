@@ -38,8 +38,7 @@ function exportDxf(project){
   if(!a||!b)throw Error('Wire endpoint not found');
   const from=w.fromTerminal?geometry?.terminalPosition(a,w.fromTerminal):null;
   const to=w.toTerminal?geometry?.terminalPosition(b,w.toTerminal):null;
-  if(!w.fromTerminal||!w.toTerminal)throw Error('DXF export requires complete terminal assignments');
-  if(!from||!to)throw Error('Terminal position not available for DXF export');
+  if(w.fromTerminal&&!from||w.toTerminal&&!to)throw Error('Terminal position not available for DXF export');
   const p=from||a,q=to||b;
   add('LINE',[[8,'WIRES'],[10,p.x],[20,-p.y],[30,0],[11,q.x],[21,-q.y],[31,0]]);
  }
