@@ -8,8 +8,8 @@ const path=require('node:path');
   const errors=[];page.on('pageerror',e=>errors.push(e.message));
   await page.goto('file://'+path.resolve(__dirname,'../prototypes/ElektroPlan-SM-integriert.html'));
   for(const type of ['RCD','LS','SW'])await page.locator('[data-add="'+type+'"]').click();
-  await page.locator('#wireMode').click();
   for(const [a,b] of [[0,1],[1,2]]){
+   await page.locator('#wireMode').click();
    await page.locator('#symbols > g').nth(a).tap();
    await page.locator('#symbols > g').nth(b).tap();
   }
