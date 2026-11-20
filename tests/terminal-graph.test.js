@@ -48,3 +48,10 @@ for(const invisible of ['A\u200b1','A\u202e1','A\u20661','A\u00001','A\u007f1'])
  assert.equal(result.reviewRequired,true);
 }
 assert.equal(check({components:[{id:'X1',terminals:['A1','A2']}],connections:[]}).valid,true);
+
+for(const invalidId of [' Q1','Q1 ','Q\u200b1','Q\u202e1','Q\u00001']){
+ const result=check({components:[{id:invalidId,terminals:['1']}],connections:[]});
+ assert.equal(result.valid,false,'Invalid component identifier must be rejected');
+ assert.equal(result.reviewRequired,true);
+}
+assert.equal(check({components:[{id:'Q1',terminals:['1']}],connections:[]}).valid,true);
