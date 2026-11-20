@@ -65,6 +65,6 @@ assert.ok(html.includes('Manuelle Leitungsenden vorhanden – nicht herstellerve
 
 assert.ok(html.includes('if(!w)return msg(\'Leitung nicht mehr vorhanden – Auswahl neu öffnen\')'),'Terminal picker must refuse saving a deleted wire');
 
-assert.ok(html.includes('const pickerWires=data.wires.slice()'),'Terminal picker must snapshot wire identities');
-assert.ok(html.includes('w!==pickerWires[index]'),'Terminal picker must reject changed wire identity');
+assert.ok(html.includes('const pickerWires=data.wires.map(w=>({ref:w,a:w.a,b:w.b}))'),'Terminal picker must snapshot wire identities and component endpoints');
+assert.ok(html.includes('w.a!==pickerWires[index].a||w.b!==pickerWires[index].b'),'Terminal picker must reject changed wire endpoints');
 assert.ok(html.includes('Leitung geändert – Auswahl neu öffnen'),'Terminal picker must explain stale selection');
