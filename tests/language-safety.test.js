@@ -29,4 +29,5 @@ for(const phrase of ['statusTranslations','Wiring is NOT manufacturer-verified',
 assert.ok(html.includes("statusTranslations[t]?.[lang]||additionalStatusTranslations[t]?.[lang]||t"),'Translated status must retain German fallback');
 for(const phrase of ['additionalStatusTranslations','Project file exported successfully','تم تصدير ملف المشروع بنجاح','NO wiring approval','لا توجد موافقة على التوصيل'])assert.ok(html.includes(phrase),'Missing completed translated status: '+phrase);
 assert.ok(html.includes('additionalStatusTranslations[t]?.[lang]'),'Additional runtime statuses must follow selected language');
+for(const phrase of ['localizedActionButtons[lang]','Check structure','فحص البنية','Recognize image text (experimental)','استخراج نص الصورة (تجريبي)'])assert.ok(html.includes(phrase),'Missing translated action control: '+phrase);
 console.log('German, English and Arabic language selector, RTL and camera safety translations: passed');
