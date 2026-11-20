@@ -33,3 +33,6 @@ jobs:
 
       - name: Integrated Schaltplan UI wiring
         run: node tests/integrated-schematic-ui.test.js
+
+      - name: Project import validation
+        run: node tests/project-import-validation.test.js
