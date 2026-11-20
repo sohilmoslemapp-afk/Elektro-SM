@@ -25,7 +25,7 @@ function validate(project){
   for(const [terminal,symbol,side] of [[w.fromTerminal,from,'Start'],[w.toTerminal,to,'Ziel']]){
    if(terminal!==undefined&&terminal!==null&&terminal!==''&&(!Array.isArray(symbol?.manualTerminals)||!symbol.manualTerminals.includes(terminal)))errors.push('Leitung '+i+': '+side+'klemme nicht am Symbol erfasst');
   }
-  const key=JSON.stringify([w.a,w.b].sort());
+  const key=w.fromTerminal&&w.toTerminal?JSON.stringify([[w.a,w.fromTerminal],[w.b,w.toTerminal]].sort((a,b)=>JSON.stringify(a).localeCompare(JSON.stringify(b)))):JSON.stringify([w.a,w.b].sort());
   if(seen.has(key))warnings.push('Leitung '+i+': doppelte Verbindung');
   seen.add(key);degree.set(w.a,(degree.get(w.a)||0)+1);degree.set(w.b,(degree.get(w.b)||0)+1);
  });
