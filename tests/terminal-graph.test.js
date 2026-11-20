@@ -15,9 +15,10 @@ assert.equal(check({...a,connections:[{from:{component:'Q1',terminal:'3'},to:{co
 assert.equal(check({...a,connections:[{from:{component:'Q1',terminal:'2'},to:{component:'Q1',terminal:'2'}}]}).valid,false);
 assert.equal(check({...a,components:[a.components[0],a.components[0]]}).valid,false);
 assert.equal(check({...a,components:[{id:'Q1',terminals:['1','1']}]}).valid,false);
-assert.equal(check({...a,connections:[a.connections[0],a.connections[0]]}).warnings.some(x=>x.includes('doppelt')),true);
+assert.equal(check({...a,connections:[a.connections[0],a.connections[0]]}).valid,false);
+assert.equal(check({...a,connections:[a.connections[0],a.connections[0]]}).errors.some(x=>x.includes('doppelte Anschlussverbindung')),true);
 assert.equal(check({...a,connections:[{from:{component:'Q1',terminal:'2'},to:{component:'missing',terminal:'A1'}}]}).valid,false);
-assert.equal(check({...a,connections:[{from:{component:'Q1',terminal:'2'},to:{component:'H1',terminal:'A1'}},{from:{component:'H1',terminal:'A1'},to:{component:'Q1',terminal:'2'}}]}).warnings.some(x=>x.includes('doppelt')),true);
+assert.equal(check({...a,connections:[{from:{component:'Q1',terminal:'2'},to:{component:'H1',terminal:'A1'}},{from:{component:'H1',terminal:'A1'},to:{component:'Q1',terminal:'2'}}]}).errors.some(x=>x.includes('doppelte Anschlussverbindung')),true);
 assert.equal(check({...a,components:[{id:'Q1',terminals:['1','2']},{id:'H1',terminals:['A1','A2']},{id:'X1',terminals:['L']}]}).warnings.some(x=>x.includes('X1/L')),true);
 assert.equal(check({...a,connections:[{from:{component:'Q1',terminal:'2'},to:{component:'Q1',terminal:'1'}}]}).valid,true);
 console.log('Terminal graph: 12 structural assertions passed; electrical correctness not assessed.');
