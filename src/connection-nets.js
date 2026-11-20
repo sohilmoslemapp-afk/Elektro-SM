@@ -15,7 +15,7 @@ function analyze(project){
   else normalizedIds.set(normalized,id);
  }
  const parent=new Map(),groups=new Map(),pending=[],seenEdges=new Map();
- const validTerminals=s=>Array.isArray(s?.manualTerminals)&&s.manualTerminals.length<=8&&s.manualTerminals.every(t=>typeof t==='string'&&t.trim()===t&&t.length>0&&t.length<=40&&!unsafe.test(t))&&new Set(s.manualTerminals).size===s.manualTerminals.length;
+ const validTerminals=s=>Array.isArray(s?.manualTerminals)&&s.manualTerminals.length<=8&&s.manualTerminals.every(t=>typeof t==='string'&&t.trim()===t&&t.length>0&&t.length<=40&&!unsafe.test(t))&&new Set(s.manualTerminals.map(t=>t.normalize('NFC'))).size===s.manualTerminals.length;
  const validId=id=>typeof id==='string'&&id.trim()===id&&id.length>0&&id.length<=100&&!unsafe.test(id);
  const validEndpoint=t=>typeof t==='string'&&t.trim()===t&&t.length>0&&t.length<=40&&!unsafe.test(t);
  const key=(id,t)=>JSON.stringify([id,t]);
