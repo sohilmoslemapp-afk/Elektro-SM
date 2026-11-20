@@ -52,6 +52,7 @@ jobs:
           node tests/integrated-pointer-cancel-browser.test.js
           node tests/tablet-desktop-smoke.test.js
           node tests/trilingual-browser.test.js
+          node tests/cross-platform-trilingual-browser.test.js
       - name: Integrated prototype inline JavaScript syntax
         run: |
           node - <<'NODE'
