@@ -22,9 +22,16 @@ const path = require('node:path');
     if(!await page.locator('#planCheckResult').isVisible())throw Error('Structural validation not displayed');
     await page.locator('[data-tab="camera"]').click();
     if(!await page.locator('#takePhoto').count() || !await page.locator('#choosePhoto').count())throw Error('Camera inputs missing');
+    const tinyPng=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9Y9M9S8AAAAASUVORK5CYII=','base64');
+    await page.locator('#choosePhoto').setInputFiles({name:'test-photo.png',mimeType:'image/png',buffer:tinyPng});
+    await page.waitForFunction(()=>document.querySelector('#photoStatus').textContent.includes('test-photo.png'));
+    if(!await page.locator('#preview').getAttribute('src').then(x=>x?.startsWith('data:image/png;base64,')))throw Error('Image preview missing');
     await page.locator('[data-tab="plan"]').click();
     await page.locator('#savePlan').click();
+    await page.reload();
+    if(await page.locator('#symbols > g').count()!==2)throw Error('Saved symbols not restored after reload');
+    if(await page.locator('#wires > path').count()!==1)throw Error('Saved wire not restored after reload');
     if(errors.length)throw Error('Browser errors: '+errors.join(' | '));
-    console.log('Mobile Chromium smoke test passed: add, undo, redo, tabs, camera controls, save');
+    console.log('Mobile Chromium smoke test passed: add, undo, redo, tabs, camera image selection, save and reload');
   } finally {await browser.close()}
 })().catch(e=>{console.error(e);process.exit(1)});
