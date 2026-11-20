@@ -1,0 +1,33 @@
+name: ElektroPlan quality gate
+on:
+  push:
+    branches: [ElektroPlan-Entwicklung-1]
+  pull_request:
+  workflow_dispatch:
+jobs:
+  structural-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: JavaScript syntax checks
+        run: |
+          node --check src/schematic-validation.js
+          node --check src/project-import-validation.js
+          node --check src/terminal-graph.js
+      - name: Terminal-graph regression
+        run: node tests/terminal-graph.test.js
+      - name: Search-ranking regression
+        run: node tests/V132-ranking.test.js
+      - name: Integrated prototype inline JavaScript syntax
+        run: |
+          node - <<'NODE'
+          const fs=require('node:fs'),vm=require('node:vm');
+          const html=fs.readFileSync('prototypes/ElektroPlan-SM-integriert.html','utf8');
+          const blocks=[...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)].map(x=>x[1]);
+          if(blocks.length!==1)throw Error('Expected one inline application script');
+          new vm.Script(blocks[0],{filename:'ElektroPlan-SM-integriert.html'});
+          console.log('Integrated inline JS syntax passed');
+          NODE
