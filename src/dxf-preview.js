@@ -16,7 +16,7 @@ function previewDxf(source){
  const flush=()=>{if(current){entities.push(current);if(entities.length>10000)throw Error('Too many DXF entities');current=null}};
  for(const [code,value] of pairs){
   if(code===0&&value==='SECTION'){if(section||awaitSection)throw Error('Nested or malformed DXF SECTION');flush();awaitSection=true;continue}
-  if(awaitSection&&code===2){section=value;awaitSection=false;if(section==='ENTITIES')hasEntities=true;continue}
+  if(awaitSection&&code===2){section=value;awaitSection=false;if(section==='ENTITIES'){if(hasEntities)throw Error('Duplicate DXF ENTITIES section');hasEntities=true}continue}
   if(awaitSection)throw Error('Missing DXF section name');
   if(code===0&&value==='ENDSEC'){if(!section)throw Error('Unexpected DXF ENDSEC');flush();section='';continue}
   if(code===0&&value==='EOF'){if(section)throw Error('DXF EOF before ENDSEC');flush();hasEof=true;break}
@@ -32,6 +32,7 @@ function previewDxf(source){
  }
  flush();
  if(!hasEntities||!hasEof||section||awaitSection)throw Error('Incomplete DXF ENTITIES section or EOF marker');
+ if(pairs.at(-1)?.[0]!==0||pairs.at(-1)?.[1]!=='EOF')throw Error('Unexpected DXF data after EOF');
  const supported=entities.filter(e=>Number.isFinite(e[10])&&Number.isFinite(e[20])&&(e.type==='TEXT'||(e.type==='CIRCLE'&&e[40]>0)||(e.type==='LINE'&&Number.isFinite(e[11])&&Number.isFinite(e[21]))));
  return {entities:supported,unsupportedCount:unsupportedEntities+entities.length-supported.length,note:'Geometrie-Vorschau, keine elektrischen Verbindungen oder editierbare Projektkonvertierung.'};
 }
