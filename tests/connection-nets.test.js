@@ -1,0 +1,13 @@
+'use strict';
+const assert=require('node:assert/strict');
+const {analyze}=require('../src/connection-nets');
+const project={symbols:[{id:'X1',manualTerminals:['1','2','N']},{id:'F1',manualTerminals:['1','2']},{id:'L1',manualTerminals:['1']}],wires:[{a:'X1',fromTerminal:'1',b:'F1',toTerminal:'1'},{a:'F1',fromTerminal:'1',b:'L1',toTerminal:'1'},{a:'X1',fromTerminal:'2',b:'F1',toTerminal:'2'},{a:'X1',b:'L1'}]};
+const result=analyze(project);
+assert.equal(result.nets.length,2);
+assert.deepEqual(result.nets.map(n=>n.terminals.length).sort(),[2,3]);
+assert.equal(result.pending.length,1);
+assert.equal(result.electricallyApproved,false);
+assert.equal(result.reviewRequired,true);
+assert.equal(analyze({symbols:[],wires:[]}).nets.length,0);
+assert.equal(analyze({symbols:[{id:'A',manualTerminals:['1']}],wires:[{a:'A',fromTerminal:'1',b:'Z',toTerminal:'1'}]}).pending.length,1);
+console.log('Explicit terminal connectivity grouping regression passed');
