@@ -11,7 +11,7 @@ const path=require('node:path');
   await page.locator('#wireMode').click();await page.locator('#symbols > g').nth(0).tap();await page.locator('#symbols > g').nth(1).tap();
   const wire=page.locator('#wires > path').first();
   if(await wire.getAttribute('stroke')!=='#a34516'||await wire.getAttribute('stroke-dasharray')!=='6 4')throw Error('Unassigned terminals should show dashed amber warning wire');
-  if(!(await page.locator('#wires').innerText()).includes('⚠'))throw Error('Missing terminal warning marker');
+  if(!(await page.locator('#wires').evaluate(el=>el.textContent)).includes('⚠'))throw Error('Missing terminal warning marker');
   if(errors.length)throw Error('Browser errors: '+errors.join(' | '));
   console.log('Chromium: incomplete terminal wiring is visibly amber and dashed');
  }finally{await browser.close()}
