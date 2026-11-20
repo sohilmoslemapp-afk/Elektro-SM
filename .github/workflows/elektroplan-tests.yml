@@ -59,6 +59,8 @@ jobs:
         run: node tests/integrated-wire-key.test.js
       - name: Indexed integrated wire rendering
         run: node tests/integrated-wire-render-index.test.js
+      - name: Indexed integrated terminal checks
+        run: node tests/integrated-terminal-check-index.test.js
       - name: Integrated Schaltplan UI wiring
         run: node tests/integrated-schematic-ui.test.js
 
