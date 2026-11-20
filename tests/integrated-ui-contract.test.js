@@ -116,5 +116,6 @@ assert.ok(html.includes('id="partNumber"'),'Component library must capture artic
 assert.ok(html.includes("partNumber:safe($('partNumber').value)"),'Article number must be saved in library records');
 
 assert.ok(html.includes('id="photoPartNumber"'),'Camera must capture article number separately');
-assert.ok(html.includes("safe($('photoPartNumber').value)!==result.item.partNumber"),'Camera insertion must reject article-number mismatch');
+assert.ok(html.includes("if(!result.item.partNumber||!safe($('photoPartNumber').value))"),'Camera insertion must reject missing article numbers');
+assert.ok(html.includes("if(safe($('photoPartNumber').value)!==result.item.partNumber)"),'Camera insertion must reject article-number mismatch');
 assert.ok(html.includes("$('partNumber').value=safe($('photoPartNumber').value)"),'Camera must transfer article number to library form');
