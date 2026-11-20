@@ -14,7 +14,7 @@ function validateTerminalGraph(project){
   if(!Array.isArray(part.terminals)){errors.push('Bauteil '+part.id+': Anschlussliste fehlt');return}
   const names=new Set();
   part.terminals.forEach((term,j)=>{
-   if(typeof term!=='string'||!term.trim()||names.has(term)){errors.push('Bauteil '+part.id+': ungültiger oder doppelter Anschluss '+j);return}
+   if(typeof term!=='string'||!term.trim()||term!==term.trim()||names.has(term)){errors.push('Bauteil '+part.id+': ungültiger oder doppelter Anschluss '+j);return}
    names.add(term);
   });
   ports.set(part.id,names);
