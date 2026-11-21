@@ -9,7 +9,7 @@ for(const device of [{name:'desktop',viewport:{width:1280,height:800},hasTouch:f
   const page=await context.newPage();const errors=[];page.on('pageerror',e=>errors.push(e.message));
   await page.goto(url);
   await expect(page.locator('.eps-toolbar button')).toHaveCount(11);
-  await expect(page.locator('svg.eps-canvas')).toBeVisible();
+  await expect(page.locator('.eps-canvas')).toBeVisible();
   await page.locator('select').selectOption('ar');
   await expect(page.locator('#editor')).toHaveAttribute('dir','rtl');
   await expect(page.getByRole('button',{name:'إضافة قطعة'})).toBeVisible();
