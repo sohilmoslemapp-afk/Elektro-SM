@@ -47,4 +47,14 @@ for (const invalid of [null,{},'bad',{forEach(){throw Error('Untrusted collectio
   assert.equal(result.reviewRequired,true);
   assert.equal(result.electricallyApproved,false);
 }
+
+for (const malformedWires of [null,{},'broken',{forEach(){throw Error('Do not invoke')}}]) {
+  const converted=fromSchematic({symbols:schematic.symbols,wires:malformedWires});
+  const checked=validateTerminalGraph(converted);
+  assert.equal(checked.valid,false,'Malformed wire collections must fail closed');
+  assert.equal(checked.reviewRequired,true);
+  assert.equal(checked.electricallyApproved,false);
+  assert.ok(checked.errors.some(x=>x.startsWith('Ungültige offene Leitungsreferenz')));
+}
+
 console.log('Connection package safety regression checks passed');
