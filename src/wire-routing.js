@@ -10,7 +10,7 @@ function route(a,b,mode='horizontal-first'){
  if(!['horizontal-first','vertical-first'].includes(mode))throw Error('invalid_route_mode');
  const start={x:a.x,y:a.y},end={x:b.x,y:b.y};
  const corner=mode==='horizontal-first'?{x:end.x,y:start.y}:{x:start.x,y:end.y};
- const points=[start,corner,end].filter((p,i,arr)=>i===0||p.x!==arr[i-1].x||p.y!==arr[i-1].y);
+ const points=[start];for(const p of [corner,end]){const prev=points[points.length-1];if(p.x!==prev.x||p.y!==prev.y)points.push(p)}
  return points;
 }
 function toPath(points){
