@@ -6,7 +6,33 @@ on:
 permissions:
   contents: read
 jobs:
+  browser-acceptance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chromium, firefox, webkit]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install browser runner
+        run: |
+          npm install --no-save @playwright/test
+          npx playwright install --with-deps ${{ matrix.browser }}
+      - name: Run mobile and desktop acceptance tests
+        run: npx playwright test tests/schaltplan-browser.spec.js --browser ${{ matrix.browser }} --workers 1 --reporter=line
+      - name: Preserve browser failure evidence
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: preview-browser-failure-${{ matrix.browser }}
+          path: test-results/
+          if-no-files-found: ignore
   preview-package:
+    needs: browser-acceptance
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -24,6 +50,11 @@ jobs:
           mkdir -p preview/src
           cp index.html schaltplan.html preview/
           cp src/*.js preview/src/
+          test -s preview/index.html
+          test -s preview/schaltplan.html
+          test -s preview/src/schematic-editor.js
+          test -s preview/src/terminal-graph.js
+          test -s preview/src/component-recognition.js
           printf '%s\n' 'ElektroPlan SM preview: static offline files. Open index.html in a compatible browser or publish this folder to a separate HTTPS preview host. No GitHub Pages settings were changed.' > preview/README.txt
       - name: Upload verified preview files
         uses: actions/upload-artifact@v4
