@@ -5,7 +5,7 @@ const {resolve}=require('node:path');
 const url=pathToFileURL(resolve(__dirname,'../schaltplan.html')).href;
 for(const device of [{name:'desktop',viewport:{width:1280,height:800},hasTouch:false},{name:'phone',viewport:{width:390,height:844},hasTouch:true},{name:'tablet',viewport:{width:820,height:1180},hasTouch:true}]){
  test(device.name+' loads editor and switches all languages',async({browser})=>{
-  const context=await browser.newContext({viewport:device.viewport,hasTouch:device.hasTouch,isMobile:device.hasTouch});
+  const context=await browser.newContext({viewport:device.viewport,hasTouch:device.hasTouch,isMobile:device.hasTouch && browser.browserType().name()!=='firefox'});
   const page=await context.newPage();const errors=[];page.on('pageerror',e=>errors.push(e.message));
   await page.goto(url);
   await expect(page.locator('.eps-toolbar button')).toHaveCount(11);
@@ -74,7 +74,7 @@ test('pointer drag moves a component and undo restores its position',async({page
 });
 
 test('touch input selects a component on mobile viewport',async({browser})=>{
- const context=await browser.newContext({viewport:{width:390,height:844},hasTouch:true,isMobile:true});
+ const context=await browser.newContext({viewport:{width:390,height:844},hasTouch:true,isMobile:browser.browserType().name()!=='firefox'});
  const page=await context.newPage();
  await page.goto(url);
  page.on('dialog',async d=>d.accept(d.message().includes('Kennung')?'T1':'1,2'));
