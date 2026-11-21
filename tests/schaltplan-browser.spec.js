@@ -270,7 +270,7 @@ test('final acceptance: invalid schematic transfer cannot inject a component',as
  await page.evaluate(()=>sessionStorage.setItem('elektroplan-schematic-import',JSON.stringify({id:'BAD',manualTerminals:['A1','A1'],manufacturer:'Unsafe'})));
  await page.reload();
  await expect(page.locator('svg [data-id="BAD"]')).toHaveCount(0);
- await expect(page.locator('svg.eps-canvas')).toBeVisible();
+ await expect(page.locator('.eps-canvas')).toBeVisible();
 });
 
 
