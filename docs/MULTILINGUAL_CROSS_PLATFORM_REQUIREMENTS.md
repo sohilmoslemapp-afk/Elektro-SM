@@ -21,5 +21,8 @@ Stand: 2026-11-21. Ergänzt docs/AI_CAMERA_REQUIREMENTS.md, ohne dessen Anforder
 - Browserübergreifende Tests für Kamera, Crop, Touch, Sprache, Text, RTL, Schaltplan und Export.
 - „Alle Programme“ bedeutet offene, dokumentierte Austauschformate und perspektivisch Integrationen; keine unbelegte Zusage einer direkten Kompatibilität mit jeder Drittsoftware.
 
+## Zusätzliche ausdrückliche Freigabe (2026-11-21)
+Plattformübergreifende Nutzung ist eine **Hauptanforderung**, kein optionales Extra: Android-Smartphones, iPhones, Android- und iPad-Tablets sowie Desktop-/Laptop-Computer unter Windows, macOS und Linux. Sämtliche Kernabläufe (Kamera/Bildauswahl, Bauteilerkennung, Stromlaufplan, Bearbeitung, Speichern/Export) müssen auf der unterstützten Browser-/Gerätematrix geprüft werden. Plattformbedingte Grenzen werden klar angezeigt und mit Fallbacks behandelt. Unterstützung für „alle Programme“ wird durch dokumentierte, getestete Austauschformate und gezielte Integrationen angestrebt; keine unbelegte universelle Kompatibilitätsbehauptung.
+
 ## Nicht verhandelbar
 Keine dieser Anforderungen bei der KI-Kamera-Neuentwicklung streichen; ursprüngliches main und Sicherungen schützen.
