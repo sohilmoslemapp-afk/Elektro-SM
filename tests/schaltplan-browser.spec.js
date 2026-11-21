@@ -35,3 +35,25 @@ test('editor adds, validates, undoes and exports JSON',async({page})=>{
  await page.getByRole('button',{name:'Rückgängig'}).click();
  await expect(page.locator('svg [data-id="X1"]')).toHaveCount(0);
 });
+
+test('keyboard selection and movement work without losing focus',async({page})=>{
+ await page.goto(url);
+ page.on('dialog',async d=>d.accept(d.message().includes('Kennung')?'K1':'1,2'));
+ await page.getByRole('button',{name:'Bauteil hinzufügen'}).click();
+ const item=page.locator('svg [data-id="K1"]');
+ await item.focus();
+ const before=await item.locator('rect').getAttribute('x');
+ await page.keyboard.press('ArrowRight');
+ await expect(page.locator('svg [data-id="K1"] rect')).toHaveAttribute('x',String(Number(before)+10));
+ await expect(page.locator('svg [data-id="K1"]')).toBeFocused();
+ await page.keyboard.press('ControlOrMeta+z');
+ await expect(page.locator('svg [data-id="K1"] rect')).toHaveAttribute('x',before);
+});
+test('exports SVG and DXF without browser errors',async({page})=>{
+ await page.goto(url);
+ for(const [button,filename] of [['SVG exportieren','elektroplan.svg'],['DXF exportieren','elektroplan.dxf']]){
+  const pending=page.waitForEvent('download');
+  await page.getByRole('button',{name:button}).click();
+  expect((await pending).suggestedFilename()).toBe(filename);
+ }
+});
