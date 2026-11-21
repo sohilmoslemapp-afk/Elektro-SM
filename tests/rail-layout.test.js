@@ -1,0 +1,12 @@
+const assert=require('node:assert/strict');
+const rails=require('../src/rail-layout.js');
+const r=rails.layout();
+assert.deepEqual(r.map(x=>x.id),['L1','L2','L3','N','PE']);
+assert.ok(r.slice(0,4).every(x=>x.position==='top'));
+assert.equal(r[4].position,'bottom');
+assert.ok(r[4].y>r[3].y);
+assert.equal(r[3].color,'#2366db');
+assert.equal(r[4].stripe,'#f1d400');
+assert.ok(!r.some(x=>x.id==='PA'||x.id==='AP'));
+assert.throws(()=>rails.layout(200,580));
+console.log('Rail layout unit tests passed');
