@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ElektroPlan SM – Entwicklung 1</title>
+<style>
+*{box-sizing:border-box}
+body{font-family:system-ui,-apple-system,sans-serif;background:#eef3fa;color:#15243b;margin:0;padding:16px}
+main{max-width:620px;margin:auto;background:white;padding:22px;border-radius:18px}
+h1{margin-top:0}
+.pick{display:block;position:relative;overflow:hidden;background:#125ac8;color:white;border-radius:12px;text-align:center;padding:18px 10px;margin:12px 0;font-size:18px;font-weight:700}
+.pick input{position:absolute;inset:0;width:100%;height:100%;opacity:0;font-size:100px}
+button,input,select{font:inherit}
+button{padding:12px;border:1px solid #bbc9d9;background:#f5f8fc;border-radius:10px}
+.field{display:block;width:100%;padding:12px;margin:8px 0 14px;border:1px solid #bbc9d9;border-radius:10px}
+#status,#result{background:#edf3fa;padding:14px;border-radius:10px;white-space:pre-wrap;overflow-wrap:anywhere}
+#preview{display:none;max-width:100%;max-height:60vh;margin:15px auto;border-radius:10px}
+section{margin-top:24px;padding-top:16px;border-top:1px solid #ccd5e2}
+small{display:block;line-height:1.5;margin-top:16px}
+</style>
+</head>
+<body>
+<main>
+<h1>⚡ ElektroPlan SM</h1>
+<h2>Kamera</h2>
+<label class="pick">📷 Kamera öffnen<input id="camera" type="file" accept="image/*" capture="environment"></label>
+<label class="pick">🖼️ Bild auswählen<input id="gallery" type="file" accept="image/*"></label>
+<p id="status">Seite geladen. Bereit.</p>
+<img id="preview" alt="Bildvorschau">
+<button id="check" type="button">🔎 Funktion prüfen</button>
+<button id="read-image-text" type="button">Bildtext erkennen (experimentell)</button>
+<p id="image-text-result" role="status" aria-live="polite">Noch keine Texterkennung durchgeführt.</p>
+<section>
+<h2>Bauteil erfassen</h2>
+<label for="type">Bauteiltyp</label>
+<select id="type" class="field">
+<option value="">Bitte auswählen</option>
+<option>FI / RCD</option>
+<option>LS-Schalter</option>
+<option>Schütz</option>
+<option>Relais</option>
+<option>KNX</option>
+<option>Sonstiges</option>
+</select>
+<label for="brand">Hersteller</label>
+<input id="brand" class="field" placeholder="z. B. ABB, Hager, Siemens">
+<label for="model">Modell / Artikelnummer</label>
+<input id="model" class="field" placeholder="Modell eingeben">
+<button id="record" type="button">Bauteil erfassen</button>
+<button id="identify" type="button">Identität zur Prüfung vorbereiten</button>
+<p id="identity-review" role="status" aria-live="polite">Noch keine Identitätsprüfung durchgeführt.</p>
+<p id="result">Noch kein Bauteil erfasst.</p>
+<small>Entwicklungsstand: keine automatische Bilderkennung. Anschlussbelegung nur anhand geprüfter Herstellerunterlagen beurteilen.</small>
+</section>
+<section id="saved-components">
+  <h2>Gespeicherte Bauteile</h2>
+  <p>Hier werden gespeicherte Bauteile angezeigt.</p>
+  <ul id="component-list"></ul>
+  <p><a href="schaltplan.html">Schaltplan öffnen</a></p>
+</section>
+</main>
+<script src="src/image-text-recognition.js"></script>
+<script src="src/manufacturer-evidence.js"></script>
+<script src="src/component-recognition.js"></script>
+<script>
+(function(){
+var s=document.getElementById('status');
+var p=document.getElementById('preview');
+function msg(t){s.textContent=t}
+window.addEventListener('error',function(e){msg('JavaScript-Fehler: '+e.message)});
+document.getElementById('read-image-text').addEventListener('click',async function(){
+ const output=document.getElementById('image-text-result');
+ if(!p.src||p.style.display==='none'){output.textContent='Bitte zuerst ein Bild auswählen.';return}
+ if(!window.ElektroPlanImageText){output.textContent='Texterkennungsmodul nicht geladen.';return}
+ output.textContent='Texterkennung läuft …';
+ const imageAtStart=p.src;
+ const result=await window.ElektroPlanImageText.readImageText(p,window);
+ if(p.src!==imageAtStart){output.textContent='Bild wurde geändert – Texterkennung erneut starten.';return}
+ output.textContent=result.message+(result.lines.length?'\\n'+result.lines.join('\\n'):'');
+});
+document.getElementById('check').onclick=function(){
+msg('✓ JavaScript funktioniert.\nAdresse: '+location.protocol+'\nBrowser: '+navigator.userAgent.slice(0,110));
+};
+['camera','gallery'].forEach(function(id){
+var el=document.getElementById(id);
+el.addEventListener('click',function(){msg('Auswahl '+id+' angeklickt. Warte auf Datei …')});
+el.addEventListener('change',function(){
+var f=el.files&&el.files[0];
+if(!f){msg('Keine Datei zurückgegeben.');return}
+msg('Datei empfangen: '+f.name+' ('+Math.round(f.size/1024)+' KB)\nFormat: '+f.type);
+p.style.display='none';
+var r=new FileReader();
+r.onload=function(){
+p.onload=function(){p.style.display='block';msg('✓ Bild erfolgreich angezeigt: '+f.name)};
+p.onerror=function(){msg('Bild konnte nicht dargestellt werden: '+f.type)};
+p.src=r.result;
+};
+r.onerror=function(){msg('Fehler beim Lesen der Datei.')};
+r.readAsDataURL(f);
+});
+});
+document.getElementById('record').onclick=function(){
+var t=document.getElementById('type').value;
+var b=document.getElementById('brand').value.trim();
+var m=document.getElementById('model').value.trim();
+document.getElementById('result').textContent=t&&b&&m?'✓ Erfasst: '+t+' | '+b+' | '+m:'Bitte Typ, Hersteller und Modell eingeben.';
+};
+
+document.getElementById('identify').addEventListener('click',function(){
+ const brand=document.getElementById('brand').value.trim();
+ const model=document.getElementById('model').value.trim();
+ const output=document.getElementById('identity-review');
+ if(!brand||!model){output.textContent='Hersteller und Modell eingeben.';return}
+ if(!window.ElektroPlanRecognition){output.textContent='Prüfmodul nicht geladen.';return}
+ const result=window.ElektroPlanRecognition.prepareIdentification({
+  candidates:[{manufacturer:brand,model:model,origin:'manual'}]
+ });
+ output.textContent=result.status==='identity_review_required'
+  ? 'Identität erfasst – Herstellerdokument und Modell müssen geprüft werden. Keine Anschlussfreigabe.'
+  : 'Identität unvollständig – Prüfung erforderlich.';
+});
+const componentList = document.getElementById('component-list');
+let savedComponents = [];
+try {
+  const stored = JSON.parse(localStorage.getItem('elektroplan-components') || '[]');
+  if (Array.isArray(stored)) {
+    savedComponents = stored.filter(item => item && typeof item.type === 'string' &&
+      typeof item.brand === 'string' && typeof item.model === 'string');
+  } else {
+    document.getElementById('result').textContent = 'Gespeicherte Daten ungültig – bitte prüfen.';
+  }
+} catch (error) {
+  document.getElementById('result').textContent = 'Gespeicherte Daten konnten nicht gelesen werden.';
+}
+
+function showSavedComponents() {
+  componentList.innerHTML = '';
+  savedComponents.forEach(function(item) {
+    const li = document.createElement('li');
+    li.textContent = item.type + ' – ' + item.brand + ' – ' + item.model + ' ';
+    const add = document.createElement('button');
+    add.type = 'button';
+    add.textContent = 'Im Schaltplan verwenden';
+    add.addEventListener('click', function() {
+      const id = window.prompt('Bauteilkennung (z. B. K1)', 'K' + (savedComponents.indexOf(item) + 1));
+      if (id === null) return;
+      if (!/^[A-Za-z0-9_-]{1,32}$/.test(id)) { document.getElementById('result').textContent = 'Ungültige Kennung.'; return; }
+      const terminals = window.prompt('Anschlüsse laut geprüfter Dokumentation (Komma getrennt). Keine automatische Zuordnung.', '');
+      if (terminals === null) return;
+      const manualTerminals = terminals.split(',').map(x => x.trim()).filter(Boolean);
+      if (!manualTerminals.length || manualTerminals.length > 24 || manualTerminals.some(x => !/^[A-Za-z0-9_+.-]{1,24}$/.test(x)) || new Set(manualTerminals).size !== manualTerminals.length) { document.getElementById('result').textContent = 'Anschlüsse prüfen und manuell eingeben.'; return; }
+      try {
+        sessionStorage.setItem('elektroplan-schematic-import', JSON.stringify({id,manualTerminals,manufacturer:item.brand,model:item.model,type:item.type,origin:'manual'}));
+        location.href = 'schaltplan.html';
+      } catch (_) { document.getElementById('result').textContent = 'Übertragung nicht möglich.'; }
+    });
+    li.appendChild(add);
+    componentList.appendChild(li);
+  });
+}
+
+document.getElementById('record').addEventListener('click', function() {
+  const type = document.getElementById('type').value.trim();
+  const brand = document.getElementById('brand').value.trim();
+  const model = document.getElementById('model').value.trim();
+
+  if (!type || !brand || !model) return;
+
+  savedComponents.push({ type, brand, model });
+  try {
+    localStorage.setItem('elektroplan-components', JSON.stringify(savedComponents));
+    showSavedComponents();
+  } catch (error) {
+    savedComponents.pop();
+    document.getElementById('result').textContent = 'Speichern fehlgeschlagen – Speicherplatz oder Browser-Einstellungen prüfen.';
+  }
+});
+
+showSavedComponents();
+
+})();
+</script>
+</body>
+</html>
