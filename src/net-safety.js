@@ -14,10 +14,10 @@ function proposeWire(project,wire){
  if(project.wires.some(w=>same(w,wire)||reverse(w,wire)))return {accepted:false,reason:'DUPLICATE_WIRE'};
  const before=validate(project),after=validate({...project,wires:[...project.wires,wire]});
  const hardCodes=['N_PE_NET_CONFLICT','PHASE_PE_NET_CONFLICT','PHASE_N_NET_CONFLICT','PHASE_PHASE_NET_CONFLICT','INVALID_CONDUCTOR_TYPE','INVALID_WIRE_REFERENCE'];
- const count=errors=>{const map=new Map();for(const e of errors)if(hardCodes.includes(e.code))map.set(e.code,(map.get(e.code)||0)+1);return map};
- const existing=count(before.errors),added=count(after.errors);
- const newErrors=[...added].filter(([code,n])=>n>(existing.get(code)||0)).map(([code])=>code);
- return {accepted:newErrors.length===0,reason:newErrors[0]||null,reviewRequired:after.reviewRequired,errors:after.errors.filter(e=>newErrors.includes(e.code))};
+ const signature=e=>e.code+':'+JSON.stringify((e.terminals||[]).slice().sort((a,b)=>JSON.stringify(a).localeCompare(JSON.stringify(b))));
+ const existing=new Set(before.errors.filter(e=>hardCodes.includes(e.code)).map(signature));
+ const introduced=after.errors.filter(e=>hardCodes.includes(e.code)&&!existing.has(signature(e)));
+ return {accepted:introduced.length===0,reason:introduced[0]?.code||null,reviewRequired:after.reviewRequired,errors:introduced};
 }
 function validate(project){
  const errors=[],warnings=[],symbols=Array.isArray(project?.symbols)?project.symbols:[],wires=Array.isArray(project?.wires)?project.wires:[];
