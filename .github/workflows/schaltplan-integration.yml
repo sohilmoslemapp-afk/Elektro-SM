@@ -18,6 +18,8 @@ jobs:
           node --check src/schematic-editor.js
           node --check src/schematic-graph-adapter.js
           node --check src/terminal-graph.js
+          node --check tests/schematic-editor-integration.test.js
+          node --check tests/schaltplan-browser.spec.js
       - name: Schematic integration regression tests
         run: node --test tests/schematic-editor-integration.test.js
   browser-smoke:
