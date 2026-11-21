@@ -1,0 +1,11 @@
+'use strict';
+const assert=require('node:assert/strict');
+const {test}=require('node:test');
+const editor=require('../src/schematic-editor');
+const {fromSchematic}=require('../src/schematic-graph-adapter');
+const {validateTerminalGraph}=require('../src/terminal-graph');
+test('new schematic is serializable and valid',()=>{const p=editor.fresh();assert.equal(editor.valid(JSON.parse(JSON.stringify(p))),true)});
+test('all three interface languages have matching keys',()=>{const d=editor.translations;assert.deepEqual(Object.keys(d.de).sort(),Object.keys(d.en).sort());assert.deepEqual(Object.keys(d.de).sort(),Object.keys(d.ar).sort());for(const v of Object.values(d))for(const s of Object.values(v))assert.ok(s.trim())});
+test('rejects malformed and duplicate identifiers',()=>{assert.equal(editor.valid({version:1,symbols:[{id:'A',x:0,y:0,manualTerminals:[]},{id:'A',x:5,y:5,manualTerminals:[]}],wires:[]}),false);assert.equal(editor.valid({version:1,symbols:[],wires:'bad'}),false)});
+test('round trip preserves terminals and graph validation',()=>{const p={version:1,symbols:[{id:'X1',x:100,y:100,manualTerminals:['1']},{id:'X2',x:250,y:100,manualTerminals:['2']}],wires:[{a:'X1',b:'X2',fromTerminal:'1',toTerminal:'2'}]};assert.equal(editor.valid(p),true);const copy=JSON.parse(JSON.stringify(p));assert.deepEqual(copy,p);const result=validateTerminalGraph(fromSchematic(copy));assert.equal(result.valid,true);assert.equal(result.electricallyApproved,false)});
+test('unresolved terminals cannot be silently approved',()=>{const p={version:1,symbols:[{id:'X1',x:0,y:0,manualTerminals:['1']}],wires:[{a:'X1',b:'MISSING',fromTerminal:'1',toTerminal:'2'}]};assert.equal(editor.valid(p),true);const result=validateTerminalGraph(fromSchematic(p));assert.equal(result.reviewRequired,true);assert.equal(result.electricallyApproved,false)});
