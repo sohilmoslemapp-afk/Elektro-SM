@@ -94,6 +94,7 @@ test('JSON save and reload preserve components',async({page})=>{
  const file=await save;
  const saved=await file.path();
  expect(saved).toBeTruthy();
+ await page.locator('svg [data-id="R1"] rect').click();
  await page.getByRole('button',{name:'Auswahl löschen'}).click();
  await expect(page.locator('svg [data-id="R1"]')).toHaveCount(0);
  await page.locator('input[type="file"]').setInputFiles(saved);
