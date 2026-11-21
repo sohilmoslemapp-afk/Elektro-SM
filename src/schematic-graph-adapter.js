@@ -8,7 +8,7 @@ function fromSchematic(project){
  const malformedWireCollection=project!=null&&project.wires!==undefined&&!Array.isArray(project.wires);
  const components=symbols.map(s=>({id:s?.id,terminals:Array.isArray(s?.manualTerminals)?s.manualTerminals.slice():[]}));
  const connections=[],pending=[];
- if(malformedWireCollection)pending.push({wire:0,reason:'Ungültige Leitungsliste'});
+ if(malformedWireCollection)pending.push({wire:-1,reason:'Ungültige Leitungsliste'});
  const knownIds=new Set(components.map(c=>c.id));
  const idCounts=new Map();
  components.forEach(c=>idCounts.set(c.id,(idCounts.get(c.id)||0)+1));
