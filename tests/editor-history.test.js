@@ -1,0 +1,15 @@
+const assert=require('node:assert/strict');
+const h=require('../src/editor-history.js').create(2);
+const a={version:1,symbols:[],wires:[]},b={...a,symbols:[{id:'X1'}]},c={...a,symbols:[{id:'X2'}]},d={...a,symbols:[{id:'X3'}]};
+h.checkpoint(a);h.checkpoint(b);
+assert.deepEqual(h.undo(c),b);
+assert.deepEqual(h.undo(b),a);
+assert.equal(h.undo(a),null);
+assert.deepEqual(h.redo(a),b);
+assert.deepEqual(h.redo(b),c);
+assert.equal(h.redo(c),null);
+h.checkpoint(c);assert.deepEqual(h.undo(d),c);
+h.checkpoint(b);assert.equal(h.redo(b),null);
+h.clear();assert.deepEqual(h.state(),{undo:0,redo:0});
+assert.throws(()=>require('../src/editor-history.js').create(0));
+console.log('Undo redo history tests passed');
