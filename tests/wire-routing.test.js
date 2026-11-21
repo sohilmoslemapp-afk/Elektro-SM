@@ -1,0 +1,13 @@
+const assert=require('node:assert/strict');
+const r=require('../src/wire-routing.js');
+assert.equal(r.snap(14),10);
+assert.equal(r.snap(16),20);
+assert.deepEqual(r.route({x:0,y:0},{x:100,y:80}),[{x:0,y:0},{x:100,y:0},{x:100,y:80}]);
+assert.deepEqual(r.route({x:0,y:0},{x:100,y:80},'vertical-first'),[{x:0,y:0},{x:0,y:80},{x:100,y:80}]);
+assert.deepEqual(r.route({x:0,y:0},{x:0,y:80}),[{x:0,y:0},{x:0,y:80}]);
+assert.equal(r.toPath(r.route({x:0,y:0},{x:100,y:80})),'M0 0 L100 0 L100 80');
+assert.deepEqual(r.intersections([{x:0,y:10},{x:100,y:10}],[{x:50,y:0},{x:50,y:50}]),[{x:50,y:10,connected:false}]);
+assert.deepEqual(r.intersections([{x:0,y:10},{x:100,y:10}],[{x:0,y:20},{x:100,y:20}]),[]);
+assert.throws(()=>r.route(null,{x:0,y:0}));
+assert.throws(()=>r.route({x:0,y:0},{x:0,y:0},'diagonal'));
+console.log('Wire routing assertions passed');
