@@ -9,9 +9,15 @@ function proposeWire(project,wire){
  const a=project.symbols.find(s=>s.id===wire?.a),b=project.symbols.find(s=>s.id===wire?.b);
  if(!a?.manualTerminals?.includes(wire.fromTerminal)||!b?.manualTerminals?.includes(wire.toTerminal))return {accepted:false,reason:'INVALID_WIRE_REFERENCE'};
  if(wire.a===wire.b&&wire.fromTerminal===wire.toTerminal)return {accepted:false,reason:'SELF_CONNECTION'};
- const check=validate({...project,wires:[...project.wires,wire]});
- const hard=check.errors.filter(e=>['N_PE_NET_CONFLICT','PHASE_PE_NET_CONFLICT','PHASE_N_NET_CONFLICT','PHASE_PHASE_NET_CONFLICT','INVALID_CONDUCTOR_TYPE','INVALID_WIRE_REFERENCE'].includes(e.code));
- return {accepted:hard.length===0,reason:hard.length?hard[0].code:null,reviewRequired:check.reviewRequired,errors:hard};
+ const same=(x,y)=>x.a===y.a&&x.fromTerminal===y.fromTerminal&&x.b===y.b&&x.toTerminal===y.toTerminal;
+ const reverse=(x,y)=>x.a===y.b&&x.fromTerminal===y.toTerminal&&x.b===y.a&&x.toTerminal===y.fromTerminal;
+ if(project.wires.some(w=>same(w,wire)||reverse(w,wire)))return {accepted:false,reason:'DUPLICATE_WIRE'};
+ const before=validate(project),after=validate({...project,wires:[...project.wires,wire]});
+ const hardCodes=['N_PE_NET_CONFLICT','PHASE_PE_NET_CONFLICT','PHASE_N_NET_CONFLICT','PHASE_PHASE_NET_CONFLICT','INVALID_CONDUCTOR_TYPE','INVALID_WIRE_REFERENCE'];
+ const count=errors=>{const map=new Map();for(const e of errors)if(hardCodes.includes(e.code))map.set(e.code,(map.get(e.code)||0)+1);return map};
+ const existing=count(before.errors),added=count(after.errors);
+ const newErrors=[...added].filter(([code,n])=>n>(existing.get(code)||0)).map(([code])=>code);
+ return {accepted:newErrors.length===0,reason:newErrors[0]||null,reviewRequired:after.reviewRequired,errors:after.errors.filter(e=>newErrors.includes(e.code))};
 }
 function validate(project){
  const errors=[],warnings=[],symbols=Array.isArray(project?.symbols)?project.symbols:[],wires=Array.isArray(project?.wires)?project.wires:[];
