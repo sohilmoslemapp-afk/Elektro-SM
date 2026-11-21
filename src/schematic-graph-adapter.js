@@ -5,8 +5,10 @@
 function fromSchematic(project){
  const symbols=Array.isArray(project?.symbols)?project.symbols:[];
  const wires=Array.isArray(project?.wires)?project.wires:[];
+ const malformedWireCollection=project!=null&&project.wires!==undefined&&!Array.isArray(project.wires);
  const components=symbols.map(s=>({id:s?.id,terminals:Array.isArray(s?.manualTerminals)?s.manualTerminals.slice():[]}));
  const connections=[],pending=[];
+ if(malformedWireCollection)pending.push({wire:0,reason:'Ungültige Leitungsliste'});
  const knownIds=new Set(components.map(c=>c.id));
  const idCounts=new Map();
  components.forEach(c=>idCounts.set(c.id,(idCounts.get(c.id)||0)+1));
