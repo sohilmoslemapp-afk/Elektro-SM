@@ -1,0 +1,26 @@
+name: ElektroPlan unit tests
+on:
+  push:
+    branches: [ElektroPlan-Entwicklung-1]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  javascript:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Syntax check
+        run: |
+          for f in src/*.js tests/*.test.js; do node --check "$f"; done
+      - name: Run dependency-free tests
+        run: |
+          set -eu
+          for f in tests/*.test.js; do
+            echo "Running $f"
+            node "$f"
+          done
