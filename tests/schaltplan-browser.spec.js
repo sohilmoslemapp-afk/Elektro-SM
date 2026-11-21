@@ -292,3 +292,18 @@ test('release gate: image OCR never fills manufacturer or model without review',
  await expect(page.locator('#brand')).toHaveValue('');
  await expect(page.locator('#model')).toHaveValue('');
 });
+
+
+test('release gate: malformed transfer is consumed once and cannot replay',async({page})=>{
+ await page.goto(url);
+ await page.evaluate(()=>sessionStorage.setItem('elektroplan-schematic-import','{invalid'));
+ await page.reload();
+ expect(await page.evaluate(()=>sessionStorage.getItem('elektroplan-schematic-import'))).toBeNull();
+ await expect(page.locator('.eps-canvas')).toBeVisible();
+ await page.evaluate(()=>sessionStorage.setItem('elektroplan-schematic-import',JSON.stringify({id:'ONCE',manualTerminals:['1','2'],manufacturer:'Reviewed'})));
+ await page.reload();
+ await expect(page.locator('svg [data-id="ONCE"]')).toHaveCount(1);
+ expect(await page.evaluate(()=>sessionStorage.getItem('elektroplan-schematic-import'))).toBeNull();
+ await page.reload();
+ await expect(page.locator('svg [data-id="ONCE"]')).toHaveCount(0);
+});
