@@ -72,3 +72,15 @@ test('pointer drag moves a component and undo restores its position',async({page
  await page.getByRole('button',{name:'Rückgängig'}).click();
  await expect(page.locator('svg [data-id="D1"] rect')).toHaveAttribute('x',String(initial));
 });
+
+test('touch input selects a component on mobile viewport',async({browser})=>{
+ const context=await browser.newContext({viewport:{width:390,height:844},hasTouch:true,isMobile:true});
+ const page=await context.newPage();
+ await page.goto(url);
+ page.on('dialog',async d=>d.accept(d.message().includes('Kennung')?'T1':'1,2'));
+ await page.getByRole('button',{name:'Bauteil hinzufügen'}).click();
+ await page.locator('svg [data-id="T1"] rect').tap();
+ await page.getByRole('button',{name:'Auswahl löschen'}).click();
+ await expect(page.locator('svg [data-id="T1"]')).toHaveCount(0);
+ await context.close();
+});
