@@ -8,12 +8,13 @@
 try {
  const raw=sessionStorage.getItem('elektroplan-schematic-import');
  if(raw){
+  sessionStorage.removeItem('elektroplan-schematic-import');
   const incoming=JSON.parse(raw);
   const project=editor.getProject();
   if(incoming && /^[A-Za-z0-9_-]{1,32}$/.test(incoming.id) && Array.isArray(incoming.manualTerminals) && incoming.manualTerminals.length>0 && incoming.manualTerminals.length<=24 && incoming.manualTerminals.every(t=>typeof t==='string' && /^[A-Za-z0-9_+.-]{1,24}$/.test(t)) && new Set(incoming.manualTerminals).size===incoming.manualTerminals.length && !project.symbols.some(s=>s.id===incoming.id)){
    project.symbols.push({id:incoming.id,x:100,y:100,manualTerminals:incoming.manualTerminals,manufacturer:String(incoming.manufacturer||'').slice(0,120),model:String(incoming.model||'').slice(0,120),type:String(incoming.type||'').slice(0,120),origin:'manual'});
    editor.setProject(project);
-   sessionStorage.removeItem('elektroplan-schematic-import');
+
   }
  }
 } catch(error){console.warn('Schematic transfer was not applied:',error.message)}</script></body></html>
