@@ -8,7 +8,7 @@ const snap=n=>Math.round(n/GRID)*GRID;
 function route(a,b,mode='horizontal-first'){
  if(!a||!b||![a.x,a.y,b.x,b.y].every(Number.isFinite))throw Error('invalid_point');
  if(!['horizontal-first','vertical-first'].includes(mode))throw Error('invalid_route_mode');
- const start={x:snap(a.x),y:snap(a.y)},end={x:snap(b.x),y:snap(b.y)};
+ const start={x:a.x,y:a.y},end={x:b.x,y:b.y};
  const corner=mode==='horizontal-first'?{x:end.x,y:start.y}:{x:start.x,y:end.y};
  const points=[start,corner,end].filter((p,i,arr)=>i===0||p.x!==arr[i-1].x||p.y!==arr[i-1].y);
  return points;
