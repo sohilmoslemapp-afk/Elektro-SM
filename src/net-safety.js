@@ -4,6 +4,15 @@
 'use strict';
 const allowed=new Set(['L1','L2','L3','N','PE','PEN','PA','UNKNOWN']);
 const norm=v=>typeof v==='string'?v.trim().toUpperCase():'UNKNOWN';
+function proposeWire(project,wire){
+ if(!project||!Array.isArray(project.wires)||!Array.isArray(project.symbols))return {accepted:false,reason:'INVALID_PROJECT'};
+ const a=project.symbols.find(s=>s.id===wire?.a),b=project.symbols.find(s=>s.id===wire?.b);
+ if(!a?.manualTerminals?.includes(wire.fromTerminal)||!b?.manualTerminals?.includes(wire.toTerminal))return {accepted:false,reason:'INVALID_WIRE_REFERENCE'};
+ if(wire.a===wire.b&&wire.fromTerminal===wire.toTerminal)return {accepted:false,reason:'SELF_CONNECTION'};
+ const check=validate({...project,wires:[...project.wires,wire]});
+ const hard=check.errors.filter(e=>['N_PE_NET_CONFLICT','PHASE_PE_NET_CONFLICT','PHASE_N_NET_CONFLICT','PHASE_PHASE_NET_CONFLICT','INVALID_CONDUCTOR_TYPE','INVALID_WIRE_REFERENCE'].includes(e.code));
+ return {accepted:hard.length===0,reason:hard.length?hard[0].code:null,reviewRequired:check.reviewRequired,errors:hard};
+}
 function validate(project){
  const errors=[],warnings=[],symbols=Array.isArray(project?.symbols)?project.symbols:[],wires=Array.isArray(project?.wires)?project.wires:[];
  const byId=new Map(symbols.map(s=>[s.id,s]));
@@ -34,5 +43,5 @@ function validate(project){
  }
  return {valid:errors.length===0,reviewRequired:errors.length>0||warnings.length>0,electricallyApproved:false,errors,warnings,netCount:nets.size};
 }
-const api={validate};if(typeof module!=='undefined'&&module.exports)module.exports=api;else root.ElektroPlanNetSafety=api;
+const api={validate,proposeWire};if(typeof module!=='undefined'&&module.exports)module.exports=api;else root.ElektroPlanNetSafety=api;
 })(typeof globalThis!=='undefined'?globalThis:this);
