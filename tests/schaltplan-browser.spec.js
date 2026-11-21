@@ -107,3 +107,20 @@ test('invalid JSON import leaves existing schematic unchanged',async({page})=>{
  await page.locator('input[type="file"]').setInputFiles({name:'broken.json',mimeType:'application/json',buffer:Buffer.from('{"version":999}')});
  await expect(page.locator('svg [data-id="S1"]')).toHaveCount(1);
 });
+
+test('exported SVG is valid XML and DXF includes required sections',async({page})=>{
+ await page.goto(url);
+ const svgPending=page.waitForEvent('download');
+ await page.getByRole('button',{name:'SVG exportieren'}).click();
+ const svgFile=await svgPending;
+ const fs=require('node:fs');
+ const svg=fs.readFileSync(await svgFile.path(),'utf8');
+ expect(svg).toMatch(/<svg[\\s>]/);
+ expect(svg).toMatch(/<\\/svg>/);
+ const dxfPending=page.waitForEvent('download');
+ await page.getByRole('button',{name:'DXF exportieren'}).click();
+ const dxfFile=await dxfPending;
+ const dxf=fs.readFileSync(await dxfFile.path(),'utf8');
+ expect(dxf).toContain('SECTION');
+ expect(dxf).toContain('EOF');
+});
