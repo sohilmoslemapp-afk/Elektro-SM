@@ -47,7 +47,7 @@ function create(host,api){
  file.addEventListener('change',async()=>{const f=file.files?.[0];if(!f)return;try{if(f.size>2e6)throw Error();const candidate=JSON.parse(await f.text());if(!valid(candidate))throw Error();snap();p=clone(candidate);selected=null;pending=null;render()}catch(_){status(t('invalid'))}finally{file.value=''}});
  doc.addEventListener('keydown',e=>{if(!host.isConnected||e.target.matches('input,textarea,select'))return;if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='z'){e.preventDefault();undo()}else if(e.key==='Delete'&&selected)remove()});
  langBox.addEventListener('change',()=>{lang=langBox.value;host.dir=lang==='ar'?'rtl':'ltr';for(const [k,v] of Object.entries(controls))v.textContent=t(k);hint.textContent=t('help')+' '+t('warning');render()});langBox.dispatchEvent(new Event('change'));
- return {getProject:()=>clone(p),setProject:x=>{if(!valid(x))throw Error('Invalid project');snap();p=clone(x);render()},validate:check,undo};
+ return {getProject:()=>clone(p),setProject:x=>{if(!valid(x))throw Error('Invalid project');snap();p=clone(x);selected=null;pending=null;drag=null;mode='select';render()},validate:check,undo};
 }
 const api={create,valid,fresh,translations:dict};if(typeof module!=='undefined'&&module.exports)module.exports=api;else root.ElektroPlanEditor=api;
 })(typeof globalThis!=='undefined'?globalThis:this);
