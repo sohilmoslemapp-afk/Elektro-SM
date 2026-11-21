@@ -3,7 +3,7 @@ on:
   push:
     branches: [ElektroPlan-Entwicklung-1]
   pull_request:
-    branches: [ElektroPlan-Entwicklung-1]
+    branches: [main, ElektroPlan-Entwicklung-1]
   workflow_dispatch:
 jobs:
   schematic-tests:
