@@ -26,9 +26,11 @@ jobs:
           node --check tests/component-recognition.test.js
           node --check tests/schematic-editor-integration.test.js
           node --check tests/schaltplan-browser.spec.js
+          node --check tests/schematic-graph-adapter.test.js
+          node --check tests/terminal-graph.test.js
       - name: Schematic integration regression tests
         run: |
-          node --test tests/schematic-editor-integration.test.js tests/image-text-recognition.test.js tests/manufacturer-evidence.test.js tests/component-recognition.test.js
+          node --test tests/*.test.js
   browser-smoke:
     runs-on: ubuntu-latest
     timeout-minutes: 40
