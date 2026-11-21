@@ -13,15 +13,15 @@ function validateTerminalGraph(project){
   if(pendingIndexes.has(item.wire))errors.push('Doppelte offene Leitungsreferenz '+item.wire);
   pendingIndexes.add(item.wire);
  });
+ if(!Array.isArray(parts)||!Array.isArray(edges))return {valid:false,reviewRequired:true,electricallyApproved:false,errors:[...errors,'Ungültiges Anschlussmodell'],warnings};
  const sourceIndexes=new Set();
- edges?.forEach?.((edge,i)=>{
+ edges.forEach((edge,i)=>{
   if(edge?.sourceWire===undefined)return;
   if(!Number.isSafeInteger(edge.sourceWire)||edge.sourceWire<0){errors.push('Ungültiger Quellleitungsindex '+i);return}
   if(sourceIndexes.has(edge.sourceWire))errors.push('Doppelter Quellleitungsindex '+edge.sourceWire);
   sourceIndexes.add(edge.sourceWire);
  });
  for(const index of pendingIndexes)if(sourceIndexes.has(index))errors.push('Leitung gleichzeitig offen und verbunden: '+index);
- if(!Array.isArray(parts)||!Array.isArray(edges))return {valid:false,reviewRequired:true,electricallyApproved:false,errors:['Ungültiges Anschlussmodell'],warnings};
  const ids=new Set(),normalizedIds=new Set(),ports=new Map(),used=new Map(),edgeKeys=new Set(),connectedComponents=new Set();
  if(parts.length===0){warnings.push('Keine Bauteile vorhanden');if(edges.length>0)errors.push('Verbindungen ohne Bauteile sind unzulässig')}
  if(edges.length===0)warnings.push('Keine Verbindungen vorhanden');
