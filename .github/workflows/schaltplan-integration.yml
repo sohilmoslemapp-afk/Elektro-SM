@@ -37,13 +37,16 @@ jobs:
           npm install --no-save @playwright/test
           npx playwright install --with-deps ${{ matrix.browser }}
       - name: Desktop, phone and tablet browser smoke tests
-        run: npx playwright test tests/schaltplan-browser.spec.js --browser ${{ matrix.browser }} --workers 1 --reporter=line
-      - name: Upload browser test results on failure
-        if: failure()
+        run: npx playwright test tests/schaltplan-browser.spec.js --browser ${{ matrix.browser }} --workers 1 --reporter=junit,line
+        env:
+          PLAYWRIGHT_JUNIT_OUTPUT_NAME: test-results/junit-${{ matrix.browser }}.xml
+      - name: Upload browser test evidence
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: schaltplan-browser-results-${{ matrix.browser }}
           path: |
             test-results/
             playwright-report/
-          if-no-files-found: ignore
+          if-no-files-found: warn
+          retention-days: 30
