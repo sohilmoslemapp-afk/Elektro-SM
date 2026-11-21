@@ -1,0 +1,50 @@
+name: Build isolated ElektroPlan preview
+on:
+  workflow_dispatch:
+  push:
+    branches: [ElektroPlan-Entwicklung-1]
+    paths:
+      - 'index.html'
+      - 'schaltplan.html'
+      - 'src/**'
+      - '.github/workflows/preview-build.yml'
+permissions:
+  contents: read
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify app entry points and referenced scripts
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s index.html
+          test -s schaltplan.html
+          python3 - <<'PY'
+          from html.parser import HTMLParser
+          from pathlib import Path
+          class Scripts(HTMLParser):
+              def __init__(self): super().__init__(); self.paths=[]
+              def handle_starttag(self, tag, attrs):
+                  if tag == 'script':
+                      src=dict(attrs).get('src')
+                      if src and not src.startswith(('https://','http://','//')): self.paths.append(src.split('?')[0])
+          for page in ('index.html','schaltplan.html'):
+              p=Scripts(); p.feed(Path(page).read_text())
+              for src in p.paths:
+                  assert Path(src).is_file(), f'{page}: missing script {src}'
+              print(f'{page}: {len(p.paths)} local scripts verified')
+          PY
+      - name: Assemble isolated preview (no Pages deployment)
+        run: |
+          mkdir -p preview
+          cp index.html schaltplan.html preview/
+          cp -R src preview/
+          printf 'ElektroPlan SM preview from branch ElektroPlan-Entwicklung-1\n' > preview/PREVIEW-INFO.txt
+      - name: Upload preview artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: elektroplan-development-preview
+          path: preview/
+          retention-days: 7
