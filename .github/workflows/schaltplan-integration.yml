@@ -22,13 +22,13 @@ jobs:
           node --check src/component-recognition.js
           node --check src/manufacturer-evidence.js
           node --check tests/image-text-recognition.test.js
+          node --check tests/manufacturer-evidence.test.js
+          node --check tests/component-recognition.test.js
           node --check tests/schematic-editor-integration.test.js
           node --check tests/schaltplan-browser.spec.js
       - name: Schematic integration regression tests
         run: |
-          node --test tests/schematic-editor-integration.test.js tests/image-text-recognition.test.js
-      - name: Browser-dependent legacy tests are excluded from Node-only job
-        run: echo 'Playwright browser suites run in the browser-smoke matrix; Node-only CI does not install the playwright package.'
+          node --test tests/schematic-editor-integration.test.js tests/image-text-recognition.test.js tests/manufacturer-evidence.test.js tests/component-recognition.test.js
   browser-smoke:
     runs-on: ubuntu-latest
     timeout-minutes: 40
