@@ -253,3 +253,22 @@ test('final acceptance: transferred component survives JSON export and re-import
  await page.locator('input[type="file"]').setInputFiles({name:'acceptance.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(project))});
  await expect(page.locator('svg [data-id="SAFE2"]')).toHaveCount(1);
 });
+
+
+test('final acceptance: camera file input previews an image on mobile viewport',async({browser})=>{
+ const context=await browser.newContext({viewport:{width:390,height:844},hasTouch:true,isMobile:browser.browserType().name()!=='firefox'});
+ const page=await context.newPage();const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ await page.goto(pathToFileURL(resolve(__dirname,'../index.html')).href);
+ await page.locator('#camera').setInputFiles({name:'camera-sample.png',mimeType:'image/png',buffer:Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/B2sAAAAASUVORK5CYII=','base64')});
+ await expect(page.locator('#preview')).toBeVisible();
+ await expect(page.locator('#status')).toContainText('Bild erfolgreich angezeigt');
+ expect(errors).toEqual([]);
+ await context.close();
+});
+test('final acceptance: invalid schematic transfer cannot inject a component',async({page})=>{
+ await page.goto(url);
+ await page.evaluate(()=>sessionStorage.setItem('elektroplan-schematic-import',JSON.stringify({id:'BAD',manualTerminals:['A1','A1'],manufacturer:'Unsafe'})));
+ await page.reload();
+ await expect(page.locator('svg [data-id="BAD"]')).toHaveCount(0);
+ await expect(page.locator('svg.eps-canvas')).toBeVisible();
+});
