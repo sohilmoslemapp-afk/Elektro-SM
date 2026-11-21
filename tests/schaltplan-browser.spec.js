@@ -200,3 +200,13 @@ test('camera manual capture transfers reviewed component to schematic without in
  expect(project.wires).toEqual([]);
  expect(errors).toEqual([]);
 });
+
+test('camera photo preview and unsupported OCR remain safe',async({page})=>{
+ const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ await page.goto(pathToFileURL(resolve(__dirname,'../index.html')).href);
+ await page.locator('#gallery').setInputFiles({name:'sample.png',mimeType:'image/png',buffer:Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/B2sAAAAASUVORK5CYII=','base64')});
+ await expect(page.locator('#preview')).toBeVisible();
+ await page.locator('#read-image-text').click();
+ await expect(page.locator('#image-text-result')).toContainText(/manuell|prüfen|erkannt|fehlgeschlagen|verfügbar/i);
+ expect(errors).toEqual([]);
+});
