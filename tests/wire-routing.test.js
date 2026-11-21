@@ -10,4 +10,6 @@ assert.deepEqual(r.intersections([{x:0,y:10},{x:100,y:10}],[{x:50,y:0},{x:50,y:5
 assert.deepEqual(r.intersections([{x:0,y:10},{x:100,y:10}],[{x:0,y:20},{x:100,y:20}]),[]);
 assert.throws(()=>r.route(null,{x:0,y:0}));
 assert.throws(()=>r.route({x:0,y:0},{x:0,y:0},'diagonal'));
+assert.deepEqual(r.route({x:114,y:165},{x:239,y:285}),[{x:114,y:165},{x:239,y:165},{x:239,y:285}]);
+assert.deepEqual(r.route({x:114,y:165},{x:114,y:165}),[{x:114,y:165}]);
 console.log('Wire routing assertions passed');
