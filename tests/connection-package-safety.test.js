@@ -57,4 +57,14 @@ for (const malformedWires of [null,{},'broken',{forEach(){throw Error('Do not in
   assert.ok(checked.errors.some(x=>x.startsWith('Ungültige offene Leitungsreferenz')));
 }
 
+
+for (const malformedSymbols of [null,{},'broken',{map(){throw Error('Do not invoke')}}]) {
+  const converted=fromSchematic({symbols:malformedSymbols,wires:[]});
+  const checked=validateTerminalGraph(converted);
+  assert.equal(checked.valid,false,'Malformed symbol collections must fail closed');
+  assert.equal(checked.reviewRequired,true);
+  assert.equal(checked.electricallyApproved,false);
+  assert.ok(checked.errors.some(x=>x.includes('fehlende oder doppelte Kennung')));
+}
+
 console.log('Connection package safety regression checks passed');
