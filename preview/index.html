@@ -143,6 +143,17 @@ function showSavedComponents() {
     add.type = 'button';
     add.textContent = 'Im Schaltplan verwenden';
     add.addEventListener('click', function() {
+      // Only an exact full manufacturer model is eligible for a documented-terminal review.
+      // Never infer terminals from a series name such as DFS2.
+      const normalizedModel = item.model.replace(/\\s+/g, ' ').trim();
+      const isDoepkeCandidate = item.brand.trim().toLowerCase() === 'doepke' &&
+        /^DFS\\s*2\\s*025-2\\s*\\/\\s*0[,.]01-A$/i.test(normalizedModel);
+      if (isDoepkeCandidate) {
+        document.getElementById('result').textContent =
+          'Doepke DFS 2 025-2/0,01-A erkannt (25 A, 10 mA, Typ A, 2-polig). ' +
+          'Anschlussbelegung noch nicht in dieser Anwendung anhand der Herstellerunterlagen freigegeben. ' +
+          'Bitte keine Anschlüsse raten.';
+      }
       const id = window.prompt('Bauteilkennung (z. B. K1)', 'K' + (savedComponents.indexOf(item) + 1));
       if (id === null) return;
       if (!/^[A-Za-z0-9_-]{1,32}$/.test(id)) { document.getElementById('result').textContent = 'Ungültige Kennung.'; return; }
