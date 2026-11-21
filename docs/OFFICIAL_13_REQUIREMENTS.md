@@ -28,8 +28,8 @@ AI assists project creation, capture, identification, document lookup, schematic
 ## 9. Input methods
 Arabic/German/English voice, text, touch; mouse/keyboard on desktop. Functional fallbacks when speech APIs unavailable.
 
-## 10. Languages and platforms
-Full German, English, Arabic RTL; iOS Safari, Android, tablets, Windows/macOS/Linux modern browsers. Responsive, accessible, with documented online/offline limitations.
+## 10. Languages and platforms — mandatory cross-platform baseline
+Full German, English, Arabic RTL. The same core workflow must work on Android phones, iPhones, Android/iPad tablets, and desktop/laptop computers on Windows, macOS and Linux. Support modern standards-compliant browsers and their differing permissions; do not depend on a single OS, browser, app store or proprietary program. Responsive touch, mouse and keyboard layouts; camera/gallery/file upload fallbacks, accessible controls and documented online/offline limits. 'All programs' means interoperability through documented open file formats and tested adapters, NOT an impossible guarantee of running inside every third-party application. Test the supported device/browser matrix before release.
 
 ## 11. Persistence and interchange
 Save/open/version projects, undo/redo, PDF/SVG/DXF/structured JSON exports. Third-party compatibility only where supported and tested.
