@@ -166,3 +166,33 @@ for(const malformedEdges of [null,{},'invalid',{forEach:42},{forEach(){throw Err
  assert.ok(result.errors.includes('Ungültiges Anschlussmodell'));
  assert.ok(result.warnings.includes('Nicht zugeordnete Leitungen: 1'));
 }
+
+const mixedIntegrity=fromSchematic({symbols:[
+ {id:'F1',manualTerminals:['1','2']},
+ {id:'X1',manualTerminals:['3','4']},
+ {id:'F1',manualTerminals:['1','2']},
+ {id:'Z1',manualTerminals:['A','B']}
+],wires:[
+ {a:'X1',b:'Z1',fromTerminal:'3',toTerminal:'A'},
+ {a:'F1',b:'X1',fromTerminal:'1',toTerminal:'4'},
+ {a:'X1',b:'Z1',fromTerminal:'4',toTerminal:'B'},
+ {a:'X1',b:'MISSING',fromTerminal:'3',toTerminal:'A'},
+ {a:'X1',b:'Z1',fromTerminal:'?',toTerminal:'A'}
+]});
+assert.deepEqual(mixedIntegrity.connections.map(x=>x.sourceWire),[0,2],'Valid connections preserve exact original indexes');
+assert.deepEqual(mixedIntegrity.pending.map(x=>x.wire),[1,3,4],'Rejected wires preserve exact original indexes');
+const mixedResult=validateTerminalGraph(mixedIntegrity);
+assert.equal(mixedResult.valid,false,'Duplicate component identifiers must not pass structural validation');
+assert.equal(mixedResult.reviewRequired,true,'Mixed valid and pending wires always require review');
+assert.equal(mixedResult.electricallyApproved,false,'No electrical approval can be inferred');
+assert.ok(mixedResult.warnings.includes('Nicht zugeordnete Leitungen: 3'));
+const validMixed=fromSchematic({symbols:[
+ {id:'X1',manualTerminals:['3','4']},{id:'Z1',manualTerminals:['A','B']}
+],wires:[
+ {a:'X1',b:'Z1',fromTerminal:'3',toTerminal:'A'},
+ {a:'X1',b:'Z1',fromTerminal:'?',toTerminal:'B'}
+]});
+const validMixedResult=validateTerminalGraph(validMixed);
+assert.equal(validMixedResult.valid,true,'Pending wire does not corrupt structurally valid edges');
+assert.equal(validMixedResult.reviewRequired,true,'Pending wire prevents a clean review even if graph edges are valid');
+assert.equal(validMixedResult.electricallyApproved,false);
