@@ -45,6 +45,31 @@ jobs:
       - name: Run schematic and recognition regression suite
         run: |
           node --test tests/schematic-editor-integration.test.js tests/image-text-recognition.test.js tests/manufacturer-evidence.test.js tests/component-recognition.test.js tests/schematic-graph-adapter.test.js tests/terminal-graph.test.js
+      - name: Verify static page dependencies and navigation
+        run: |
+          python3 - <<'PY'
+          from html.parser import HTMLParser
+          from pathlib import Path
+          from urllib.parse import urlsplit, unquote
+          class Links(HTMLParser):
+              def __init__(self):
+                  super().__init__(); self.paths = []
+              def handle_starttag(self, tag, attrs):
+                  attrs = dict(attrs)
+                  for key in ('src', 'href'):
+                      if key in attrs and tag in ('script', 'link', 'a', 'img'):
+                          self.paths.append(attrs[key])
+          for page in ('index.html', 'schaltplan.html'):
+              parser = Links(); parser.feed(Path(page).read_text(encoding='utf-8'))
+              for link in parser.paths:
+                  parsed = urlsplit(link)
+                  if parsed.scheme or parsed.netloc or link.startswith(('#', '/', 'data:')):
+                      continue
+                  target = Path(page).parent / unquote(parsed.path)
+                  if not target.is_file():
+                      raise SystemExit(f'{page}: missing linked resource {link}')
+                  print(f'{page}: verified {link}')
+          PY
       - name: Prepare isolated static preview
         run: |
           mkdir -p preview/src
