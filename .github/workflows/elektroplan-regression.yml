@@ -36,7 +36,23 @@ jobs:
             echo "No regression tests found" >&2
             exit 1
           fi
+          failed=0
           for test in "${tests[@]}"; do
-            echo "Running $test"
-            node "$test"
+            echo "::group::Running $test"
+            if node "$test"; then
+              echo "PASS $test"
+            else
+              echo "::error file=$test::Regression test failed"
+              echo "FAIL $test" | tee -a regression-failures.txt
+              failed=1
+            fi
+            echo "::endgroup::"
           done
+          exit "$failed"
+      - name: Upload regression failure summary
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: regression-failures
+          path: regression-failures.txt
+          if-no-files-found: ignore
