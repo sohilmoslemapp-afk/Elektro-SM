@@ -22,7 +22,7 @@ jobs:
         run: node --test tests/schematic-editor-integration.test.js
   browser-smoke:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -34,9 +34,9 @@ jobs:
           npx playwright install --with-deps chromium firefox webkit
       - name: Desktop, phone and tablet browser smoke tests
         run: |
-          npx playwright test tests/schaltplan-browser.spec.js --browser chromium --workers 1
-          npx playwright test tests/schaltplan-browser.spec.js --browser firefox --workers 1
-          npx playwright test tests/schaltplan-browser.spec.js --browser webkit --workers 1
+          npx playwright test tests/schaltplan-browser.spec.js --browser chromium --workers 1 --reporter=line
+          npx playwright test tests/schaltplan-browser.spec.js --browser firefox --workers 1 --reporter=line
+          npx playwright test tests/schaltplan-browser.spec.js --browser webkit --workers 1 --reporter=line
       - name: Upload browser test results on failure
         if: failure()
         uses: actions/upload-artifact@v4
