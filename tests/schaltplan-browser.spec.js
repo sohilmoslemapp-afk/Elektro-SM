@@ -141,3 +141,16 @@ test('rejects oversized JSON import and preserves schematic',async({page})=>{
  await page.locator('input[type="file"]').setInputFiles({name:'oversized.json',mimeType:'application/json',buffer:Buffer.alloc(2000001,32)});
  await expect(page.locator('svg [data-id="SAFE2"]')).toHaveCount(1);
 });
+
+test('keyboard movement at coordinate boundary does not consume undo history',async({page})=>{
+ await page.goto(url);
+ const boundary={version:1,symbols:[{id:'EDGE',x:9990,y:0,manualTerminals:['1','2']}],wires:[]};
+ await page.locator('input[type="file"]').setInputFiles({name:'boundary.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(boundary))});
+ const item=page.locator('svg [data-id="EDGE"]');
+ await expect(item).toHaveCount(1);
+ await item.focus();
+ await page.keyboard.press('ArrowRight');
+ await expect(page.locator('svg [data-id="EDGE"] rect')).toHaveAttribute('x','9990');
+ await page.getByRole('button',{name:'Rückgängig'}).click();
+ await expect(page.locator('svg [data-id="EDGE"]')).toHaveCount(0);
+});
