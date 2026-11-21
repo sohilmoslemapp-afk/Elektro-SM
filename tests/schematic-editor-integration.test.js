@@ -18,3 +18,16 @@ test('rejects duplicate terminal labels and reversed duplicate wires',()=>{const
 test('rejects invalid coordinates and duplicate undirected connections',()=>{const p={version:1,symbols:[{id:'A',x:0,y:0,manualTerminals:['1']},{id:'B',x:100,y:0,manualTerminals:['2']}],wires:[{a:'A',b:'B',fromTerminal:'1',toTerminal:'2'}]};assert.equal(editor.valid(p),true);p.symbols[0].x=10000;assert.equal(editor.valid(p),false);p.symbols[0].x=0;p.symbols[0].y=Infinity;assert.equal(editor.valid(p),false);p.symbols[0].y=0;p.wires.push({a:'B',b:'A',fromTerminal:'2',toTerminal:'1'});assert.equal(editor.valid(p),false)});
 test('terminal validator reports disconnected ports without electrical approval',()=>{const p={version:1,symbols:[{id:'A',x:0,y:0,manualTerminals:['1','2']},{id:'B',x:100,y:0,manualTerminals:['1']}],wires:[{a:'A',b:'B',fromTerminal:'1',toTerminal:'1'}]};const result=validateTerminalGraph(fromSchematic(p));assert.equal(result.valid,true);assert.equal(result.reviewRequired,true);assert.equal(result.electricallyApproved,false);assert.ok(result.warnings.some(w=>w.includes('A/2')))});
 test('terminal graph rejects duplicate source wires and invalid pending indexes',()=>{const graph={components:[{id:'A',terminals:['1']},{id:'B',terminals:['1']}],connections:[{from:{component:'A',terminal:'1'},to:{component:'B',terminal:'1'},sourceWire:0}],pending:[{wire:0,reason:'unresolved'}]};const result=validateTerminalGraph(graph);assert.equal(result.valid,false);assert.equal(result.electricallyApproved,false);assert.ok(result.errors.some(e=>e.includes('gleichzeitig')))});
+
+test('project limits reject 301 components and 1501 wires',()=>{
+ const symbols=Array.from({length:301},(_,i)=>({id:'S'+i,x:0,y:0,manualTerminals:['1','2']}));
+ assert.equal(editor.valid({version:1,symbols,wires:[]}),false);
+ const two=symbols.slice(0,2);
+ const wires=Array.from({length:1501},(_,i)=>({a:'S0',b:'S1',fromTerminal:'1',toTerminal:'2'}));
+ assert.equal(editor.valid({version:1,symbols:two,wires}),false);
+});
+test('rejects out-of-range coordinates and nonfinite values',()=>{
+ for(const x of [10000,-10000,Infinity,NaN]){
+  assert.equal(editor.valid({version:1,symbols:[{id:'X1',x,y:0,manualTerminals:['1']}],wires:[]}),false);
+ }
+});
