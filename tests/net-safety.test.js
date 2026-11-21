@@ -1,0 +1,17 @@
+const assert=require('node:assert/strict');
+const net=require('../src/net-safety.js');
+const project=(a,b)=>({symbols:[{id:'X1',manualTerminals:['1','2'],terminalTypes:{'1':a}},{id:'X2',manualTerminals:['1','2'],terminalTypes:{'1':b}}],wires:[{a:'X1',fromTerminal:'1',b:'X2',toTerminal:'1'}]});
+assert.equal(net.validate(project('N','PE')).valid,false);
+assert.ok(net.validate(project('N','PE')).errors.some(x=>x.code==='N_PE_NET_CONFLICT'));
+assert.equal(net.validate(project('PE','PE')).valid,true);
+assert.equal(net.validate(project('L1','PE')).valid,false);
+assert.equal(net.validate(project('L1','N')).valid,false);
+assert.equal(net.validate(project('L1','L2')).valid,false);
+assert.equal(net.validate(project('L1','L1')).valid,true);
+assert.equal(net.validate(project('PEN','PE')).valid,true);
+assert.ok(net.validate(project('PEN','PE')).reviewRequired);
+assert.equal(net.validate(project('UNKNOWN','UNKNOWN')).valid,true);
+assert.ok(net.validate(project('UNKNOWN','UNKNOWN')).reviewRequired);
+assert.equal(net.validate(project('INVALID','PE')).valid,false);
+assert.equal(net.validate(project('N','N')).electricallyApproved,false);
+console.log('Typed net validation: 13 assertions passed');
