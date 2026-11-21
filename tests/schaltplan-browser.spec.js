@@ -124,3 +124,20 @@ test('exported SVG is valid XML and DXF includes required sections',async({page}
  expect(dxf).toContain('SECTION');
  expect(dxf).toContain('EOF');
 });
+
+test('rejects structurally invalid imported projects without losing the drawing',async({page})=>{
+ await page.goto(url);
+ page.on('dialog',async d=>d.accept(d.message().includes('Kennung')?'SAFE1':'1,2'));
+ await page.getByRole('button',{name:'Bauteil hinzufügen'}).click();
+ const duplicate={version:1,symbols:[{id:'A',x:0,y:0,manualTerminals:['1']},{id:'A',x:100,y:0,manualTerminals:['2']}],wires:[]};
+ await page.locator('input[type="file"]').setInputFiles({name:'duplicate.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(duplicate))});
+ await expect(page.locator('svg [data-id="SAFE1"]')).toHaveCount(1);
+ await expect(page.locator('svg [data-id="A"]')).toHaveCount(0);
+});
+test('rejects oversized JSON import and preserves schematic',async({page})=>{
+ await page.goto(url);
+ page.on('dialog',async d=>d.accept(d.message().includes('Kennung')?'SAFE2':'1,2'));
+ await page.getByRole('button',{name:'Bauteil hinzufügen'}).click();
+ await page.locator('input[type="file"]').setInputFiles({name:'oversized.json',mimeType:'application/json',buffer:Buffer.alloc(2000001,32)});
+ await expect(page.locator('svg [data-id="SAFE2"]')).toHaveCount(1);
+});
