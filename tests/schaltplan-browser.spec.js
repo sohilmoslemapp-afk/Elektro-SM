@@ -84,3 +84,25 @@ test('touch input selects a component on mobile viewport',async({browser})=>{
  await expect(page.locator('svg [data-id="T1"]')).toHaveCount(0);
  await context.close();
 });
+
+test('JSON save and reload preserve components',async({page})=>{
+ await page.goto(url);
+ page.on('dialog',async d=>d.accept(d.message().includes('Kennung')?'R1':'1,2'));
+ await page.getByRole('button',{name:'Bauteil hinzufügen'}).click();
+ const save=page.waitForEvent('download');
+ await page.getByRole('button',{name:'JSON speichern'}).click();
+ const file=await save;
+ const saved=await file.path();
+ expect(saved).toBeTruthy();
+ await page.getByRole('button',{name:'Auswahl löschen'}).click();
+ await expect(page.locator('svg [data-id="R1"]')).toHaveCount(0);
+ await page.locator('input[type="file"]').setInputFiles(saved);
+ await expect(page.locator('svg [data-id="R1"]')).toHaveCount(1);
+});
+test('invalid JSON import leaves existing schematic unchanged',async({page})=>{
+ await page.goto(url);
+ page.on('dialog',async d=>d.accept(d.message().includes('Kennung')?'S1':'1,2'));
+ await page.getByRole('button',{name:'Bauteil hinzufügen'}).click();
+ await page.locator('input[type="file"]').setInputFiles({name:'broken.json',mimeType:'application/json',buffer:Buffer.from('{"version":999}')});
+ await expect(page.locator('svg [data-id="S1"]')).toHaveCount(1);
+});
