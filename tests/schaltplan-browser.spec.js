@@ -115,8 +115,8 @@ test('exported SVG is valid XML and DXF includes required sections',async({page}
  const svgFile=await svgPending;
  const fs=require('node:fs');
  const svg=fs.readFileSync(await svgFile.path(),'utf8');
- expect(svg).toMatch(/<svg[\\s>]/);
- expect(svg).toMatch(/<\\/svg>/);
+ expect(svg).toMatch(/<svg[\s>]/);
+ expect(svg).toContain('</svg>');
  const dxfPending=page.waitForEvent('download');
  await page.getByRole('button',{name:'DXF exportieren'}).click();
  const dxfFile=await dxfPending;
