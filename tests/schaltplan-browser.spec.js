@@ -272,3 +272,23 @@ test('final acceptance: invalid schematic transfer cannot inject a component',as
  await expect(page.locator('svg [data-id="BAD"]')).toHaveCount(0);
  await expect(page.locator('svg.eps-canvas')).toBeVisible();
 });
+
+
+test('release gate: rejected schematic import does not erase a valid project',async({page})=>{
+ await page.goto(url);
+ const valid={version:1,symbols:[{id:'KEEP1',x:100,y:100,manualTerminals:['A1','A2']}],wires:[]};
+ await page.locator('input[type="file"]').setInputFiles({name:'valid.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(valid))});
+ await expect(page.locator('svg [data-id="KEEP1"]')).toHaveCount(1);
+ const invalid={version:1,symbols:[{id:'BROKEN',x:100,y:100,manualTerminals:['A1','A1']}],wires:[]};
+ await page.locator('input[type="file"]').setInputFiles({name:'invalid.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(invalid))});
+ await expect(page.locator('svg [data-id="KEEP1"]')).toHaveCount(1);
+ await expect(page.locator('svg [data-id="BROKEN"]')).toHaveCount(0);
+});
+test('release gate: image OCR never fills manufacturer or model without review',async({page})=>{
+ await page.goto(pathToFileURL(resolve(__dirname,'../index.html')).href);
+ await page.locator('#gallery').setInputFiles({name:'sample.png',mimeType:'image/png',buffer:Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/B2sAAAAASUVORK5CYII=','base64')});
+ await expect(page.locator('#preview')).toBeVisible();
+ await page.locator('#read-image-text').click();
+ await expect(page.locator('#brand')).toHaveValue('');
+ await expect(page.locator('#model')).toHaveValue('');
+});
