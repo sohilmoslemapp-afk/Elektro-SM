@@ -57,6 +57,7 @@ small{display:block;line-height:1.5;margin-top:16px}
   <h2>Gespeicherte Bauteile</h2>
   <p>Hier werden gespeicherte Bauteile angezeigt.</p>
   <ul id="component-list"></ul>
+  <p><a href="schaltplan.html">Schaltplan öffnen</a></p>
 </section>
 </main>
 <script src="src/image-text-recognition.js"></script>
@@ -137,7 +138,24 @@ function showSavedComponents() {
   componentList.innerHTML = '';
   savedComponents.forEach(function(item) {
     const li = document.createElement('li');
-    li.textContent = item.type + ' – ' + item.brand + ' – ' + item.model;
+    li.textContent = item.type + ' – ' + item.brand + ' – ' + item.model + ' ';
+    const add = document.createElement('button');
+    add.type = 'button';
+    add.textContent = 'Im Schaltplan verwenden';
+    add.addEventListener('click', function() {
+      const id = window.prompt('Bauteilkennung (z. B. K1)', 'K' + (savedComponents.indexOf(item) + 1));
+      if (id === null) return;
+      if (!/^[A-Za-z0-9_-]{1,32}$/.test(id)) { document.getElementById('result').textContent = 'Ungültige Kennung.'; return; }
+      const terminals = window.prompt('Anschlüsse laut geprüfter Dokumentation (Komma getrennt). Keine automatische Zuordnung.', '');
+      if (terminals === null) return;
+      const manualTerminals = terminals.split(',').map(x => x.trim()).filter(Boolean);
+      if (!manualTerminals.length || manualTerminals.length > 32 || manualTerminals.some(x => !/^[A-Za-z0-9_+.-]{1,24}$/.test(x)) || new Set(manualTerminals).size !== manualTerminals.length) { document.getElementById('result').textContent = 'Anschlüsse prüfen und manuell eingeben.'; return; }
+      try {
+        sessionStorage.setItem('elektroplan-schematic-import', JSON.stringify({id,manualTerminals,manufacturer:item.brand,model:item.model,type:item.type,origin:'manual'}));
+        location.href = 'schaltplan.html';
+      } catch (_) { document.getElementById('result').textContent = 'Übertragung nicht möglich.'; }
+    });
+    li.appendChild(add);
     componentList.appendChild(li);
   });
 }
