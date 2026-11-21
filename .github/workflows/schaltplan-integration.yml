@@ -18,10 +18,14 @@ jobs:
           node --check src/schematic-editor.js
           node --check src/schematic-graph-adapter.js
           node --check src/terminal-graph.js
+          node --check src/image-text-recognition.js
+          node --check src/component-recognition.js
+          node --check src/manufacturer-evidence.js
+          node --check tests/image-text-recognition.test.js
           node --check tests/schematic-editor-integration.test.js
           node --check tests/schaltplan-browser.spec.js
       - name: Schematic integration regression tests
-        run: node --test tests/schematic-editor-integration.test.js
+        run: node --test tests/*.test.js
   browser-smoke:
     runs-on: ubuntu-latest
     timeout-minutes: 40
