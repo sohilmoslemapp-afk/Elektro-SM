@@ -30,7 +30,7 @@ jobs:
           node --check tests/terminal-graph.test.js
       - name: Schematic integration regression tests
         run: |
-          node --test tests/*.test.js
+          node --test tests/schematic-editor-integration.test.js tests/image-text-recognition.test.js tests/manufacturer-evidence.test.js tests/component-recognition.test.js tests/schematic-graph-adapter.test.js tests/terminal-graph.test.js
   browser-smoke:
     runs-on: ubuntu-latest
     timeout-minutes: 40
