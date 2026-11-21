@@ -20,4 +20,12 @@ assert.equal(safety.proposeWire({...p,wires:[wire('X1','X3')]},wire('X3','X1')).
 const unrelated={...p,wires:[wire('X1','X2')]};
 assert.equal(safety.validate(unrelated).valid,false);
 assert.equal(safety.proposeWire(unrelated,wire('X3','X4')).accepted,true);
+const twoBad={version:1,symbols:[
+ {id:'A',manualTerminals:['1'],terminalTypes:{'1':'N'}},
+ {id:'B',manualTerminals:['1'],terminalTypes:{'1':'PE'}},
+ {id:'C',manualTerminals:['1'],terminalTypes:{'1':'N'}},
+ {id:'D',manualTerminals:['1'],terminalTypes:{'1':'PE'}}],
+ wires:[wire('A','B'),wire('C','D')]};
+assert.equal(safety.proposeWire(twoBad,wire('B','C')).accepted,false);
+assert.equal(safety.proposeWire(twoBad,wire('B','C')).reason,'N_PE_NET_CONFLICT');
 console.log('Preflight wiring tests passed');
