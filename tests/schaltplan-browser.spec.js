@@ -210,3 +210,46 @@ test('camera photo preview and unsupported OCR remain safe',async({page})=>{
  await expect(page.locator('#image-text-result')).toContainText(/manuell|prüfen|erkannt|fehlgeschlagen|verfügbar/i);
  expect(errors).toEqual([]);
 });
+
+
+test('final acceptance: saved component survives reload and rejects duplicate terminals',async({page})=>{
+ const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ await page.goto(pathToFileURL(resolve(__dirname,'../index.html')).href);
+ await page.evaluate(()=>localStorage.removeItem('elektroplan-components'));
+ await page.reload();
+ await page.locator('#type').selectOption('Relais');
+ await page.locator('#brand').fill('Pruefhersteller');
+ await page.locator('#model').fill('SAFE-17');
+ await page.locator('#record').click();
+ await expect(page.locator('#component-list li')).toHaveCount(1);
+ await page.reload();
+ await expect(page.locator('#component-list li')).toContainText(['Pruefhersteller']);
+ page.on('dialog',async d=>d.accept(d.message().includes('Bauteilkennung')?'SAFE1':'A1,A1'));
+ await page.getByRole('button',{name:'Im Schaltplan verwenden'}).click();
+ await expect(page.locator('#result')).toContainText('Anschlüsse prüfen');
+ await expect(page).toHaveURL(/index\.html$/);
+ expect(await page.evaluate(()=>sessionStorage.getItem('elektroplan-schematic-import'))).toBeNull();
+ expect(errors).toEqual([]);
+});
+test('final acceptance: transferred component survives JSON export and re-import',async({page})=>{
+ await page.goto(pathToFileURL(resolve(__dirname,'../index.html')).href);
+ await page.evaluate(()=>localStorage.removeItem('elektroplan-components'));
+ await page.reload();
+ await page.locator('#type').selectOption('Relais');
+ await page.locator('#brand').fill('Pruefhersteller');
+ await page.locator('#model').fill('SAFE-18');
+ await page.locator('#record').click();
+ page.on('dialog',async d=>d.accept(d.message().includes('Bauteilkennung')?'SAFE2':'A1,A2'));
+ await page.getByRole('button',{name:'Im Schaltplan verwenden'}).click();
+ await expect(page.locator('svg [data-id="SAFE2"]')).toHaveCount(1);
+ const downloadPromise=page.waitForEvent('download');
+ await page.getByRole('button',{name:'JSON speichern'}).click();
+ const file=await downloadPromise;
+ const fs=require('node:fs');
+ const project=JSON.parse(fs.readFileSync(await file.path(),'utf8'));
+ expect(project.symbols[0]).toMatchObject({id:'SAFE2',manualTerminals:['A1','A2'],manufacturer:'Pruefhersteller',model:'SAFE-18'});
+ expect(project.wires).toEqual([]);
+ await page.reload();
+ await page.locator('input[type="file"]').setInputFiles({name:'acceptance.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(project))});
+ await expect(page.locator('svg [data-id="SAFE2"]')).toHaveCount(1);
+});
