@@ -57,3 +57,18 @@ test('exports SVG and DXF without browser errors',async({page})=>{
   expect((await pending).suggestedFilename()).toBe(filename);
  }
 });
+
+test('pointer drag moves a component and undo restores its position',async({page})=>{
+ await page.goto(url);
+ page.on('dialog',async d=>d.accept(d.message().includes('Kennung')?'D1':'1,2'));
+ await page.getByRole('button',{name:'Bauteil hinzufügen'}).click();
+ const rect=page.locator('svg [data-id="D1"] rect');
+ const initial=Number(await rect.getAttribute('x'));
+ const bounds=await rect.boundingBox();
+ expect(bounds).toBeTruthy();
+ const x=bounds.x+bounds.width/2,y=bounds.y+bounds.height/3;
+ await page.mouse.move(x,y);await page.mouse.down();await page.mouse.move(x+60,y+20,{steps:5});await page.mouse.up();
+ await expect.poll(async()=>Number(await page.locator('svg [data-id="D1"] rect').getAttribute('x'))).toBeGreaterThan(initial);
+ await page.getByRole('button',{name:'Rückgängig'}).click();
+ await expect(page.locator('svg [data-id="D1"] rect')).toHaveAttribute('x',String(initial));
+});
