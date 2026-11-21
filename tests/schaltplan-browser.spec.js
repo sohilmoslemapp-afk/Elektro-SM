@@ -154,3 +154,27 @@ test('keyboard movement at coordinate boundary does not consume undo history',as
  await page.getByRole('button',{name:'Rückgängig'}).click();
  await expect(page.locator('svg [data-id="EDGE"]')).toHaveCount(0);
 });
+
+test('terminal connections survive JSON round-trip and are removed with their component',async({page})=>{
+ await page.goto(url);
+ const project={version:1,symbols:[{id:'A1',x:100,y:100,manualTerminals:['1','2']},{id:'B1',x:350,y:100,manualTerminals:['L','N']}],wires:[]};
+ await page.locator('input[type="file"]').setInputFiles({name:'connection.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(project))});
+ await expect(page.locator('svg [data-id="A1"]')).toHaveCount(1);
+ await page.getByRole('button',{name:'Leitung verbinden'}).click();
+ await page.locator('svg [data-component="A1"][data-terminal="1"]').click();
+ await page.locator('svg [data-component="B1"][data-terminal="L"]').click();
+ await expect(page.locator('svg path')).toHaveCount(1);
+ const saved=page.waitForEvent('download');
+ await page.getByRole('button',{name:'JSON speichern'}).click();
+ const file=await saved;
+ const fs=require('node:fs');
+ const data=JSON.parse(fs.readFileSync(await file.path(),'utf8'));
+ expect(data.wires).toEqual([{a:'A1',b:'B1',fromTerminal:'1',toTerminal:'L'}]);
+ await page.locator('input[type="file"]').setInputFiles({name:'roundtrip.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(data))});
+ await expect(page.locator('svg path')).toHaveCount(1);
+ await page.locator('svg [data-id="A1"] rect').click();
+ await page.getByRole('button',{name:'Auswahl löschen'}).click();
+ await expect(page.locator('svg path')).toHaveCount(0);
+ await page.getByRole('button',{name:'Rückgängig'}).click();
+ await expect(page.locator('svg path')).toHaveCount(1);
+});
