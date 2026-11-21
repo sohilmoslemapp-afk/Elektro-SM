@@ -1,0 +1,34 @@
+name: ElektroPlan SM preview release package
+on:
+  push:
+    branches: [ElektroPlan-SM-Preview]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  preview-package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check JavaScript syntax
+        run: |
+          for file in src/*.js; do node --check "$file"; done
+      - name: Run schematic and recognition regression suite
+        run: |
+          node --test tests/schematic-editor-integration.test.js tests/image-text-recognition.test.js tests/manufacturer-evidence.test.js tests/component-recognition.test.js tests/schematic-graph-adapter.test.js tests/terminal-graph.test.js
+      - name: Prepare isolated static preview
+        run: |
+          mkdir -p preview/src
+          cp index.html schaltplan.html preview/
+          cp src/*.js preview/src/
+          printf '%s\n' 'ElektroPlan SM preview: static offline files. Open index.html in a compatible browser or publish this folder to a separate HTTPS preview host. No GitHub Pages settings were changed.' > preview/README.txt
+      - name: Upload verified preview files
+        uses: actions/upload-artifact@v4
+        with:
+          name: ElektroPlan-SM-Preview-${{ github.sha }}
+          path: preview/
+          if-no-files-found: error
+          retention-days: 30
