@@ -31,9 +31,12 @@ jobs:
       - name: Install browser test runner
         run: |
           npm install --no-save @playwright/test
-          npx playwright install --with-deps chromium
+          npx playwright install --with-deps chromium firefox webkit
       - name: Desktop, phone and tablet browser smoke tests
-        run: npx playwright test tests/schaltplan-browser.spec.js --browser chromium --workers 1\n          npx playwright test tests/schaltplan-browser.spec.js --browser firefox --workers 1\n          npx playwright test tests/schaltplan-browser.spec.js --browser webkit --workers 1
+        run: |
+          npx playwright test tests/schaltplan-browser.spec.js --browser chromium --workers 1
+          npx playwright test tests/schaltplan-browser.spec.js --browser firefox --workers 1
+          npx playwright test tests/schaltplan-browser.spec.js --browser webkit --workers 1
       - name: Upload browser test results on failure
         if: failure()
         uses: actions/upload-artifact@v4
