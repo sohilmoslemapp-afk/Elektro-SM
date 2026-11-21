@@ -18,7 +18,7 @@ function instantiate(name,id,x,y){
  const t=TEMPLATES[name];if(!t)throw Error('UNKNOWN_TEMPLATE');
  if(typeof id!=='string'||!/^[A-Za-z0-9_-]{1,32}$/.test(id))throw Error('INVALID_ID');
  if(!Number.isFinite(x)||!Number.isFinite(y))throw Error('INVALID_POSITION');
- return {id,x,y,symbolKind:t.symbolKind,manualTerminals:[...t.manualTerminals],terminalTypes:Object.fromEntries(t.manualTerminals.map(k=>[k,'UNKNOWN'])),templateId:name,terminalProvenance:'generic-unverified'};
+ return {id,x,y,symbolKind:t.symbolKind,manualTerminals:[...t.manualTerminals],terminalTypes:Object.fromEntries(t.manualTerminals.map(k=>[k,'UNKNOWN'])),templateId:name,terminalProvenance:'generic-unverified',terminalEvidence:{status:'generic-unverified'}};
 }
 const api={TEMPLATES,instantiate};if(typeof module!=='undefined'&&module.exports)module.exports=api;else root.ElektroPlanDeviceTemplates=api;
 })(typeof globalThis!=='undefined'?globalThis:this);
