@@ -15,7 +15,7 @@ button,input,select{font:inherit}
 button{padding:12px;border:1px solid #bbc9d9;background:#f5f8fc;border-radius:10px}
 .field{display:block;width:100%;padding:12px;margin:8px 0 14px;border:1px solid #bbc9d9;border-radius:10px}
 #status,#result{background:#edf3fa;padding:14px;border-radius:10px;white-space:pre-wrap;overflow-wrap:anywhere}
-#preview{display:none;max-width:100%;max-height:60vh;margin:15px auto;border-radius:10px}
+#preview{display:none;max-width:100%;max-height:60vh;margin:0 auto;border-radius:10px}#image-area{display:none;position:relative;width:fit-content;max-width:100%;margin:15px auto}#crop-overlay{position:absolute;inset:0;width:100%;height:100%;touch-action:none;cursor:crosshair}#crop-controls{display:none;gap:8px;flex-wrap:wrap}
 section{margin-top:24px;padding-top:16px;border-top:1px solid #ccd5e2}
 small{display:block;line-height:1.5;margin-top:16px}
 </style>
@@ -27,7 +27,7 @@ small{display:block;line-height:1.5;margin-top:16px}
 <label class="pick">📷 Kamera öffnen<input id="camera" type="file" accept="image/*" capture="environment"></label>
 <label class="pick">🖼️ Bild auswählen<input id="gallery" type="file" accept="image/*"></label>
 <p id="status">Seite geladen. Bereit.</p>
-<img id="preview" alt="Bildvorschau">
+<div id="image-area"><img id="preview" alt="Bildvorschau"><canvas id="crop-overlay" aria-label="Bildbereich durch Ziehen auswählen"></canvas></div><div id="crop-controls"><button id="apply-crop" type="button" disabled>✂️ Auswahl zuschneiden</button><button id="reset-image" type="button">Originalbild</button></div><p id="crop-info" role="status">Bild aufnehmen oder auswählen; anschließend Bauteil im Bild markieren.</p>
 <button id="check" type="button">🔎 Funktion prüfen</button>
 <button id="read-image-text" type="button">Bildtext erkennen (experimentell)</button>
 <p id="image-text-result" role="status" aria-live="polite">Noch keine Texterkennung durchgeführt.</p>
@@ -60,13 +60,20 @@ small{display:block;line-height:1.5;margin-top:16px}
   <p><a href="schaltplan.html">Schaltplan öffnen</a></p>
 </section>
 </main>
-<script src="src/image-text-recognition.js"></script>
+<script src="src/image-selection.js"></script><script src="src/image-text-recognition.js"></script>
 <script src="src/manufacturer-evidence.js"></script>
 <script src="src/component-recognition.js"></script>
 <script>
 (function(){
 var s=document.getElementById('status');
 var p=document.getElementById('preview');
+var area=document.getElementById('image-area'),controls=document.getElementById('crop-controls'),overlay=document.getElementById('crop-overlay');
+var cropInfo=document.getElementById('crop-info'),cropButton=document.getElementById('apply-crop');
+var originalImage='',selectedRegion=null;
+function setImage(src){p.onload=function(){p.style.display='block';area.style.display='block';controls.style.display='flex';overlay.width=p.clientWidth*devicePixelRatio;overlay.height=p.clientHeight*devicePixelRatio;selectedRegion=null;cropButton.disabled=true;cropInfo.textContent='Bauteil durch Ziehen mit Finger oder Maus markieren.'};p.src=src}
+if(window.ElektroPlanImageSelection){window.ElektroPlanImageSelection.attach(p,overlay,function(region){selectedRegion=region;cropButton.disabled=region.width<8||region.height<8;cropInfo.textContent=cropButton.disabled?'Auswahl zu klein.':'Auswahl bereit – Zuschneiden drücken.'})}
+cropButton.addEventListener('click',function(){try{if(!selectedRegion)throw Error('no_selection');setImage(window.ElektroPlanImageSelection.crop(p,selectedRegion));cropInfo.textContent='Bildausschnitt übernommen.'}catch(_){cropInfo.textContent='Zuschneiden fehlgeschlagen.'}});
+document.getElementById('reset-image').addEventListener('click',function(){if(originalImage)setImage(originalImage)});
 function msg(t){s.textContent=t}
 window.addEventListener('error',function(e){msg('JavaScript-Fehler: '+e.message)});
 document.getElementById('read-image-text').addEventListener('click',async function(){
@@ -92,8 +99,9 @@ msg('Datei empfangen: '+f.name+' ('+Math.round(f.size/1024)+' KB)\nFormat: '+f.t
 p.style.display='none';
 var r=new FileReader();
 r.onload=function(){
-p.onload=function(){p.style.display='block';msg('✓ Bild erfolgreich angezeigt: '+f.name)};
+p.onload=function(){p.style.display='block';area.style.display='block';controls.style.display='flex';overlay.width=p.clientWidth*devicePixelRatio;overlay.height=p.clientHeight*devicePixelRatio;selectedRegion=null;cropButton.disabled=true;cropInfo.textContent='Bauteil im Bild markieren.';msg('✓ Bild erfolgreich angezeigt: '+f.name)};
 p.onerror=function(){msg('Bild konnte nicht dargestellt werden: '+f.type)};
+originalImage=r.result;
 p.src=r.result;
 };
 r.onerror=function(){msg('Fehler beim Lesen der Datei.')};
