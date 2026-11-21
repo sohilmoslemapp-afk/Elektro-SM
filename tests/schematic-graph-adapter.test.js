@@ -157,3 +157,12 @@ for(const bad of [-1,1.5,NaN,'0']){
 }
 const noSourceIndex=graphWith([{from:graph.connections[0].from,to:graph.connections[0].to}],[]);
 assert.equal(noSourceIndex.errors.some(x=>x.includes('Quellleitungsindex')),false,'Standalone graph edges need not carry schematic source indexes');
+
+for(const malformedEdges of [null,{},'invalid',{forEach:42},{forEach(){throw Error('Must not execute')}}]){
+ const result=validateTerminalGraph({components:graph.components,connections:malformedEdges,pending:[{wire:2,reason:'Nicht zugeordnet'}]});
+ assert.equal(result.valid,false,'Malformed connection collections must fail closed');
+ assert.equal(result.reviewRequired,true);
+ assert.equal(result.electricallyApproved,false);
+ assert.ok(result.errors.includes('Ungültiges Anschlussmodell'));
+ assert.ok(result.warnings.includes('Nicht zugeordnete Leitungen: 1'));
+}
