@@ -149,7 +149,7 @@ function showSavedComponents() {
       const terminals = window.prompt('Anschlüsse laut geprüfter Dokumentation (Komma getrennt). Keine automatische Zuordnung.', '');
       if (terminals === null) return;
       const manualTerminals = terminals.split(',').map(x => x.trim()).filter(Boolean);
-      if (!manualTerminals.length || manualTerminals.length > 32 || manualTerminals.some(x => !/^[A-Za-z0-9_+.-]{1,24}$/.test(x)) || new Set(manualTerminals).size !== manualTerminals.length) { document.getElementById('result').textContent = 'Anschlüsse prüfen und manuell eingeben.'; return; }
+      if (!manualTerminals.length || manualTerminals.length > 24 || manualTerminals.some(x => !/^[A-Za-z0-9_+.-]{1,24}$/.test(x)) || new Set(manualTerminals).size !== manualTerminals.length) { document.getElementById('result').textContent = 'Anschlüsse prüfen und manuell eingeben.'; return; }
       try {
         sessionStorage.setItem('elektroplan-schematic-import', JSON.stringify({id,manualTerminals,manufacturer:item.brand,model:item.model,type:item.type,origin:'manual'}));
         location.href = 'schaltplan.html';
