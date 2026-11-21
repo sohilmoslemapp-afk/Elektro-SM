@@ -12,3 +12,5 @@ test('unresolved terminals cannot be silently approved',()=>{const p={version:1,
 
 test('rejects dangling terminal and missing component references',()=>{const p={version:1,symbols:[{id:'A',x:0,y:0,manualTerminals:['1']},{id:'B',x:100,y:0,manualTerminals:['2']}],wires:[{a:'A',b:'B',fromTerminal:'1',toTerminal:'missing'}]};assert.equal(editor.valid(p),false);p.wires[0].toTerminal='2';assert.equal(editor.valid(p),true);p.wires[0].b='MISSING';assert.equal(editor.valid(p),false)});
 test('rejects self-loop on identical terminal',()=>{const p={version:1,symbols:[{id:'A',x:0,y:0,manualTerminals:['1']}],wires:[{a:'A',b:'A',fromTerminal:'1',toTerminal:'1'}]};assert.equal(editor.valid(p),false)});
+
+test('rejects duplicate terminal labels and reversed duplicate wires',()=>{const p={version:1,symbols:[{id:'A',x:0,y:0,manualTerminals:['1','1']},{id:'B',x:100,y:0,manualTerminals:['2']}],wires:[]};assert.equal(editor.valid(p),false);p.symbols[0].manualTerminals=['1'];p.wires=[{a:'A',b:'B',fromTerminal:'1',toTerminal:'2'}];assert.equal(editor.valid(p),true);p.wires.push({a:'B',b:'A',fromTerminal:'2',toTerminal:'1'});assert.equal(editor.valid(p),false)});
