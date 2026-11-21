@@ -1,0 +1,12 @@
+const assert=require('node:assert/strict');
+const lib=require('../src/netlist-export.js');
+const project={symbols:[{id:'Q1',manualTerminals:['1','2']},{id:'X1',manualTerminals:['1','2']}],wires:[{a:'Q1',fromTerminal:'2',b:'X1',toTerminal:'1'}]};
+const a=lib.build(project);
+assert.equal(a.format,'elektroplan-explicit-netlist-v1');
+assert.equal(a.nets.length,3);
+assert.ok(a.nets.some(n=>n.terminals.length===2&&n.terminals.some(t=>t.device==='Q1'&&t.terminal==='2')&&n.terminals.some(t=>t.device==='X1'&&t.terminal==='1')));
+assert.equal(a.connectionPolicy,'explicit-wires-only');
+assert.equal(a.electricallyApproved,false);
+assert.deepEqual(lib.build({...project,wires:[{a:'X1',fromTerminal:'1',b:'Q1',toTerminal:'2'}]}),a);
+assert.throws(()=>lib.build({symbols:project.symbols,wires:[{a:'missing',fromTerminal:'1',b:'X1',toTerminal:'2'}]}));
+console.log('Netlist export tests passed');
