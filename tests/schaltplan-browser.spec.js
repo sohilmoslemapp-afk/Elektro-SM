@@ -178,3 +178,25 @@ test('terminal connections survive JSON round-trip and are removed with their co
  await page.getByRole('button',{name:'Rückgängig'}).click();
  await expect(page.locator('svg path')).toHaveCount(1);
 });
+
+
+test('camera manual capture transfers reviewed component to schematic without inferred wires',async({page})=>{
+ const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ await page.goto(pathToFileURL(resolve(__dirname,'../index.html')).href);
+ await page.locator('#type').selectOption('Relais');
+ await page.locator('#brand').fill('Testhersteller');
+ await page.locator('#model').fill('R-42');
+ await page.locator('#record').click();
+ await expect(page.locator('#component-list li')).toHaveCount(1);
+ page.on('dialog',async dialog=>{await dialog.accept(dialog.message().includes('Bauteilkennung')?'K1':'A1,A2');});
+ await page.getByRole('button',{name:'Im Schaltplan verwenden'}).click();
+ await expect(page.locator('svg [data-id="K1"]')).toBeVisible();
+ const saved=page.waitForEvent('download');
+ await page.getByRole('button',{name:'JSON speichern'}).click();
+ const download=await saved;
+ const fs=require('node:fs');
+ const project=JSON.parse(fs.readFileSync(await download.path(),'utf8'));
+ expect(project.symbols[0]).toMatchObject({id:'K1',manufacturer:'Testhersteller',model:'R-42',manualTerminals:['A1','A2'],origin:'manual'});
+ expect(project.wires).toEqual([]);
+ expect(errors).toEqual([]);
+});
