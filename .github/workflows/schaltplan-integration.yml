@@ -20,3 +20,24 @@ jobs:
           node --check src/terminal-graph.js
       - name: Schematic integration regression tests
         run: node --test tests/schematic-editor-integration.test.js
+  browser-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install browser test runner
+        run: |
+          npm install --no-save @playwright/test
+          npx playwright install --with-deps chromium
+      - name: Desktop, phone and tablet browser smoke tests
+        run: npx playwright test tests/schaltplan-browser.spec.js --browser chromium --workers 1
+      - name: Upload browser test results on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: schaltplan-browser-results
+          path: test-results/
+          if-no-files-found: ignore
