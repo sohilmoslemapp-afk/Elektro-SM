@@ -146,12 +146,12 @@ function showSavedComponents() {
       const id = window.prompt('Bauteilkennung (z. B. K1)', 'K' + (savedComponents.indexOf(item) + 1));
       if (id === null) return;
       if (!/^[A-Za-z0-9_-]{1,32}$/.test(id)) { document.getElementById('result').textContent = 'Ungültige Kennung.'; return; }
-      const terminals = window.prompt('Anschlüsse laut geprüfter Dokumentation (Komma getrennt). Keine automatische Zuordnung.', '');
+      const terminals = window.prompt('Anschlüsse laut geprüfter Dokumentation (Komma getrennt). Leer lassen = Symbol ohne Anschlüsse, keine automatische Zuordnung.', '');
       if (terminals === null) return;
       const manualTerminals = terminals.split(',').map(x => x.trim()).filter(Boolean);
-      if (!manualTerminals.length || manualTerminals.length > 24 || manualTerminals.some(x => !/^[A-Za-z0-9_+.-]{1,24}$/.test(x)) || new Set(manualTerminals).size !== manualTerminals.length) { document.getElementById('result').textContent = 'Anschlüsse prüfen und manuell eingeben.'; return; }
+      if (manualTerminals.length > 24 || manualTerminals.some(x => !/^[A-Za-z0-9_+.-]{1,24}$/.test(x)) || new Set(manualTerminals).size !== manualTerminals.length) { document.getElementById('result').textContent = 'Anschlüsse prüfen und manuell eingeben.'; return; }
       try {
-        sessionStorage.setItem('elektroplan-schematic-import', JSON.stringify({id,manualTerminals,manufacturer:item.brand,model:item.model,type:item.type,origin:'manual'}));
+        sessionStorage.setItem('elektroplan-schematic-import', JSON.stringify({id,manualTerminals,manufacturer:item.brand,model:item.model,type:item.type,origin:'manual',terminalStatus:manualTerminals.length?'unverified_manual':'pending_documentation'}));
         location.href = 'schaltplan.html';
       } catch (_) { document.getElementById('result').textContent = 'Übertragung nicht möglich.'; }
     });
