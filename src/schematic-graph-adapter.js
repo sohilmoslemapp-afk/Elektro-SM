@@ -3,10 +3,12 @@
 (function(root){
 'use strict';
 function fromSchematic(project){
+ const malformedSymbolCollection=project!=null&&project.symbols!==undefined&&!Array.isArray(project.symbols);
  const symbols=Array.isArray(project?.symbols)?project.symbols:[];
  const wires=Array.isArray(project?.wires)?project.wires:[];
  const malformedWireCollection=project!=null&&project.wires!==undefined&&!Array.isArray(project.wires);
  const components=symbols.map(s=>({id:s?.id,terminals:Array.isArray(s?.manualTerminals)?s.manualTerminals.slice():[]}));
+ if(malformedSymbolCollection)components.push({id:null,terminals:[]});
  const connections=[],pending=[];
  if(malformedWireCollection)pending.push({wire:-1,reason:'Ungültige Leitungsliste'});
  const knownIds=new Set(components.map(c=>c.id));
